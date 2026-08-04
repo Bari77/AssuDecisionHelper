@@ -148,20 +148,26 @@ conclusion d'une qualification est un incrément **majeur**.
 L'image sert le site via nginx en mode non privilégié (uid 101), sur le port **8080**.
 Une sonde `GET /healthz` répond `ok`.
 
-Déploiement depuis la registry :
+[docker-compose.yml](docker-compose.yml) décrit le déploiement de production : l'image est
+tirée de `registry.bariserv.net/adh/web`, publiée sur `https://adh.bariserv.net` par Traefik
+(entrypoints `web` / `websecure`, certificat `myresolver`, middlewares `rate-limit-global@file`
+et `redirect-to-https@file`). Aucun port n'est exposé sur l'hôte : le conteneur rejoint le
+réseau externe `traefik_proxy`.
 
 ```sh
-ADH_REGISTRY=registry.exemple.fr \
-ADH_IMAGE=assurance/adh \
-ADH_VERSION=1.0.0 \
-ADH_PORT=8080 \
-docker compose up -d
+docker compose pull && docker compose up -d
 ```
 
-Build local depuis les sources, sans registry :
+Épingler une version au lieu de `latest` :
 
 ```sh
-docker compose --profile build up -d --build
+ADH_VERSION=1.0.0 docker compose up -d
+```
+
+Build local depuis les sources, sans registry ni Traefik :
+
+```sh
+docker build -t adh:dev . && docker run --rm -p 8080:8080 adh:dev
 ```
 
 Le conteneur tourne en système de fichiers en lecture seule, sans élévation de privilèges,

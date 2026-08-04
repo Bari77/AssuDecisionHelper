@@ -1,19 +1,23 @@
+version: "3.9"
+
 # Hébergement d'ADH — AssuDecisionHelper
 #
-# Déploiement depuis la registry (cas courant) :
-#   ADH_REGISTRY=registry.exemple.fr ADH_IMAGE=assurance/adh ADH_VERSION=1.0.0 docker compose up -d
+# Site statique servi par nginx non privilégié (port 8080), publié derrière Traefik.
+# Aucun port n'est exposé sur l'hôte : le routage passe par le réseau traefik_proxy.
 #
-# Build local depuis les sources, sans registry :
-#   docker compose --profile build up -d --build
+# Déploiement :
+#   docker compose pull && docker compose up -d
+#
+# Épingler une version au lieu de « latest » :
+#   ADH_VERSION=1.0.0 docker compose up -d
+
+name: adh-prod
 
 services:
   adh:
-    image: ${ADH_REGISTRY:-ghcr.io}/${ADH_IMAGE:-owner/assudecisionhelper}:${ADH_VERSION:-1.0.0}
-    container_name: adh
-    restart: unless-stopped
-    ports:
-      # Port hôte réglable ; le conteneur écoute toujours sur 8080 en non privilégié.
-      - "${ADH_PORT:-8080}:8080"
+    image: registry.bariserv.net/adh/web:${ADH_VERSION:-latest}
+    container_name: adh-prod-web
+    restart: always
     read_only: true
     tmpfs:
       # nginx a besoin d'écrire ses fichiers temporaires et son pid.
@@ -28,16 +32,22 @@ services:
       timeout: 3s
       retries: 3
       start_period: 5s
+    labels:
+      - "traefik.enable=true"
 
-  # Même service, mais construit depuis les sources locales.
-  adh-build:
-    profiles: ["build"]
-    build:
-      context: .
-      args:
-        ADH_VERSION: ${ADH_VERSION:-dev}
-    image: adh:${ADH_VERSION:-dev}
-    container_name: adh-build
-    restart: unless-stopped
-    ports:
-      - "${ADH_PORT:-8080}:8080"
+      - "traefik.http.routers.adh.rule=Host(`adh.bariserv.net`)"
+      - "traefik.http.routers.adh.entrypoints=websecure"
+      - "traefik.http.routers.adh.tls=true"
+      - "traefik.http.routers.adh.tls.certresolver=myresolver"
+      - "traefik.http.services.adh.loadbalancer.server.port=8080"
+      - "traefik.http.routers.adh.middlewares=rate-limit-global@file"
+
+      - "traefik.http.routers.adh-http.rule=Host(`adh.bariserv.net`)"
+      - "traefik.http.routers.adh-http.entrypoints=web"
+      - "traefik.http.routers.adh-http.middlewares=redirect-to-https@file"
+    networks:
+      - traefik_proxy
+
+networks:
+  traefik_proxy:
+    external: true
