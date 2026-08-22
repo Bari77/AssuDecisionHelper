@@ -15,6 +15,16 @@ const SEUILS = {
 
 const eur = (n) => n.toLocaleString('fr-FR') + ' € HT';
 
+/* Tranche IRSI d'un montant HT déjà estimé pour un local. 1 600 € inclus
+   reste en tranche 1 ; au-delà et jusqu'à 5 000 € inclus, tranche 2. */
+function trancheIrsi(montant) {
+  const n = Number(montant);
+  if (!Number.isFinite(n) || n < 0) return null;
+  if (n <= SEUILS.irsiTranche1) return 't1';
+  if (n <= SEUILS.irsiPlafond) return 't2';
+  return 'hors';
+}
+
 /* ---------------------------------------------------------------------------
    Fiches conventions
    --------------------------------------------------------------------------- */
@@ -245,12 +255,12 @@ const QUESTIONS = {
 
   montant: {
     intitule: 'Quel est le montant des dommages matériels par local sinistré ?',
-    aide: 'Assiette conventionnelle : montant hors taxes, par local sinistré pris isolément, frais de recherche de fuite et mesures conservatoires inclus, pertes immatérielles exclues.',
+    aide: 'Assiette : hors taxes, un local à la fois, recherche de fuite et mesures conservatoires incluses, pertes immatérielles exclues. Une estimation ci-dessous calcule la tranche ; la franchise du contrat ne s’impute pas sur ce seuil.',
     options: [
       { v: 't1', l: `Jusqu’à ${eur(SEUILS.irsiTranche1)}`, h: 'Tranche 1 de la convention IRSI' },
       {
         v: 't2',
-        l: `De ${eur(SEUILS.irsiTranche1)} à ${eur(SEUILS.irsiPlafond)}`,
+        l: `Au-delà de ${eur(SEUILS.irsiTranche1)} et jusqu’à ${eur(SEUILS.irsiPlafond)}`,
         h: 'Tranche 2 de la convention IRSI',
       },
       {
@@ -291,7 +301,7 @@ const QUESTIONS = {
 
   natureDommages: {
     intitule: 'Quelle est la nature des dommages à indemniser ?',
-    aide: 'CIDECOP et CIDEPIEC répartissent la charge entre assureur de l’immeuble et assureur de l’occupant selon cette qualification. Le contenu reste hors répartition.',
+    aide: 'CIDECOP et CIDEPIEC répartissent la charge selon cette qualification. Le mobilier reste hors convention. En cas de doute (carrelage, parquet, cuisine), voir l’onglet Guides — ce n’est pas une décision de gestion.',
     options: [
       {
         v: 'mixte',
@@ -327,7 +337,7 @@ const QUESTIONS = {
 
   adhesion: {
     intitule: 'Tous les assureurs concernés adhèrent-ils aux conventions ?',
-    aide: 'Une convention ne lie que ses adhérents. À vérifier pour l’assureur de l’immeuble comme pour ceux des occupants concernés.',
+    aide: 'Une convention ne lie que ses adhérents. À vérifier pour l’assureur de l’immeuble comme pour ceux des occupants. Un assureur étranger, un fonds de garantie ou une société en liquidation écarte en principe le dispositif.',
     options: [
       { v: 'oui', l: 'Oui, tous adhérents', h: 'Le dispositif conventionnel est opposable entre eux' },
       {
@@ -597,4 +607,4 @@ function branchesCopropriete(r, cle, motifSortie) {
 }
 
 /* Exposition globale (chargement en script classique, sans module). */
-window.RULES = { SEUILS, CONVENTIONS, QUESTIONS, flow };
+window.RULES = { SEUILS, CONVENTIONS, QUESTIONS, flow, trancheIrsi };

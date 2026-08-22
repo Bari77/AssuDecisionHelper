@@ -18,6 +18,33 @@ Portée des incréments, appliquée à la base de connaissance autant qu'au code
 
 ## [Non publié]
 
+## [1.1.0] - 2026-08-22
+
+Outil d'aide aux nouveaux experts : textes prêts à coller dans le dossier, guides de chiffrage
+et de qualification immobilier / embellissements. Aucune conclusion de l'arbre n'est modifiée.
+
+### Ajouté
+
+- Textes à coller générés à l'issue de l'analyse, un bloc par onglet usuel du logiciel
+  (qualification, gestionnaire / répartition, dommages, assiette de chiffrage, conduite,
+  observations, conclusions). Les crochets signalent ce que le constat ou le contrat doivent
+  encore préciser.
+- Personnalisation facultative des textes (référence, assuré, compagnie mandante, type de
+  contrat, franchise, montant, cause) — les mentions restent dans le navigateur.
+- Onglet « Guides métier » : assiette des seuils IRSI, tableau immobilier / embellissements /
+  mobilier, causes d'exclusion, ce que le contrat tranche, pièges du premier dossier.
+- Saisie d'une estimation hors taxes sur le critère de montant : la tranche IRSI se calcule
+  toute seule (`trancheIrsi`), 1 600 € HT inclus restant en tranche 1.
+- Accueil pédagogique pour un premier dossier, masqué dès qu'un critère est tranché.
+- [tests/textes.test.js](tests/textes.test.js) : parcours exhaustif des blocs générés, injection
+  des mentions de dossier, complétude des guides.
+
+### Modifié
+
+- Libellé de la tranche 2 IRSI : « au-delà de 1 600 € HT et jusqu'à 5 000 € HT », pour lever
+  le chevauchement de lecture avec la tranche 1.
+- Aides des critères montant, nature des dommages et adhésion, orientées expert novice.
+
 ### Corrigé
 
 - Le retour arrière (`←`, `Retour arrière`, « Question précédente », « Modifier le dernier
@@ -28,16 +55,8 @@ Portée des incréments, appliquée à la base de connaissance autant qu'au code
   par la classe `.wrap` portée par le même élément, de spécificité supérieure. Les sections
   touchaient l'en-tête et le pied de page.
 
-### Modifié
-
-- La machine à états de la navigation est extraite dans [assets/parcours.js](assets/parcours.js),
-  sans dépendance au DOM. Motif : la logique de parcours enfermée dans la closure de rendu
-  n'était pas vérifiable, ce qui avait laissé passer la régression du retour arrière.
-
-### Ajouté
-
-- [tests/parcours.test.js](tests/parcours.test.js) : 32 assertions sur les invariants de
-  navigation et le rejeu d'URL, exécutées par la pipeline.
+Les corrections de navigation ci-dessus s'accompagnent de l'extraction de la machine à états
+dans [assets/parcours.js](assets/parcours.js) et de [tests/parcours.test.js](tests/parcours.test.js).
 
 ## [1.0.0] - 2026-08-04
 
@@ -76,5 +95,6 @@ Version initiale.
 
 Le détail de ces réserves est affiché dans l'onglet « Sources » du site.
 
-[Non publié]: https://github.com/OWNER/AssuDecisionHelper/compare/1.0.0...HEAD
+[Non publié]: https://github.com/OWNER/AssuDecisionHelper/compare/1.1.0...HEAD
+[1.1.0]: https://github.com/OWNER/AssuDecisionHelper/compare/1.0.0...1.1.0
 [1.0.0]: https://github.com/OWNER/AssuDecisionHelper/releases/tag/1.0.0

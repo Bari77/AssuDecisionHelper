@@ -6,7 +6,8 @@
 (function () {
   'use strict';
 
-  const { CONVENTIONS, QUESTIONS, flow } = window.RULES;
+  const { CONVENTIONS, QUESTIONS, flow, SEUILS, trancheIrsi } = window.RULES;
+  const textesDossier = window.TEXTES && window.TEXTES.textesDossier;
 
   /* Couleurs par famille de résultat, injectées en variables CSS. */
   const TONES = {
@@ -49,6 +50,12 @@
   });
 
   let courant = null; // id de la question affichée, null si résultat
+  let dernierResultat = null;
+
+  function dossierVide() {
+    return { ref: '', assure: '', compagnie: '', contrat: '', franchise: '', montant: '', cause: '' };
+  }
+  let dossier = dossierVide();
 
   /* Le parcours est reflété dans le fragment d'URL : un cas d'espèce se partage
      alors par simple copie du lien. Silencieux si le navigateur refuse
@@ -89,6 +96,63 @@
 
     renderTrail();
     syncHash();
+
+    const intro = document.getElementById('intro-novice');
+    if (intro) intro.hidden = parcours.etapes().length > 0;
+  }
+
+  function saisieMontant(id) {
+    const box = el('div', 'montant-aide');
+    const label = el('label', 'montant-aide__label');
+    label.setAttribute('for', 'montant-estime');
+    label.textContent = 'Estimation provisoire d’un local (€ HT)';
+    const input = el('input', 'montant-aide__input');
+    input.id = 'montant-estime';
+    input.type = 'number';
+    input.min = '0';
+    input.step = '1';
+    input.inputMode = 'decimal';
+    input.placeholder = 'Ex. 2400';
+    if (dossier.montant) input.value = dossier.montant;
+    const lecture = el('p', 'montant-aide__lecture muted small');
+
+    const etiquettes = {
+      t1: 'Tranche 1 IRSI — cliquez l’option correspondante pour valider.',
+      t2: 'Tranche 2 IRSI — cliquez l’option correspondante pour valider.',
+      hors: 'Au-delà du plafond IRSI — cliquez l’option correspondante pour valider.',
+    };
+
+    function appliquer() {
+      dossier.montant = input.value;
+      const tranche = trancheIrsi(input.value);
+      const options = stage.querySelectorAll('.option');
+      QUESTIONS.montant.options.forEach((o, i) => {
+        if (options[i]) options[i].classList.toggle('option--hinted', tranche != null && o.v === tranche);
+      });
+      if (input.value === '') {
+        lecture.textContent =
+          'La franchise du contrat ne s’impute pas sur ce montant. Laisser vide et choisir « Non encore évalué » si le chiffrage n’est pas fait.';
+      } else if (!tranche) {
+        lecture.textContent = 'Saisir un montant positif, hors taxes, pour un seul local.';
+      } else {
+        lecture.textContent = etiquettes[tranche];
+      }
+    }
+
+    input.addEventListener('input', appliquer);
+    input.addEventListener('keydown', (e) => {
+      if (e.key !== 'Enter') return;
+      const tranche = trancheIrsi(input.value);
+      if (!tranche) return;
+      e.preventDefault();
+      parcours.repondre(id, tranche);
+    });
+
+    box.appendChild(label);
+    box.appendChild(input);
+    box.appendChild(lecture);
+    setTimeout(appliquer, 0);
+    return box;
   }
 
   function renderQuestion(id) {
@@ -99,6 +163,14 @@
     card.appendChild(el('p', 'step', `Critère ${rang} sur ${rang + parcours.resteEstime()}`));
     card.appendChild(el('h1', 'question', def.intitule));
     if (def.aide) card.appendChild(el('p', 'hint', def.aide));
+
+    if (id === 'montant') card.appendChild(saisieMontant(id));
+    if (id === 'natureDommages') {
+      const lien = el('button', 'linkbtn hint-link', 'Ouvrir le guide immobilier / embellissements');
+      lien.type = 'button';
+      lien.addEventListener('click', () => afficherVue('guides'));
+      card.appendChild(lien);
+    }
 
     const opts = el('div', 'options');
     def.options.forEach((o, i) => {
@@ -134,8 +206,10 @@
     card.appendChild(foot);
 
     stage.replaceChildren(card);
+    const champ = card.querySelector('#montant-estime');
     const first = card.querySelector('.option');
-    if (first) first.focus({ preventScroll: true });
+    if (champ) champ.focus({ preventScroll: true });
+    else if (first) first.focus({ preventScroll: true });
   }
 
   function renderResultat(res) {
@@ -195,12 +269,19 @@
 
     box.appendChild(body);
 
+    box.appendChild(panneauDossier(res));
+    const textesHost = el('div', 'textes');
+    textesHost.id = 'blocs-textes';
+    box.appendChild(textesHost);
+    dernierResultat = res;
+    renderBlocsTextes(textesHost, res);
+
     /* Actions */
     const foot = el('div', 'result__foot');
 
     const again = el('button', 'btn btn--primary', 'Nouvelle analyse');
     again.type = 'button';
-    again.addEventListener('click', parcours.reinitialiser);
+    again.addEventListener('click', nouvelleAnalyse);
     foot.appendChild(again);
 
     const back = el('button', 'btn', 'Modifier le dernier critère');
@@ -210,15 +291,7 @@
 
     const copy = el('button', 'btn', 'Copier la synthèse');
     copy.type = 'button';
-    copy.addEventListener('click', () => {
-      navigator.clipboard.writeText(synthese(res)).then(
-        () => {
-          copy.textContent = 'Synthèse copiée';
-          setTimeout(() => (copy.textContent = 'Copier la synthèse'), 1800);
-        },
-        () => (copy.textContent = 'Copie impossible')
-      );
-    });
+    copy.addEventListener('click', () => copier(synthese(res), copy, 'Copier la synthèse'));
     foot.appendChild(copy);
 
     const print = el('button', 'btn', 'Imprimer');
@@ -230,6 +303,120 @@
     stage.replaceChildren(box);
     box.setAttribute('tabindex', '-1');
     box.focus({ preventScroll: true });
+  }
+
+  function nouvelleAnalyse() {
+    dossier = dossierVide();
+    dernierResultat = null;
+    parcours.reinitialiser();
+  }
+
+  function copier(texte, bouton, repos) {
+    const ok = () => {
+      bouton.textContent = 'Copié';
+      setTimeout(() => (bouton.textContent = repos), 1800);
+    };
+    const ko = () => {
+      bouton.textContent = 'Copie impossible';
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(texte).then(ok, ko);
+      return;
+    }
+    ko();
+  }
+
+  function panneauDossier(res) {
+    const wrap = el('div', 'dossier');
+    wrap.appendChild(el('h3', null, 'Personnaliser les textes (facultatif)'));
+    wrap.appendChild(
+      el(
+        'p',
+        'muted small',
+        'Ces mentions ne quittent pas le navigateur. Elles remplacent les crochets dans les blocs à coller.'
+      )
+    );
+
+    const grid = el('div', 'dossier__grid');
+    const champs = [
+      { name: 'ref', label: 'Réf. dossier / n° sinistre' },
+      { name: 'assure', label: 'Assuré' },
+      { name: 'compagnie', label: 'Compagnie mandante' },
+      { name: 'cause', label: 'Cause retenue' },
+      { name: 'franchise', label: 'Franchise du contrat' },
+      { name: 'montant', label: 'Montant HT du local (€)', type: 'number' },
+    ];
+
+    champs.forEach((c) => {
+      const lab = el('label', 'field');
+      lab.appendChild(el('span', 'field__label', c.label));
+      const input = el('input', 'field__input');
+      input.type = c.type || 'text';
+      if (c.type === 'number') {
+        input.min = '0';
+        input.step = '1';
+      }
+      input.value = dossier[c.name] || '';
+      input.addEventListener('input', () => {
+        dossier[c.name] = input.value;
+        const host = document.getElementById('blocs-textes');
+        if (host) renderBlocsTextes(host, res);
+      });
+      lab.appendChild(input);
+      grid.appendChild(lab);
+    });
+
+    const labContrat = el('label', 'field');
+    labContrat.appendChild(el('span', 'field__label', 'Type de contrat'));
+    const select = el('select', 'field__input');
+    ['', 'MRH locataire', 'MRH propriétaire occupant', 'PNO', 'Multirisque immeuble / syndicat', 'Autre'].forEach(
+      (v) => {
+        const o = el('option', null, v || 'Non renseigné');
+        o.value = v;
+        if (dossier.contrat === v) o.selected = true;
+        select.appendChild(o);
+      }
+    );
+    select.addEventListener('change', () => {
+      dossier.contrat = select.value;
+      const host = document.getElementById('blocs-textes');
+      if (host) renderBlocsTextes(host, res);
+    });
+    labContrat.appendChild(select);
+    grid.appendChild(labContrat);
+
+    wrap.appendChild(grid);
+    return wrap;
+  }
+
+  function renderBlocsTextes(host, res) {
+    host.replaceChildren();
+    if (!textesDossier) return;
+
+    const head = el('div', 'textes__head');
+    head.appendChild(el('h3', null, 'Textes à coller dans le dossier'));
+    head.appendChild(
+      el(
+        'p',
+        'muted small',
+        'Un bloc par onglet usuel du logiciel d’expertise. Les crochets [ainsi] restent à compléter après la visite.'
+      )
+    );
+    host.appendChild(head);
+
+    const blocs = textesDossier(parcours.reponses(), res, dossier);
+    blocs.forEach((b) => {
+      const article = el('article', 'texte');
+      const barre = el('div', 'texte__barre');
+      barre.appendChild(el('h4', null, b.onglet));
+      const btn = el('button', 'btn btn--tiny', 'Copier');
+      btn.type = 'button';
+      btn.addEventListener('click', () => copier(b.texte, btn, 'Copier'));
+      barre.appendChild(btn);
+      article.appendChild(barre);
+      article.appendChild(el('pre', 'texte__corps', b.texte));
+      host.appendChild(article);
+    });
   }
 
   function bloc(titre, paragraphes, listClass) {
@@ -322,6 +509,62 @@
     });
   }
 
+  /* ---------------------- Guides métier ---------------------- */
+
+  function renderGuides() {
+    const { GUIDES } = window.GUIDES;
+    const toc = document.getElementById('guides-toc');
+    const host = document.getElementById('guides');
+    GUIDES.forEach((g) => {
+      const a = el('a', 'guide-toc__item', g.titre);
+      a.href = '#' + g.id;
+      a.addEventListener('click', (ev) => {
+        ev.preventDefault();
+        const cible = document.getElementById(g.id);
+        if (cible) cible.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+      toc.appendChild(a);
+
+      const article = el('article', 'guide');
+      article.id = g.id;
+      article.appendChild(el('h2', null, g.titre));
+      if (g.chapo) article.appendChild(el('p', 'guide__chapo', g.chapo));
+
+      if (g.tableau) {
+        const scroll = el('div', 'table-scroll');
+        const table = el('table', 'compare');
+        const thead = el('thead');
+        const trh = el('tr');
+        g.tableau.colonnes.forEach((c) => trh.appendChild(el('th', null, c)));
+        thead.appendChild(trh);
+        table.appendChild(thead);
+        const tbody = el('tbody');
+        g.tableau.lignes.forEach((ligne) => {
+          const tr = el('tr');
+          ligne.forEach((cell, i) => {
+            tr.appendChild(el(i === 0 ? 'th' : 'td', null, cell));
+            if (i === 0) tr.lastChild.scope = 'row';
+          });
+          tbody.appendChild(tr);
+        });
+        table.appendChild(tbody);
+        scroll.appendChild(table);
+        article.appendChild(scroll);
+      }
+
+      (g.sections || []).forEach((s) => {
+        const sec = el('section', 'guide__sec');
+        sec.appendChild(el('h3', null, s.t));
+        const ul = el('ul', 'list');
+        (s.p || []).forEach((p) => ul.appendChild(el('li', null, p)));
+        sec.appendChild(ul);
+        article.appendChild(sec);
+      });
+
+      host.appendChild(article);
+    });
+  }
+
   /* ---------------------- Sources ---------------------- */
 
   function renderSources() {
@@ -381,6 +624,7 @@
 
   const vues = {
     assistant: document.getElementById('view-assistant'),
+    guides: document.getElementById('view-guides'),
     fiches: document.getElementById('view-fiches'),
     sources: document.getElementById('view-sources'),
   };
@@ -391,14 +635,14 @@
     Object.entries(vues).forEach(([n, section]) => (section.hidden = n !== nom));
   }
 
-  document.querySelectorAll('.tab').forEach((tab) => {
+  document.querySelectorAll('[data-view]').forEach((tab) => {
     tab.addEventListener('click', () => {
       afficherVue(tab.dataset.view);
       window.scrollTo({ top: 0 });
     });
   });
 
-  resetBtn.addEventListener('click', parcours.reinitialiser);
+  resetBtn.addEventListener('click', nouvelleAnalyse);
 
   document.addEventListener('keydown', (e) => {
     if (e.metaKey || e.ctrlKey || e.altKey) return;
@@ -428,6 +672,7 @@
   document.getElementById('footer-version').textContent = `${adh.nom} (${adh.sigle}) — version ${adh.version}`;
 
   renderFiches();
+  renderGuides();
   renderSources();
   initDepuisHash();
   render();

@@ -63,7 +63,7 @@ jobs:
 
       - name: Contrôler la syntaxe des scripts
         run: |
-          for f in assets/version.js assets/rules.js assets/sources.js assets/parcours.js assets/app.js; do
+          for f in assets/version.js assets/rules.js assets/sources.js assets/guides.js assets/textes.js assets/parcours.js assets/app.js; do
             node --check "$f" && echo "  ok  $f"
           done
 
@@ -72,6 +72,9 @@ jobs:
 
       - name: Valider les invariants de navigation
         run: node tests/parcours.test.js
+
+      - name: Valider les textes à coller et les guides
+        run: node tests/textes.test.js
 
   publier:
     name: Construire et publier l'image

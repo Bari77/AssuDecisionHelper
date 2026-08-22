@@ -6,7 +6,7 @@
     <title>ADH — AssuDecisionHelper · IRSI · CIDECOP · CIDEPIEC</title>
     <meta
       name="description"
-      content="Outil d'aide à la détermination de la convention d'indemnisation applicable à un sinistre en immeuble collectif : IRSI, CIDECOP, CIDEPIEC."
+      content="Aide les nouveaux experts à qualifier IRSI, CIDECOP ou CIDEPIEC, chiffrer l'assiette du dossier et coller les textes dans leur logiciel."
     />
     <link rel="stylesheet" href="assets/styles.css" />
   </head>
@@ -22,6 +22,7 @@
         </div>
         <nav class="tabs" aria-label="Sections">
           <button class="tab is-active" data-view="assistant" type="button">Assistant</button>
+          <button class="tab" data-view="guides" type="button">Guides métier</button>
           <button class="tab" data-view="fiches" type="button">Fiches conventions</button>
           <button class="tab" data-view="sources" type="button">Sources</button>
         </nav>
@@ -31,6 +32,21 @@
     <main class="wrap">
       <!-- ================= Assistant ================= -->
       <section id="view-assistant">
+        <aside id="intro-novice" class="intro">
+          <p>
+            <strong>Pour un premier dossier.</strong> L’assistant pose 3 à 7 questions, désigne la convention, puis
+            propose des textes à coller dans les onglets du logiciel. Le chiffrage définitif, la franchise et les
+            plafonds restent ceux du contrat.
+          </p>
+          <ul>
+            <li>Les seuils IRSI s’apprécient <strong>hors taxes, local par local</strong>, recherche de fuite comprise.</li>
+            <li>
+              La frontière <strong>immobilier / embellissement</strong> conditionne CIDECOP et CIDEPIEC — voir
+              <button class="linkbtn" type="button" data-view="guides">Guides métier</button>.
+            </li>
+            <li>Franchise, vétusté et plafonds ne sont <strong>jamais</strong> dans la convention : ils sont au contrat.</li>
+          </ul>
+        </aside>
         <div class="layout">
           <div class="layout__main">
             <div id="stage" aria-live="polite"></div>
@@ -52,7 +68,7 @@
               <h2>Repères</h2>
               <dl class="reperes">
                 <div><dt>Tranche 1 IRSI</dt><dd>≤ 1 600 € HT</dd></div>
-                <div><dt>Tranche 2 IRSI</dt><dd>1 600 → 5 000 € HT</dd></div>
+                <div><dt>Tranche 2 IRSI</dt><dd>&gt; 1 600 → 5 000 € HT</dd></div>
                 <div><dt>Plafond IRSI</dt><dd>5 000 € HT par local</dd></div>
                 <div><dt>Seuil CIDEPIEC</dt><dd>320 € en principal</dd></div>
               </dl>
@@ -60,6 +76,19 @@
             </div>
           </aside>
         </div>
+      </section>
+
+      <!-- ================= Guides ================= -->
+      <section id="view-guides" hidden>
+        <div class="pagehead">
+          <h1>Guides métier</h1>
+          <p class="muted">
+            Repères pour chiffrer l’assiette, qualifier immobilier / embellissements / mobilier, et ne pas confondre
+            convention et contrat. Ces fiches n’augmentent pas les garanties souscrites.
+          </p>
+        </div>
+        <div id="guides-toc" class="guide-toc"></div>
+        <div id="guides" class="guides"></div>
       </section>
 
       <!-- ================= Fiches ================= -->
@@ -149,6 +178,8 @@
     <script src="assets/version.js"></script>
     <script src="assets/rules.js"></script>
     <script src="assets/sources.js"></script>
+    <script src="assets/guides.js"></script>
+    <script src="assets/textes.js"></script>
     <script src="assets/parcours.js"></script>
     <script src="assets/app.js"></script>
   </body>

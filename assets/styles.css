@@ -132,6 +132,7 @@ body {
 .tabs {
   display: flex;
   gap: 4px;
+  flex-wrap: wrap;
 }
 
 .tab {
@@ -275,6 +276,16 @@ main.wrap {
   border-color: var(--accent-line);
   color: var(--accent);
 }
+.option--hinted {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  box-shadow: 0 0 0 1px var(--accent-line);
+}
+.option--hinted .option__key {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
 
 .option__body {
   min-width: 0;
@@ -349,6 +360,10 @@ main.wrap {
 .btn--primary:hover {
   background: #14556f;
   border-color: #14556f;
+}
+.btn--tiny {
+  font-size: 12.5px;
+  padding: 4px 10px;
 }
 
 /* ---------------- Panneau latéral ---------------- */
@@ -856,6 +871,218 @@ a.src__titre:hover {
   word-break: break-all;
 }
 
+/* ---------------- Accueil novice ---------------- */
+
+.intro {
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 16px 20px 14px;
+  margin-bottom: 22px;
+  box-shadow: var(--shadow);
+}
+.intro p {
+  margin: 0 0 8px;
+  max-width: 78ch;
+}
+.intro ul {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--ink-soft);
+  font-size: 13.5px;
+  display: grid;
+  gap: 4px;
+}
+.intro .linkbtn {
+  font-size: inherit;
+}
+
+.hint-link {
+  display: inline-block;
+  margin: -12px 0 18px;
+  font-size: 13.5px;
+}
+
+/* ---------------- Saisie du montant ---------------- */
+
+.montant-aide {
+  display: grid;
+  gap: 6px;
+  margin: 0 0 18px;
+  padding: 14px 16px;
+  background: var(--bg-soft);
+  border: 1px dashed var(--line);
+  border-radius: 8px;
+}
+.montant-aide__label {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+.montant-aide__input {
+  font: inherit;
+  font-variant-numeric: tabular-nums;
+  width: 100%;
+  max-width: 220px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  padding: 8px 10px;
+  background: var(--bg);
+}
+.montant-aide__input:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+.montant-aide__lecture {
+  margin: 2px 0 0;
+}
+
+/* ---------------- Dossier / textes à coller ---------------- */
+
+.dossier,
+.textes {
+  padding: 22px 30px;
+  border-top: 1px solid var(--line-soft);
+}
+.dossier h3,
+.textes__head h3 {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin: 0 0 6px;
+}
+.dossier__grid {
+  display: grid;
+  gap: 12px;
+  margin-top: 12px;
+}
+@media (min-width: 640px) {
+  .dossier__grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+.field {
+  display: grid;
+  gap: 4px;
+}
+.field__label {
+  font-size: 12px;
+  color: var(--ink-faint);
+}
+.field__input {
+  font: inherit;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  padding: 7px 10px;
+  background: var(--bg);
+  width: 100%;
+}
+.field__input:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.textes__head {
+  margin-bottom: 14px;
+}
+.texte {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  margin-bottom: 10px;
+  overflow: hidden;
+  background: var(--bg-soft);
+}
+.texte:last-child {
+  margin-bottom: 0;
+}
+.texte__barre {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--line-soft);
+}
+.texte__barre h4 {
+  margin: 0;
+  font-size: 13.5px;
+  font-weight: 600;
+}
+.texte__corps {
+  margin: 0;
+  padding: 12px 14px 14px;
+  font-family: inherit;
+  font-size: 13.5px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  max-width: none;
+}
+
+/* ---------------- Guides métier ---------------- */
+
+.guide-toc {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 22px;
+}
+.guide-toc__item {
+  font-size: 13.5px;
+  color: var(--accent);
+  text-decoration: none;
+  border: 1px solid var(--accent-line);
+  background: var(--accent-soft);
+  border-radius: 20px;
+  padding: 5px 12px;
+}
+.guide-toc__item:hover {
+  border-color: var(--accent);
+}
+
+.guides {
+  display: grid;
+  gap: 16px;
+}
+.guide {
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 22px 26px 24px;
+  scroll-margin-top: 80px;
+}
+.guide h2 {
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  margin: 0 0 8px;
+  text-transform: none;
+  color: var(--ink);
+}
+.guide__chapo {
+  margin: 0 0 18px;
+  max-width: 76ch;
+  color: var(--ink-soft);
+}
+.guide__sec {
+  margin-top: 18px;
+}
+.guide__sec h3 {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin: 0 0 8px;
+}
+.guide .table-scroll {
+  margin: 4px 0 8px;
+}
+
 /* ---------------- Pied de page ---------------- */
 
 .footer {
@@ -900,7 +1127,11 @@ a.src__titre:hover {
   .result__foot,
   .panel--quiet,
   #reset,
-  .cardfoot {
+  .cardfoot,
+  .intro,
+  .dossier,
+  .texte__barre .btn,
+  .montant-aide {
     display: none !important;
   }
   .layout {

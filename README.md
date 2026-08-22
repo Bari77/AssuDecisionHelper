@@ -1,10 +1,11 @@
 # ADH — AssuDecisionHelper
 
-Outil d'aide à la décision destiné aux experts et gestionnaires sinistres : un arbre de
-questions détermine quelle convention d'indemnisation entre assureurs s'applique à un
-sinistre survenu dans un immeuble collectif — **IRSI**, **CIDECOP**, **CIDEPIEC** ou repli
-en droit commun — désigne l'assureur gestionnaire ou la répartition de charge, et restitue
-la conduite du dossier.
+Outil d'aide à la décision destiné aux experts et gestionnaires sinistres, en particulier aux
+nouveaux experts : un arbre de questions détermine quelle convention d'indemnisation entre
+assureurs s'applique à un sinistre survenu dans un immeuble collectif — **IRSI**, **CIDECOP**,
+**CIDEPIEC** ou repli en droit commun — désigne l'assureur gestionnaire ou la répartition de
+charge, restitue la conduite du dossier, et produit des **textes prêts à coller** dans les
+onglets du logiciel d'expertise.
 
 Version courante : voir [assets/version.js](assets/version.js) et [CHANGELOG.md](CHANGELOG.md).
 
@@ -16,10 +17,17 @@ navigateur, ou le servir depuis n'importe quel hébergement statique.
 - Réponse au clavier : touches `1` à `4`, `←` ou `Retour arrière` pour revenir.
 - Le récapitulatif latéral reste cliquable : chaque critère peut être repris en cours d'analyse.
 - « Copier la synthèse » produit un texte prêt à coller dans un rapport ou une note de gestion.
+- À l'issue de l'analyse, chaque onglet usuel du dossier (qualification, gestionnaire,
+  dommages, assiette, conduite, observations, conclusions) a son propre bouton Copier.
+  Les crochets `[ainsi]` restent à compléter après la visite ; les mentions de dossier
+  (assuré, compagnie, franchise, cause…) sont facultatives et ne quittent pas le navigateur.
+- Sur le critère de montant, une estimation en euros HT calcule la tranche IRSI.
+- L'onglet « Guides métier » rappelle l'assiette des seuils, la frontière immobilier /
+  embellissements, et ce que le contrat tranche (franchise, vétusté, plafonds).
 - « Imprimer » ne conserve que le parcours et la conclusion.
 - Le parcours est reflété dans l'URL : copier le lien partage le cas d'espèce à l'identique
   (`…/index.html#immeuble=copropriete&evenement=dde&causeExclue=non&montant=t2&…`).
-- `?vue=fiches` et `?vue=sources` ouvrent directement l'onglet correspondant.
+- `?vue=fiches`, `?vue=guides` et `?vue=sources` ouvrent directement l'onglet correspondant.
 
 ## Structure
 
@@ -28,12 +36,15 @@ navigateur, ou le servir depuis n'importe quel hébergement statique.
 | [index.html](index.html) | Structure de la page, comparatif des conventions |
 | [assets/version.js](assets/version.js) | **Version applicative** — source de vérité unique |
 | [assets/rules.js](assets/rules.js) | **Base de connaissance** : seuils, fiches, questions, moteur de décision |
+| [assets/textes.js](assets/textes.js) | **Textes à coller** dans les onglets du dossier, à partir de la conclusion |
+| [assets/guides.js](assets/guides.js) | **Guides métier** : assiette, immobilier / embellissements, pièges du novice |
 | [assets/sources.js](assets/sources.js) | **Bibliographie** : documents de référence et réserves méthodologiques |
 | [assets/parcours.js](assets/parcours.js) | Machine à états de la navigation, sans DOM |
 | [assets/app.js](assets/app.js) | Interface : rendu, raccourcis clavier, onglets |
 | [assets/styles.css](assets/styles.css) | Feuille de style |
 | [tests/tree.test.js](tests/tree.test.js) | Validation exhaustive de l'arbre de décision |
 | [tests/parcours.test.js](tests/parcours.test.js) | Invariants de navigation |
+| [tests/textes.test.js](tests/textes.test.js) | Textes générés et complétude des guides |
 | [Dockerfile](Dockerfile) · [nginx.conf](nginx.conf) · [docker-compose.yml](docker-compose.yml) | Hébergement |
 | [.github/workflows/release.yml](.github/workflows/release.yml) | Publication de l'image sur tag |
 
@@ -54,9 +65,12 @@ Assureurs ou du service technique de la compagnie concernée.
 
 Le métier est isolé dans [assets/rules.js](assets/rules.js) et
 [assets/sources.js](assets/sources.js) — aucun autre fichier n'a besoin d'être touché lors
-d'une évolution conventionnelle.
+d'une évolution conventionnelle. Les libellés à coller dans le dossier vivent à part, dans
+[assets/textes.js](assets/textes.js) ; les fiches pédagogiques dans
+[assets/guides.js](assets/guides.js).
 
 - `SEUILS` — montants pivots (tranches IRSI, plafond IRSI, seuil CIDEPIEC).
+- `trancheIrsi(montant)` — calcule `t1` / `t2` / `hors` pour un montant HT d'un local.
 - `CONVENTIONS` — fiches affichées dans le résultat et dans l'onglet de référence.
 - `QUESTIONS` — intitulés, aides et options de chaque critère.
 - `flow(reponses)` — moteur : renvoie soit la question suivante, soit le résultat calculé
@@ -72,6 +86,7 @@ Ajouter un critère revient à déclarer une entrée dans `QUESTIONS`, un libell
 ```sh
 node tests/tree.test.js       # arbre de décision
 node tests/parcours.test.js   # navigation
+node tests/textes.test.js     # textes à coller et guides
 ```
 
 **`tree.test.js`** — le moteur étant une fonction pure de l'état des réponses, le test énumère
@@ -89,7 +104,12 @@ rejeu d'URL (valeurs inventées, clés inconnues, réponses incomplètes). Le te
 [assets/parcours.js](assets/parcours.js) directement — d'où l'extraction de la machine à états
 hors du rendu : une logique enfermée dans une closure DOM n'est pas vérifiable.
 
-La pipeline exécute les deux tests avant toute publication.
+**`textes.test.js`** — pour chaque parcours, les blocs à coller sont complets (qualification,
+gestion, dommages, assiette, observations, conclusions), sans interpolation cassée, avec
+gestionnaire en IRSI et répartition en CIDECOP/CIDEPIEC. Contrôle aussi l'injection des mentions
+de dossier et la complétude des guides métier.
+
+La pipeline exécute les trois tests avant toute publication.
 
 ## Logique de qualification
 
@@ -101,7 +121,7 @@ Immeuble collectif
 │  ├─ cause exclue IRSI ────────────────────────┐
 │  └─ cause non exclue                          │
 │     ├─ ≤ 1 600 € HT / local ──► IRSI tranche 1│
-│     ├─ 1 600 → 5 000 € HT ────► IRSI tranche 2│
+│     ├─ > 1 600 → 5 000 € HT ─► IRSI tranche 2│
 │     └─ > 5 000 € HT ──────────────────────────┤
 │                                               ▼
 │                                    copropriété ?
