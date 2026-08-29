@@ -1204,6 +1204,10 @@ a.src__titre:hover {
   background: #fdf7f7 !important;
 }
 
+.combo {
+  position: relative;
+  display: block;
+}
 .combo.is-open {
   z-index: 50;
 }

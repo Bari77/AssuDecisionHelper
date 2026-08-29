@@ -105,6 +105,13 @@
     function dessiner() {
       const rows = visibles();
       list.replaceChildren();
+      if (!items.length) {
+        const li = document.createElement('li');
+        li.className = 'combo__vide';
+        li.textContent = 'Aucune fiche pour ce filtre';
+        list.appendChild(li);
+        return rows;
+      }
       if (!rows.length) {
         const li = document.createElement('li');
         li.className = 'combo__vide';
@@ -475,8 +482,18 @@
       db = json;
       comboNumero = creerCombo($('combo-numero'), {
         hidden: $('exp-numero'),
-        placeholder: 'Rechercher un numéro…',
-        onChange: render,
+        placeholder: 'Rechercher ou ouvrir la liste…',
+        onChange: function () {
+          const numero = $('exp-numero').value;
+          if (numero && db) {
+            const hits = (db.contrats || []).filter((c) => c.numero === numero);
+            if (hits.length === 1) {
+              if (!$('exp-compagnie').value) $('exp-compagnie').value = hits[0].compagnie;
+              if (!$('exp-type').value) $('exp-type').value = hits[0].typeContrat;
+            }
+          }
+          render();
+        },
       });
       remplirSelect($('exp-nature'), json.natures, true);
       remplirSelect($('exp-compagnie'), json.compagnies, true);

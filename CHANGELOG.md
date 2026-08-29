@@ -30,6 +30,7 @@ Portée des incréments, appliquée à la base de connaissance autant qu'au code
 - Dommages constatés : `modeles.*.dommages` est une chaîne éditable (grêle et défaut :
   impacts et taches de peinture). Un clic copie tout le bloc, comme la vérification.
 - Champs bleus (contrat, capitaux, frais, causes) : icône de copie au survol, à droite.
+- Numéro de contrat : liste déroulante filtrable (la bande était mal ancrée au champ).
 - `aliasNumero` retiré : la recherche ignore déjà la ponctuation du numéro.
 - `lettreSaufSi` retiré des fiches contrat (plus affiché, source d’encombrement).
 - Fiches épurées : plus d’`aliasCompagnie`, d’`id` (contrat ou option), ni de
