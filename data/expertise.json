@@ -1,0 +1,375 @@
+{
+  "modeEmploi": "Fiche = compagnie + typeContrat + numero. Option sans libelle = régime de base ; option avec libelle = régime nommé (capitaux, frais). natures (optionnel) limite la fiche à certains sinistres. modeles indexés par nature, repli _defaut. verificationsRisque par compagnie, repli _defaut.",
+  "natures": [
+    "ACCIDENT DE LA CIRCULATION",
+    "BRIS DE GLACE",
+    "BRIS DE MACHINE",
+    "CAT. NATURELLE",
+    "CHOC DE VEHICULE",
+    "DEFENSE RECOURS",
+    "DÉGAT DES EAUX",
+    "DOM ELECTRIQUES",
+    "EFFONDREMENT",
+    "EVENEMENT CLIMATIQUE",
+    "GRELE",
+    "INCENDIE",
+    "PERTES EXPLOITATION",
+    "PERTES FRIGORIFIQUES",
+    "PROTECTION JURIDIQUE",
+    "RC AUTOMOBILE",
+    "RC DE SPECIALITÉ",
+    "RC DECENNALE",
+    "RC DES COLLECTIVITES",
+    "RC EXPLOITATION",
+    "RC IMMEUBLE",
+    "RC TRAVAUX",
+    "RC VIE PRIVEE",
+    "RESPONSABILITE CIVILE PROFESSIONNELLE",
+    "TEMPETE"
+  ],
+  "compagnies": [
+    "ABEILLE",
+    "AVIVA",
+    "EUROFIL",
+    "ACHEEL",
+    "ACM",
+    "CIC",
+    "CREDIT MUTUEL",
+    "AMF",
+    "AGPM",
+    "ALLIANZ",
+    "HSBC",
+    "ALTIMA",
+    "AMAGUIZ",
+    "AMP",
+    "APRIL",
+    "AREAS",
+    "BNP",
+    "DIRECT ASSURANCE",
+    "AXA",
+    "BPCE",
+    "CARDIF",
+    "COVEA",
+    "MAAF",
+    "FEDELIDADE",
+    "FRIDAY",
+    "GAN",
+    "GENERALI",
+    "AZUR",
+    "GMF",
+    "GROUPAMA",
+    "LA MEDICALE",
+    "MACIF",
+    "MAIF",
+    "MATMUT",
+    "CREDIT AGRICOLE",
+    "LCL",
+    "PACIFICA",
+    "PROTEC BTP",
+    "SMABTP",
+    "SWISSLIFE",
+    "THELEM"
+  ],
+  "typesContrat": [
+    { "code": "MRH", "libelle": "MRH — Multirisque habitation" },
+    { "code": "MRP", "libelle": "MRP — Multirisque professionnelle" },
+    { "code": "MRA", "libelle": "MRA — Multirisque agricole" },
+    { "code": "MRE", "libelle": "MRE — Multirisque entreprise" },
+    { "code": "MRI", "libelle": "MRI — Multirisque immeuble" }
+  ],
+  "civilites": ["M.", "MME", "MLLE"],
+  "qualites": [
+    "propriétaire occupant",
+    "locataire",
+    "propriétaire non occupant",
+    "syndicat des copropriétaires"
+  ],
+  "typesBien": [
+    "maison individuelle",
+    "appartement",
+    "immeuble en copropriété",
+    "local professionnel"
+  ],
+  "verificationsRisque": {
+    "_defaut": [
+      "La vérification du risque n'a pas pu être réalisée. Lors de notre expertise, l'assuré était représenté par son couvreur, lequel ne disposait pas des clés du logement, ne nous permettant pas d'accéder à l'intérieur de l'habitation."
+    ]
+  },
+  "contrats": [
+    {
+      "compagnie": "ACM",
+      "typeContrat": "MRH",
+      "numero": "16.07.20-04/ 2008",
+      "libelle": "ACM - MRH - 160720 - 042008",
+      "options": [
+        {
+          "capitaux": [
+            {
+              "nature": "Batiment",
+              "capital": "Valeur de reconstruction",
+              "modalite": "Vétusté déduite"
+            }
+          ]
+        },
+        {
+          "libelle": "Valeur à neuf",
+          "capitaux": [
+            {
+              "nature": "Batiment",
+              "capital": "Valeur de reconstruction",
+              "modalite": "VAN 25 %"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "compagnie": "GENERALI",
+      "typeContrat": "MRH",
+      "numero": "GA5X25N",
+      "libelle": "GENERALI IARD - MRH - GA5X25N",
+      "options": [
+        {
+          "capitaux": [
+            {
+              "nature": "Batiment",
+              "capital": "Valeur de reconstruction",
+              "modalite": "VAN 25 %"
+            }
+          ],
+          "frais": [
+            {
+              "type": "Démolition / déblai",
+              "limitation": "Selon frais justifiés"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "compagnie": "ACM",
+      "typeContrat": "MRH",
+      "numero": "BQ 16.46.43-04/21",
+      "libelle": "ACM - MRH - 164643 - 042021",
+      "options": [
+        {
+          "capitaux": [
+            {
+              "nature": "Batiment",
+              "capital": "Valeur de reconstruction",
+              "modalite": "VAN 25 %"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "compagnie": "PACIFICA",
+      "typeContrat": "MRH",
+      "numero": "INTEGRALE PNO - 7030A.38",
+      "libelle": "PACIFICA - MRH - FORMULE INTEGRALE PNO",
+      "options": [
+        {
+          "libelle": "OPTION IMMO+",
+          "capitaux": [
+            {
+              "nature": "Batiment",
+              "capital": "Valeur de reconstruction",
+              "modalite": "VAN 100 %"
+            }
+          ],
+          "frais": [
+            {
+              "type": "Démolition / déblai",
+              "limitation": "25 % de l’indemnité payée pour les dommages aux biens"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "compagnie": "MAAF",
+      "typeContrat": "MRH",
+      "numero": "TEMPO Habitation HA2 004/09/14",
+      "libelle": "MAAF - MRH - TEMPO Habitation HA2 004/09/14",
+      "options": [
+        {
+          "capitaux": [
+            {
+              "nature": "Batiment",
+              "capital": "Valeur de reconstruction",
+              "modalite": "VAN 25 %"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "compagnie": "PACIFICA",
+      "typeContrat": "MRH",
+      "numero": "7030A.37",
+      "libelle": "PACIFICA - MRH -7030A.37 INTEGRALE",
+      "options": [
+        {
+          "libelle": "INTEGRALE",
+          "capitaux": [
+            {
+              "nature": "Batiment",
+              "capital": "Valeur de reconstruction",
+              "modalite": "VAN 100 %"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "compagnie": "AXA",
+      "typeContrat": "MRH",
+      "numero": "970464 l 03 2023",
+      "libelle": "AXA - MRH - 970464 l 03 2023",
+      "options": [
+        {
+          "capitaux": [
+            {
+              "nature": "Batiment",
+              "capital": "Valeur de reconstruction",
+              "modalite": "VAN 25 %"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "compagnie": "PACIFICA",
+      "typeContrat": "MRH",
+      "numero": "7030A.29",
+      "libelle": "PACIFICA - MRH -7030A.29",
+      "options": [
+        {
+          "capitaux": [
+            {
+              "nature": "Batiment",
+              "capital": "Valeur de reconstruction",
+              "modalite": "VAN 25 %"
+            },
+            {
+              "nature": "Embellissement",
+              "capital": "Valeur de reconstruction",
+              "modalite": "VD"
+            }
+          ],
+          "frais": [
+            {
+              "type": "Démolition / déblai",
+              "limitation": "25 % de l’indemnité payée pour les dommages aux biens"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "compagnie": "SWISSLIFE",
+      "typeContrat": "MRH",
+      "numero": "8132O",
+      "libelle": "SWISSLIFE - MRH - 8132O",
+      "options": [
+        {
+          "capitaux": [
+            {
+              "nature": "Batiment",
+              "capital": "Valeur de reconstruction",
+              "modalite": "VAN 25 %"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "compagnie": "GMF",
+      "typeContrat": "MRH",
+      "numero": "Habitation 2012",
+      "libelle": "GMF - MRH - CONFORT 2012",
+      "options": [
+        {
+          "libelle": "CONFORT",
+          "capitaux": [
+            {
+              "nature": "Batiment",
+              "capital": "Valeur de reconstruction",
+              "modalite": "VAN 25 %"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "compagnie": "PACIFICA",
+      "typeContrat": "MRH",
+      "numero": "7262A.40",
+      "libelle": "PACIFICA - MRH - 7262A.40 IMMO +",
+      "options": [
+        {
+          "libelle": "IMMO +",
+          "capitaux": [
+            {
+              "nature": "Batiment",
+              "capital": "Valeur de reconstruction",
+              "modalite": "VAN 100 %"
+            },
+            {
+              "nature": "Embellissement",
+              "capital": "Valeur de reconstruction",
+              "modalite": "VAN 100 %"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "compagnie": "THELEM",
+      "typeContrat": "MRH",
+      "numero": "NEOLOGIS2 CONFORT 405",
+      "libelle": "THELEM - MRH - NEOLOGIS2 CONFORT 405",
+      "options": [
+        {
+          "capitaux": [
+            {
+              "nature": "Batiment",
+              "capital": "Valeur de reconstruction",
+              "modalite": "VAN 25 %"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "compagnie": "BPCE",
+      "typeContrat": "MRH",
+      "numero": "BANQUE POPULAIRE BP H404",
+      "libelle": "BPCE - MRH - H404 Formule premium",
+      "options": [
+        {
+          "libelle": "Formule premium",
+          "capitaux": [
+            {
+              "nature": "Batiment",
+              "capital": "Valeur de reconstruction",
+              "modalite": "VAN 100 %"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "modeles": {
+    "_defaut": {
+      "causesCirconstances": "Modèle par défaut, veuillez modifier le expertise.json pour ajouter le modèle de causes et circonstances de ce type de sinistre.",
+      "dommages": "Dommages par défaut, veuillez modifier le expertise.json pour ajouter le modèle de dommages de ce type de sinistre."
+    },
+    "GRELE": {
+      "causesCirconstances": "{{civilite}} {{nom}} est {{qualite}} d'un {{typeBien}} situé {{adresse}}.\n\nLe {{date}}, en fin de journée, un orage supercellulaire a traversé le secteur de {{commune}}.\n\nCet épisode météorologique s'est accompagné de violentes rafales de vent, de fortes précipitations ainsi que de chutes de grêle, dont les grêlons ont localement atteint plusieurs centimètres de diamètre.\n\nCet événement a provoqué de nombreux dégâts sur des bâtiments de bonne construction, tant sur la commune de {{commune}} que sur les communes avoisinantes.\n\nLors de notre expertise, nous avons constaté que les dommages affectant le bien assuré sont compatibles avec les effets de cet épisode de grêle.",
+      "dommages": "Dommages d’impacts de gêle sur .........\nTâches au ......... avec dégradation de la peinture suite aux infiltrations"
+    }
+  }
+}
+

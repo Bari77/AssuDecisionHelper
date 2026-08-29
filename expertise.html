@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ADH — Expertise · formulaire de dossier</title>
+    <meta
+      name="description"
+      content="Formulaire d'expertise : capitaux, frais et textes de dossier calculés d'après la nature, la compagnie, le contrat et l'option."
+    />
+    <link rel="stylesheet" href="assets/styles.css" />
+  </head>
+  <body class="page-expertise">
+    <header class="topbar">
+      <div class="wrap wrap--wide topbar__inner">
+        <a class="brand" href="index.html">
+          <span class="brand__mark" aria-hidden="true"></span>
+          <span class="brand__text">
+            <strong>ADH <span class="brand__version" id="brand-version"></span></strong>
+            <span>Expertise après sinistre</span>
+          </span>
+        </a>
+        <nav class="tabs" aria-label="Sections">
+          <a class="tab" href="index.html">Assistant</a>
+          <a class="tab" href="index.html?vue=guides">Guides métier</a>
+        </nav>
+        <a class="topbar__expertise is-active" href="expertise.html">Expertise</a>
+      </div>
+    </header>
+
+    <main class="wrap wrap--wide">
+      <p id="exp-erreur" class="exp-erreur" hidden></p>
+
+      <div class="exp-layout">
+        <div class="exp-col exp-col--fiche">
+          <section class="exp-card" aria-labelledby="titre-contrat">
+            <h2 id="titre-contrat">Contrat</h2>
+            <div class="exp-grid">
+              <label class="field">
+                <span class="field__label">Nature du sinistre</span>
+                <select id="exp-nature" class="field__input saisie"></select>
+              </label>
+              <label class="field">
+                <span class="field__label">Compagnie</span>
+                <select id="exp-compagnie" class="field__input saisie"></select>
+              </label>
+              <label class="field">
+                <span class="field__label">Type de contrat</span>
+                <select id="exp-type" class="field__input saisie"></select>
+              </label>
+              <div class="field">
+                <span class="field__label">Numéro de contrat</span>
+                <input type="hidden" id="exp-numero" />
+                <div id="combo-numero"></div>
+              </div>
+              <label class="field">
+                <span class="field__label">Option</span>
+                <select id="exp-option" class="field__input saisie"></select>
+              </label>
+              <div class="field">
+                <span class="field__label">Contrat</span>
+                <output id="exp-libelle" class="field__input calcule">—</output>
+              </div>
+            </div>
+          </section>
+
+          <section class="exp-card" aria-labelledby="titre-capitaux">
+            <h2 id="titre-capitaux">Capitaux</h2>
+            <div id="exp-capitaux" class="exp-pile"></div>
+          </section>
+
+          <section class="exp-card" aria-labelledby="titre-frais">
+            <h2 id="titre-frais">Frais et pertes</h2>
+            <div id="exp-frais" class="exp-pile"></div>
+          </section>
+        </div>
+
+        <div class="exp-col exp-col--textes">
+          <section class="exp-card" aria-labelledby="titre-verif">
+            <h2 id="titre-verif">Vérification de risque</h2>
+            <div id="exp-verif-liste" class="exp-verif-liste"></div>
+          </section>
+
+          <section class="exp-card exp-card--causes" aria-labelledby="titre-causes">
+            <h2 id="titre-causes">Causes et circonstances</h2>
+            <div class="exp-grid exp-grid--5">
+              <label class="field">
+                <span class="field__label">Civilité</span>
+                <select id="exp-civilite" class="field__input saisie"></select>
+              </label>
+              <label class="field">
+                <span class="field__label">Nom</span>
+                <input id="exp-nom" class="field__input saisie" />
+              </label>
+              <label class="field">
+                <span class="field__label">Adresse</span>
+                <input id="exp-adresse" class="field__input saisie" />
+              </label>
+              <label class="field">
+                <span class="field__label">Commune</span>
+                <input id="exp-commune" class="field__input saisie" />
+              </label>
+              <label class="field">
+                <span class="field__label">Date de visite</span>
+                <input id="exp-date" class="field__input saisie" type="date" />
+              </label>
+            </div>
+            <div class="exp-grid exp-grid--2">
+              <label class="field">
+                <span class="field__label">Qualité</span>
+                <select id="exp-qualite" class="field__input saisie"></select>
+              </label>
+              <label class="field">
+                <span class="field__label">Type de bien</span>
+                <select id="exp-bien" class="field__input saisie"></select>
+              </label>
+            </div>
+            <div id="exp-causes" class="exp-texte calcule"></div>
+          </section>
+
+          <section class="exp-card" aria-labelledby="titre-dommages">
+            <h2 id="titre-dommages">Dommages constatés</h2>
+            <div id="exp-dommages" class="exp-verif-liste"></div>
+          </section>
+        </div>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="wrap wrap--wide footer__inner">
+        <p class="footer__meta" id="footer-version"></p>
+      </div>
+    </footer>
+
+    <script src="assets/version.js"></script>
+    <script src="assets/expertise-moteur.js"></script>
+    <script src="assets/expertise.js"></script>
+  </body>
+</html>

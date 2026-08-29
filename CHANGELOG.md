@@ -18,6 +18,40 @@ Portée des incréments, appliquée à la base de connaissance autant qu'au code
 
 ## [Non publié]
 
+### Modifié
+
+- Formulaire Expertise : plus de type de lettre ni de « sauf si ». Le champ Contrat concatène
+  compagnie, type et numéro. Contrat / capitaux / frais à gauche ; vérification et textes à
+  droite. Mentions pédagogiques retirées.
+- Nature, compagnie et type de contrat : listes simples. Numéro de contrat : liste
+  avec recherche. Le champ Contrat affiche le `libelle` de la fiche trouvée.
+- Vérification de risque : liste éditable par compagnie, chaque phrase se copie.
+  La propriété `verificationRisque` des modèles par nature a été retirée.
+- Dommages constatés : `modeles.*.dommages` est une chaîne éditable (grêle et défaut :
+  impacts et taches de peinture). Un clic copie tout le bloc, comme la vérification.
+- Champs bleus (contrat, capitaux, frais, causes) : icône de copie au survol, à droite.
+- `aliasNumero` retiré : la recherche ignore déjà la ponctuation du numéro.
+- `lettreSaufSi` retiré des fiches contrat (plus affiché, source d’encombrement).
+- Fiches épurées : plus d’`aliasCompagnie`, d’`id` (contrat ou option), ni de
+  `libelle` / `frais` vides. La compagnie se choisit dans la liste `compagnies`.
+
+## [1.2.0] - 2026-08-29
+
+Formulaire d’expertise : capitaux, frais et textes de dossier calculés depuis une base JSON.
+
+### Ajouté
+
+- Menu **Expertise** (en-tête, à droite) ouvrant [expertise.html](expertise.html) : saisie nature /
+  compagnie / type de contrat / numéro / option, puis capitaux, frais, « sauf si » et textes
+  (vérification de risque, causes et circonstances, dommages constatés).
+- Base [data/expertise.json](data/expertise.json) : natures, compagnies, types de contrat, fiches
+  (ACM, GENERALI, PACIFICA, MAAF, AXA) et modèles de rédaction par nature. Format prévu pour
+  être alimenté ensuite, sans toucher au moteur.
+- [assets/expertise-moteur.js](assets/expertise-moteur.js) : résolution pure (numéro normalisé,
+  option vide = régime de base, alias de compagnie).
+- [tests/expertise.test.js](tests/expertise.test.js) : les six associations d’exemple, les
+  inconnus, l’interpolation des textes.
+
 ## [1.1.0] - 2026-08-22
 
 Outil d'aide aux nouveaux experts : textes prêts à coller dans le dossier, guides de chiffrage
@@ -95,6 +129,7 @@ Version initiale.
 
 Le détail de ces réserves est affiché dans l'onglet « Sources » du site.
 
-[Non publié]: https://github.com/OWNER/AssuDecisionHelper/compare/1.1.0...HEAD
+[Non publié]: https://github.com/OWNER/AssuDecisionHelper/compare/1.2.0...HEAD
+[1.2.0]: https://github.com/OWNER/AssuDecisionHelper/compare/1.1.0...1.2.0
 [1.1.0]: https://github.com/OWNER/AssuDecisionHelper/compare/1.0.0...1.1.0
 [1.0.0]: https://github.com/OWNER/AssuDecisionHelper/releases/tag/1.0.0

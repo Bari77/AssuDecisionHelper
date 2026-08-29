@@ -27,13 +27,19 @@ navigateur, ou le servir depuis n'importe quel hébergement statique.
 - « Imprimer » ne conserve que le parcours et la conclusion.
 - Le parcours est reflété dans l'URL : copier le lien partage le cas d'espèce à l'identique
   (`…/index.html#immeuble=copropriete&evenement=dde&causeExclue=non&montant=t2&…`).
-- `?vue=fiches`, `?vue=guides` et `?vue=sources` ouvrent directement l'onglet correspondant.
+- Le menu **Expertise** (en-tête, à droite) ouvre le formulaire de dossier : capitaux et textes
+  calculés d’après [data/expertise.json](data/expertise.json). Pour ajouter une formule, recopier
+  une entrée de `contrats` (compagnie, type, numéro, option → capitaux / frais).
 
 ## Structure
 
 | Fichier | Rôle |
 | --- | --- |
 | [index.html](index.html) | Structure de la page, comparatif des conventions |
+| [expertise.html](expertise.html) | Formulaire d’expertise (capitaux, frais, textes) |
+| [data/expertise.json](data/expertise.json) | **Base contrat** : natures, compagnies, fiches, modèles de rédaction |
+| [assets/expertise-moteur.js](assets/expertise-moteur.js) | Résolution des fiches (sans DOM) |
+| [assets/expertise.js](assets/expertise.js) | Interface du formulaire |
 | [assets/version.js](assets/version.js) | **Version applicative** — source de vérité unique |
 | [assets/rules.js](assets/rules.js) | **Base de connaissance** : seuils, fiches, questions, moteur de décision |
 | [assets/textes.js](assets/textes.js) | **Textes à coller** dans les onglets du dossier, à partir de la conclusion |
@@ -45,6 +51,7 @@ navigateur, ou le servir depuis n'importe quel hébergement statique.
 | [tests/tree.test.js](tests/tree.test.js) | Validation exhaustive de l'arbre de décision |
 | [tests/parcours.test.js](tests/parcours.test.js) | Invariants de navigation |
 | [tests/textes.test.js](tests/textes.test.js) | Textes générés et complétude des guides |
+| [tests/expertise.test.js](tests/expertise.test.js) | Fiches contrat JSON et interpolation |
 | [Dockerfile](Dockerfile) · [nginx.conf](nginx.conf) · [docker-compose.yml](docker-compose.yml) | Hébergement |
 | [.github/workflows/release.yml](.github/workflows/release.yml) | Publication de l'image sur tag |
 
@@ -87,6 +94,7 @@ Ajouter un critère revient à déclarer une entrée dans `QUESTIONS`, un libell
 node tests/tree.test.js       # arbre de décision
 node tests/parcours.test.js   # navigation
 node tests/textes.test.js     # textes à coller et guides
+node tests/expertise.test.js  # fiches contrat JSON
 ```
 
 **`tree.test.js`** — le moteur étant une fonction pure de l'état des réponses, le test énumère
@@ -109,7 +117,27 @@ gestion, dommages, assiette, observations, conclusions), sans interpolation cass
 gestionnaire en IRSI et répartition en CIDECOP/CIDEPIEC. Contrôle aussi l'injection des mentions
 de dossier et la complétude des guides métier.
 
-La pipeline exécute les trois tests avant toute publication.
+**`expertise.test.js`** — chaque fiche de [data/expertise.json](data/expertise.json) est
+rattachée au référentiel (compagnie, type). Les six associations d’exemple (ACM, GENERALI,
+PACIFICA, MAAF, AXA) produisent le libellé et la modalité de bâtiment attendus. L’option vide
+ne déclenche pas une option nommée (IMMO+). Les modèles interpolent civilité, nom et date.
+
+La pipeline exécute les quatre tests avant toute publication.
+
+### Alimenter une fiche contrat
+
+Recopier une entrée de `contrats` dans [data/expertise.json](data/expertise.json) :
+
+- `compagnie` / `typeContrat` / `numero` — clés de recherche.
+- `libelle` — texte bleu « CONTRAT ».
+- `options[]` — sans `libelle` : régime de base. Avec `libelle`
+  (« Valeur à neuf », « OPTION IMMO+ ») : régime nommé. `frais` seulement s’il y en a.
+- `natures` — optionnel : si absent, la fiche vaut pour tous les sinistres.
+
+La vérification de risque se règle dans `verificationsRisque`, indexée par compagnie
+(repli `_defaut`). Les causes et le texte de dommages se règlent dans `modeles`,
+indexés par le code de nature (`GRELE`, `INCENDIE`, …) avec repli sur `_defaut`.
+`dommages` est une chaîne (sauts de ligne conservés) : un clic copie tout le bloc.
 
 ## Logique de qualification
 
