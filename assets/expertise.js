@@ -11,7 +11,7 @@
   let db = null;
   let natureDommages = '';
   let verifCie = '';
-  let comboNumero = null;
+  const combos = {};
 
   const adh = window.ADH || { sigle: 'ADH', nom: 'AssuDecisionHelper', version: '0.0.0' };
   const brand = $('brand-version');
@@ -36,6 +36,14 @@
         return { value: v.code || v.value, label: v.libelle || v.label || v.value };
       })
       .filter(Boolean);
+  }
+
+  function trierAlpha(valeurs) {
+    return (valeurs || []).slice().sort(function (a, b) {
+      const la = typeof a === 'string' ? a : a.libelle || a.code || '';
+      const lb = typeof b === 'string' ? b : b.libelle || b.code || '';
+      return la.localeCompare(lb, 'fr', { sensitivity: 'base' });
+    });
   }
 
   function creerCombo(conteneur, options) {
@@ -64,6 +72,8 @@
     bouton.className = 'combo__chevron';
     bouton.setAttribute('aria-label', 'Ouvrir la liste');
     bouton.tabIndex = -1;
+    bouton.innerHTML =
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 6.2 8 10.2 12 6.2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
     const list = document.createElement('ul');
     list.className = 'combo__list';
@@ -133,6 +143,11 @@
       return rows;
     }
 
+    function selectionnerTout() {
+      if (!input.value) return;
+      input.select();
+    }
+
     function ouvrir() {
       ouvert = true;
       wrap.classList.add('is-open');
@@ -146,6 +161,7 @@
     }
 
     function choisir(it) {
+      if (!it && opts.vide) it = opts.vide;
       valeur = it ? it.value : '';
       input.value = it ? it.label : '';
       ecrireCache();
@@ -169,7 +185,19 @@
       }
     }
 
-    input.addEventListener('focus', ouvrir);
+    let garderSelection = false;
+
+    input.addEventListener('focus', () => {
+      garderSelection = true;
+      ouvrir();
+      selectionnerTout();
+    });
+    input.addEventListener('mouseup', (ev) => {
+      if (!garderSelection) return;
+      ev.preventDefault();
+      selectionnerTout();
+      garderSelection = false;
+    });
     input.addEventListener('input', ouvrir);
     input.addEventListener('keydown', (ev) => {
       const rows = visibles();
@@ -208,58 +236,26 @@
 
     return {
       setItems: function (valeurs) {
-        items = itemsDepuis(valeurs);
+        const base = itemsDepuis(valeurs);
+        items = opts.vide ? [opts.vide].concat(base) : base;
         if (valeur && !items.some((it) => it.value === valeur)) {
-          valeur = '';
-          input.value = '';
+          valeur = opts.vide ? opts.vide.value : '';
+          input.value = opts.vide ? opts.vide.label : '';
           ecrireCache();
-        } else if (valeur) {
+        } else {
           input.value = libelleDe(valeur);
         }
+      },
+      setValue: function (val) {
+        if (val && !items.some((it) => it.value === val)) return;
+        valeur = val || '';
+        input.value = libelleDe(valeur);
+        ecrireCache();
       },
       getValue: function () {
         return valeur;
       },
     };
-  }
-
-  function optionVide(select, libelle) {
-    const o = document.createElement('option');
-    o.value = '';
-    o.textContent = libelle || '—';
-    select.appendChild(o);
-  }
-
-  function remplirSelect(select, valeurs, avecVide) {
-    const actuelle = select.value;
-    select.replaceChildren();
-    if (avecVide) optionVide(select, 'Choisir…');
-    valeurs.forEach((v) => {
-      const o = document.createElement('option');
-      if (typeof v === 'string') {
-        o.value = v;
-        o.textContent = v;
-      } else {
-        o.value = v.code;
-        o.textContent = v.libelle || v.code;
-      }
-      select.appendChild(o);
-    });
-    if ([].some.call(select.options, (o) => o.value === actuelle)) select.value = actuelle;
-  }
-
-  function remplirOptions(select, valeurs) {
-    const actuelle = select.value;
-    select.replaceChildren();
-    optionVide(select, '—');
-    (valeurs || []).forEach((v) => {
-      if (!v) return;
-      const o = document.createElement('option');
-      o.value = v;
-      o.textContent = v;
-      select.appendChild(o);
-    });
-    if ([].some.call(select.options, (o) => o.value === actuelle)) select.value = actuelle;
   }
 
   function saisie() {
@@ -433,11 +429,13 @@
 
   function render() {
     if (!db || !E) return;
-    if (comboNumero) {
-      comboNumero.setItems(E.numerosPour(db, $('exp-compagnie').value, $('exp-type').value, $('exp-nature').value));
+    if (combos.numero) {
+      combos.numero.setItems(E.numerosPour(db, $('exp-compagnie').value, $('exp-type').value, $('exp-nature').value));
     }
     const s = saisie();
-    remplirOptions($('exp-option'), E.optionsPour(db, s.compagnie, s.typeContrat, s.numero, s.nature));
+    if (combos.option) {
+      combos.option.setItems(E.optionsPour(db, s.compagnie, s.typeContrat, s.numero, s.nature));
+    }
 
     const issue = E.resoudre(db, s);
     $('exp-libelle').textContent = issue.statut === 'ok' ? issue.libelle : '—';
@@ -466,12 +464,13 @@
     syncCopiesCalcule();
   }
 
-  ['exp-nature', 'exp-compagnie', 'exp-type', 'exp-option', 'exp-civilite', 'exp-qualite', 'exp-bien'].forEach((id) => {
-    $(id).addEventListener('change', render);
-  });
   ['exp-nom', 'exp-adresse', 'exp-commune', 'exp-date'].forEach((id) => {
     $(id).addEventListener('input', renderTextes);
   });
+
+  function comboVide(libelle) {
+    return { value: '', label: libelle };
+  }
 
   fetch('data/expertise.json', { cache: 'no-store' })
     .then((r) => {
@@ -480,27 +479,70 @@
     })
     .then((json) => {
       db = json;
-      comboNumero = creerCombo($('combo-numero'), {
+      const choisir = comboVide('Choisir…');
+      combos.nature = creerCombo($('combo-nature'), {
+        hidden: $('exp-nature'),
+        vide: choisir,
+        placeholder: 'Choisir…',
+        onChange: render,
+      });
+      combos.compagnie = creerCombo($('combo-compagnie'), {
+        hidden: $('exp-compagnie'),
+        vide: choisir,
+        placeholder: 'Choisir…',
+        onChange: render,
+      });
+      combos.type = creerCombo($('combo-type'), {
+        hidden: $('exp-type'),
+        vide: choisir,
+        placeholder: 'Choisir…',
+        onChange: render,
+      });
+      combos.numero = creerCombo($('combo-numero'), {
         hidden: $('exp-numero'),
-        placeholder: 'Rechercher ou ouvrir la liste…',
+        placeholder: 'Rechercher…',
         onChange: function () {
           const numero = $('exp-numero').value;
           if (numero && db) {
             const hits = (db.contrats || []).filter((c) => c.numero === numero);
             if (hits.length === 1) {
-              if (!$('exp-compagnie').value) $('exp-compagnie').value = hits[0].compagnie;
-              if (!$('exp-type').value) $('exp-type').value = hits[0].typeContrat;
+              if (!$('exp-compagnie').value) combos.compagnie.setValue(hits[0].compagnie);
+              if (!$('exp-type').value) combos.type.setValue(hits[0].typeContrat);
             }
           }
           render();
         },
       });
-      remplirSelect($('exp-nature'), json.natures, true);
-      remplirSelect($('exp-compagnie'), json.compagnies, true);
-      remplirSelect($('exp-type'), json.typesContrat, true);
-      remplirSelect($('exp-civilite'), json.civilites, true);
-      remplirSelect($('exp-qualite'), json.qualites, true);
-      remplirSelect($('exp-bien'), json.typesBien, true);
+      combos.option = creerCombo($('combo-option'), {
+        hidden: $('exp-option'),
+        vide: comboVide('—'),
+        placeholder: '—',
+        onChange: render,
+      });
+      combos.civilite = creerCombo($('combo-civilite'), {
+        hidden: $('exp-civilite'),
+        vide: choisir,
+        placeholder: 'Choisir…',
+        onChange: renderTextes,
+      });
+      combos.qualite = creerCombo($('combo-qualite'), {
+        hidden: $('exp-qualite'),
+        vide: choisir,
+        placeholder: 'Choisir…',
+        onChange: renderTextes,
+      });
+      combos.bien = creerCombo($('combo-bien'), {
+        hidden: $('exp-bien'),
+        vide: choisir,
+        placeholder: 'Choisir…',
+        onChange: renderTextes,
+      });
+      combos.nature.setItems(trierAlpha(json.natures));
+      combos.compagnie.setItems(trierAlpha(json.compagnies));
+      combos.type.setItems(trierAlpha(json.typesContrat));
+      combos.civilite.setItems(json.civilites);
+      combos.qualite.setItems(json.qualites);
+      combos.bien.setItems(json.typesBien);
       render();
     })
     .catch(() => {

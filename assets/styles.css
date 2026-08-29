@@ -1223,21 +1223,20 @@ a.src__titre:hover {
   height: 100%;
   border: 0;
   background: transparent;
+  color: var(--ink-soft);
   cursor: pointer;
   padding: 0;
+  display: grid;
+  place-items: center;
 }
-.combo__chevron::before {
-  content: "";
+.combo__chevron svg {
+  width: 14px;
+  height: 14px;
   display: block;
-  width: 8px;
-  height: 8px;
-  margin: 0 auto;
-  border-right: 2px solid var(--ink-soft);
-  border-bottom: 2px solid var(--ink-soft);
-  transform: translateY(-2px) rotate(45deg);
+  transition: transform 0.12s ease;
 }
-.combo.is-open .combo__chevron::before {
-  transform: translateY(2px) rotate(-135deg);
+.combo.is-open .combo__chevron svg {
+  transform: rotate(180deg);
 }
 .combo__list {
   position: absolute;

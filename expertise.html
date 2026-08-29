@@ -36,27 +36,31 @@
           <section class="exp-card" aria-labelledby="titre-contrat">
             <h2 id="titre-contrat">Contrat</h2>
             <div class="exp-grid">
-              <label class="field">
+              <div class="field">
                 <span class="field__label">Nature du sinistre</span>
-                <select id="exp-nature" class="field__input saisie"></select>
-              </label>
-              <label class="field">
+                <input type="hidden" id="exp-nature" />
+                <div id="combo-nature"></div>
+              </div>
+              <div class="field">
                 <span class="field__label">Compagnie</span>
-                <select id="exp-compagnie" class="field__input saisie"></select>
-              </label>
-              <label class="field">
+                <input type="hidden" id="exp-compagnie" />
+                <div id="combo-compagnie"></div>
+              </div>
+              <div class="field">
                 <span class="field__label">Type de contrat</span>
-                <select id="exp-type" class="field__input saisie"></select>
-              </label>
+                <input type="hidden" id="exp-type" />
+                <div id="combo-type"></div>
+              </div>
               <div class="field">
                 <span class="field__label">Numéro de contrat</span>
                 <input type="hidden" id="exp-numero" />
                 <div id="combo-numero"></div>
               </div>
-              <label class="field">
+              <div class="field">
                 <span class="field__label">Option</span>
-                <select id="exp-option" class="field__input saisie"></select>
-              </label>
+                <input type="hidden" id="exp-option" />
+                <div id="combo-option"></div>
+              </div>
               <div class="field">
                 <span class="field__label">Contrat</span>
                 <output id="exp-libelle" class="field__input calcule">—</output>
@@ -84,10 +88,11 @@
           <section class="exp-card exp-card--causes" aria-labelledby="titre-causes">
             <h2 id="titre-causes">Causes et circonstances</h2>
             <div class="exp-grid exp-grid--5">
-              <label class="field">
+              <div class="field">
                 <span class="field__label">Civilité</span>
-                <select id="exp-civilite" class="field__input saisie"></select>
-              </label>
+                <input type="hidden" id="exp-civilite" />
+                <div id="combo-civilite"></div>
+              </div>
               <label class="field">
                 <span class="field__label">Nom</span>
                 <input id="exp-nom" class="field__input saisie" />
@@ -106,14 +111,16 @@
               </label>
             </div>
             <div class="exp-grid exp-grid--2">
-              <label class="field">
+              <div class="field">
                 <span class="field__label">Qualité</span>
-                <select id="exp-qualite" class="field__input saisie"></select>
-              </label>
-              <label class="field">
+                <input type="hidden" id="exp-qualite" />
+                <div id="combo-qualite"></div>
+              </div>
+              <div class="field">
                 <span class="field__label">Type de bien</span>
-                <select id="exp-bien" class="field__input saisie"></select>
-              </label>
+                <input type="hidden" id="exp-bien" />
+                <div id="combo-bien"></div>
+              </div>
             </div>
             <div id="exp-causes" class="exp-texte calcule"></div>
           </section>

@@ -4,5 +4,5 @@
 window.ADH = {
   nom: 'AssuDecisionHelper',
   sigle: 'ADH',
-  version: '1.2.1',
+  version: '1.3.0',
 };

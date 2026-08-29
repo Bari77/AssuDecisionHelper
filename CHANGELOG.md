@@ -18,6 +18,17 @@ Portée des incréments, appliquée à la base de connaissance autant qu'au code
 
 ## [Non publié]
 
+## [1.3.0] - 2026-08-29
+
+Formulaire Expertise : listes unifiées et tri alphabétique.
+
+### Modifié
+
+- Toutes les listes (nature, compagnie, type, numéro, option, civilité, qualité, type de
+  bien) partagent la même bande déroulante et la même flèche à droite. Un clic sélectionne
+  tout le texte pour l’écraser d’une saisie.
+- Natures, compagnies et types de contrat affichés par ordre alphabétique.
+
 ## [1.2.1] - 2026-08-29
 
 Formulaire Expertise : fiches épurées, copie des champs calculés, nouvelles formules MRH.
@@ -137,7 +148,8 @@ Version initiale.
 
 Le détail de ces réserves est affiché dans l'onglet « Sources » du site.
 
-[Non publié]: https://github.com/OWNER/AssuDecisionHelper/compare/1.2.1...HEAD
+[Non publié]: https://github.com/OWNER/AssuDecisionHelper/compare/1.3.0...HEAD
+[1.3.0]: https://github.com/OWNER/AssuDecisionHelper/compare/1.2.1...1.3.0
 [1.2.1]: https://github.com/OWNER/AssuDecisionHelper/compare/1.2.0...1.2.1
 [1.2.0]: https://github.com/OWNER/AssuDecisionHelper/compare/1.1.0...1.2.0
 [1.1.0]: https://github.com/OWNER/AssuDecisionHelper/compare/1.0.0...1.1.0
