@@ -118,7 +118,7 @@ gestionnaire en IRSI et répartition en CIDECOP/CIDEPIEC. Contrôle aussi l'inje
 de dossier et la complétude des guides métier.
 
 **`expertise.test.js`** — chaque fiche de [data/expertise.json](data/expertise.json) est
-rattachée au référentiel (compagnie, type). Les six associations d’exemple (ACM, GENERALI,
+rattachée au référentiel (compagnie, type). Les associations d’exemple (ACM, GENERALI,
 PACIFICA, MAAF, AXA) produisent le libellé et la modalité de bâtiment attendus. L’option vide
 ne déclenche pas une option nommée (IMMO+). Les modèles interpolent civilité, nom et date.
 

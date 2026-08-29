@@ -18,23 +18,30 @@ Portée des incréments, appliquée à la base de connaissance autant qu'au code
 
 ## [Non publié]
 
+## [1.2.1] - 2026-08-29
+
+Formulaire Expertise : fiches épurées, copie des champs calculés, nouvelles formules MRH.
+
+### Ajouté
+
+- Fiches MRH : PACIFICA 7030A.37 INTEGRALE, 7030A.29 et 7262A.40 IMMO +, AXA 970464,
+  SWISSLIFE 8132O, GMF Habitation 2012 CONFORT, THELEM NEOLOGIS2 CONFORT 405,
+  BPCE BANQUE POPULAIRE BP H404 Formule premium.
+
 ### Modifié
 
-- Formulaire Expertise : plus de type de lettre ni de « sauf si ». Le champ Contrat concatène
-  compagnie, type et numéro. Contrat / capitaux / frais à gauche ; vérification et textes à
+- Formulaire Expertise : plus de type de lettre ni de « sauf si ». Le champ Contrat affiche
+  le `libelle` de la fiche. Contrat / capitaux / frais à gauche ; vérification et textes à
   droite. Mentions pédagogiques retirées.
 - Nature, compagnie et type de contrat : listes simples. Numéro de contrat : liste
-  avec recherche. Le champ Contrat affiche le `libelle` de la fiche trouvée.
+  filtrable (bande déroulante).
 - Vérification de risque : liste éditable par compagnie, chaque phrase se copie.
   La propriété `verificationRisque` des modèles par nature a été retirée.
-- Dommages constatés : `modeles.*.dommages` est une chaîne éditable (grêle et défaut :
-  impacts et taches de peinture). Un clic copie tout le bloc, comme la vérification.
+- Dommages constatés : `modeles.*.dommages` est une chaîne (grêle : impacts et taches
+  de peinture). Un clic copie tout le bloc.
 - Champs bleus (contrat, capitaux, frais, causes) : icône de copie au survol, à droite.
-- Numéro de contrat : liste déroulante filtrable (la bande était mal ancrée au champ).
-- `aliasNumero` retiré : la recherche ignore déjà la ponctuation du numéro.
-- `lettreSaufSi` retiré des fiches contrat (plus affiché, source d’encombrement).
-- Fiches épurées : plus d’`aliasCompagnie`, d’`id` (contrat ou option), ni de
-  `libelle` / `frais` vides. La compagnie se choisit dans la liste `compagnies`.
+- JSON des fiches allégé : plus d’`aliasNumero`, `aliasCompagnie`, `lettreSaufSi`, d’`id`,
+  ni de `libelle` / `frais` vides.
 
 ## [1.2.0] - 2026-08-29
 
@@ -130,7 +137,8 @@ Version initiale.
 
 Le détail de ces réserves est affiché dans l'onglet « Sources » du site.
 
-[Non publié]: https://github.com/OWNER/AssuDecisionHelper/compare/1.2.0...HEAD
+[Non publié]: https://github.com/OWNER/AssuDecisionHelper/compare/1.2.1...HEAD
+[1.2.1]: https://github.com/OWNER/AssuDecisionHelper/compare/1.2.0...1.2.1
 [1.2.0]: https://github.com/OWNER/AssuDecisionHelper/compare/1.1.0...1.2.0
 [1.1.0]: https://github.com/OWNER/AssuDecisionHelper/compare/1.0.0...1.1.0
 [1.0.0]: https://github.com/OWNER/AssuDecisionHelper/releases/tag/1.0.0
