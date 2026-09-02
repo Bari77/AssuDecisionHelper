@@ -457,6 +457,98 @@ if (E.optionsPour(db, 'PACIFICA', 'MRH', '7262A.39', '').length) {
   echec('7262A.39 : la liste des options doit rester vide');
 }
 
+/* ------------------- Référentiel MAAF ------------------- */
+
+/* Même référence, deux millésimes, deux nomenclatures : la référence seule ne
+   peut pas trancher, et la base doit le dire au lieu de choisir. */
+const maafAmbigu = resoudre({ compagnie: 'MAAF', typeContrat: 'MRH', numero: '2339', option: '' });
+if (maafAmbigu.statut !== 'ambigu') {
+  echec('MAAF 2339 sans millésime : statut « ambigu » attendu, obtenu « ' + maafAmbigu.statut + ' »');
+} else if (maafAmbigu.numeros.length !== 2) {
+  echec('MAAF 2339 : les deux millésimes doivent être proposés, obtenu ' + JSON.stringify(maafAmbigu.numeros));
+}
+
+const maaf2026 = attendu(
+  { compagnie: 'MAAF', typeContrat: 'MRH', numero: '2339 - 03/26', option: 'CONFORT' },
+  'MAAF - MRH - TEMPO Habitation 2339 (03/26)',
+  'VAN 100 %'
+);
+if (maaf2026.statut === 'ok') {
+  if (maaf2026.qualite !== 'verifie') echec('MAAF 2339 03/26 : régime attendu vérifié');
+  if (!maaf2026.source || maaf2026.source.hote !== 'maaf.fr') {
+    echec('MAAF 2339 03/26 : source officielle maaf.fr attendue');
+  }
+  /* Le piège de cette compagnie : la vétusté n'est intégralement remboursée
+     que sur les biens de l'adresse assurée. */
+  const dep = (maaf2026.capitaux || []).find((x) => /autre adresse/i.test(x.nature));
+  if (!dep || dep.modalite !== 'VAN 25 %') {
+    echec('MAAF Confort : dépendances à une autre adresse attendues en VAN 25 %');
+  }
+  const demol = (maaf2026.frais || []).find((x) => /d[ée]molition/i.test(x.type));
+  if (!demol || demol.pourcentage != null) {
+    echec('MAAF : les frais de démolition ne doivent porter aucun pourcentage, ils sont inclus au coût de reconstruction');
+  }
+}
+
+attendu(
+  { compagnie: 'MAAF', typeContrat: 'MRH', numero: '2339 - 03/26', option: 'ECO' },
+  'MAAF - MRH - TEMPO Habitation 2339 (03/26)',
+  'Vétusté déduite'
+);
+attendu(
+  { compagnie: 'MAAF', typeContrat: 'MRH', numero: '2339 - 03/26', option: 'ESSENTIELLE' },
+  'MAAF - MRH - TEMPO Habitation 2339 (03/26)',
+  'VAN 25 %'
+);
+
+/* L'édition 01/21 de la même référence porte l'ancienne nomenclature : ses
+   formules ne doivent pas répondre pour l'édition 03/26, ni l'inverse. */
+attendu(
+  { compagnie: 'MAAF', typeContrat: 'MRH', numero: '2339 - 01/21', option: 'INTEGRALE' },
+  'MAAF - MRH - TEMPO Habitation 2339 (01/21)',
+  'VAN 100 %'
+);
+if (resoudre({ compagnie: 'MAAF', typeContrat: 'MRH', numero: '2339 - 01/21', option: 'CONFORT' }).statut === 'ok') {
+  echec('La formule CONFORT ne doit pas résoudre sur l’édition 01/21');
+}
+if (resoudre({ compagnie: 'MAAF', typeContrat: 'MRH', numero: '2339 - 03/26', option: 'INTEGRALE' }).statut === 'ok') {
+  echec('La formule INTEGRALE ne doit pas résoudre sur l’édition 03/26');
+}
+
+/* Sans régime de base, l'absence d'option n'est pas une erreur de saisie. */
+const maafSansFormule = resoudre({ compagnie: 'MAAF', typeContrat: 'MRH', numero: '2339 - 03/26', option: '' });
+if (maafSansFormule.statut !== 'inconnu') echec('MAAF sans formule : statut « inconnu » attendu');
+if (!/Préciser la formule/i.test(maafSansFormule.motif || '')) {
+  echec('MAAF sans formule : le motif doit inviter à préciser la formule, obtenu « ' + maafSansFormule.motif + ' »');
+}
+const optionInconnue = resoudre({ compagnie: 'MAAF', typeContrat: 'MRH', numero: '2339 - 03/26', option: 'PREMIUM' });
+if (/Préciser la formule/i.test(optionInconnue.motif || '')) {
+  echec('Une option saisie mais absente doit rester signalée comme non référencée');
+}
+
+attendu(
+  { compagnie: 'MAAF', typeContrat: 'MRH', numero: '2340 - 01/26', option: '' },
+  'MAAF - MRH - TEMPO Habitation en construction 2340 (01/26)',
+  'VAN 25 %'
+);
+
+/* Contrat de locataire : aucune garantie bâtiment ne doit y apparaître. */
+const jeunes = resoudre({ compagnie: 'MAAF', typeContrat: 'MRH', numero: '11001 - 05/26', option: '' });
+if (jeunes.statut !== 'ok') echec('MAAF Tempo Jeunes non résolu : ' + jeunes.statut);
+else if ((jeunes.capitaux || []).some((x) => /batiment/i.test(x.nature))) {
+  echec('Tempo Jeunes est un contrat de locataire : aucun capital bâtiment attendu');
+}
+
+/* La fiche héritée survit et reste marquée comme non sourcée. */
+const maafHerite = attendu(
+  { compagnie: 'MAAF', typeContrat: 'MRH', numero: 'TEMPO Habitation HA2 004/09/14', option: '' },
+  'MAAF - MRH - TEMPO Habitation HA2 004/09/14',
+  'VAN 25 %'
+);
+if (maafHerite.statut === 'ok' && maafHerite.qualite !== 'a_verifier') {
+  echec('La fiche MAAF héritée doit rester marquée « a_verifier »');
+}
+
 /* Les fiches antérieures, sans champ v2, restent muettes sur la traçabilité
    sans faire échouer la résolution. */
 const acm = resoudre({ compagnie: 'ACM', typeContrat: 'MRH', numero: '16.07.20-04/ 2008', option: '' });

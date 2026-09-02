@@ -1,9 +1,1026 @@
 {
   "compagnie": "MAAF",
+  "sources": {
+    "MAAF-2339-2026-03": {
+      "compagnie": "MAAF",
+      "reference": "2339",
+      "document": "Tempo Habitation — Résidence principale, résidence secondaire, responsabilité civile — Conditions Générales",
+      "edition": "03/2026",
+      "typeDocument": "conditions_generales",
+      "niveau": "officiel",
+      "url": "https://www.maaf.fr/fr/files/live/sites/maaf/files/DOCUMENTS/Habitation/CG/MAAF_Conditions_generales_Assurance_Tempo_habitation_2339.pdf",
+      "hote": "maaf.fr",
+      "verifieLe": "2026-09-02",
+      "modeVerification": "PDF téléchargé depuis le site de la compagnie et lu intégralement. Mention « Réf. 2339 - 03/26 » imprimée en couverture et en pied de dernière page."
+    },
+    "MAAF-2339-2021-01": {
+      "compagnie": "MAAF",
+      "reference": "2339",
+      "document": "Tempo Habitation — Conditions Générales (édition antérieure de la même référence)",
+      "edition": "01/2021",
+      "typeDocument": "conditions_generales",
+      "niveau": "copie_document",
+      "url": "https://philtr.fr/static/pdf/insurance/habitation/maaf_assurance_habitation.pdf",
+      "hote": "philtr.fr",
+      "verifieLe": "2026-09-02",
+      "modeVerification": "PDF téléchargé et lu intégralement. Mention « Réf. 2339 - 01/21 » imprimée sur le document. Copie hébergée par un tiers : le document lui-même est bien la CG MAAF, mais il n'a pas été retrouvé sur maaf.fr, qui ne publie que l'édition en cours."
+    },
+    "MAAF-3845-DOM-2023-01": {
+      "compagnie": "MAAF",
+      "reference": "3845 DOM",
+      "document": "Tempo Habitation — Conditions Générales — version DROM",
+      "edition": "01/2023",
+      "typeDocument": "conditions_generales",
+      "niveau": "officiel",
+      "url": "https://www.maaf.fr/fr/files/live/sites/maaf/files/DOCUMENTS/Habitation/CG/MAAF_Conditions_generales_Assurance_Tempo_habitation_DROM_3845.pdf",
+      "hote": "maaf.fr",
+      "verifieLe": "2026-09-02",
+      "modeVerification": "PDF téléchargé depuis le site de la compagnie et lu intégralement. « Réf. 3845 - 01/23 » en couverture, « Réf. 3845 DOM - 01/23 » en pied de dernière page."
+    },
+    "MAAF-2340-2026-01": {
+      "compagnie": "MAAF",
+      "reference": "2340",
+      "document": "Tempo Habitation en construction — Conditions Générales",
+      "edition": "01/2026",
+      "typeDocument": "conditions_generales",
+      "niveau": "officiel",
+      "url": "https://www.maaf.fr/fr/files/live/sites/maaf/files/DOCUMENTS/Habitation/CG/MAAF_Conditions_generales_Tempo_habitation_en_construction_2340.pdf",
+      "hote": "maaf.fr",
+      "verifieLe": "2026-09-02",
+      "modeVerification": "PDF téléchargé depuis le site de la compagnie et lu intégralement. Mention « Réf. 2340 - 01/26 » imprimée en couverture."
+    },
+    "MAAF-11001-2026-05": {
+      "compagnie": "MAAF",
+      "reference": "11001",
+      "document": "Tempo Jeunes — Spécial étudiants et apprentis — Conditions Générales",
+      "edition": "05/2026",
+      "typeDocument": "conditions_generales",
+      "niveau": "officiel",
+      "url": "https://www.maaf.fr/fr/files/live/sites/maaf/files/DOCUMENTS/Habitation/CG/MAAF_Conditions_generales_Assurance_Tempo_jeunes_11001.pdf",
+      "hote": "maaf.fr",
+      "verifieLe": "2026-09-02",
+      "modeVerification": "PDF téléchargé depuis le site de la compagnie et lu intégralement. Mention « Réf. 11001-05/26 » imprimée en couverture."
+    }
+  },
   "contrats": [
     {
       "typeContrat": "MRH",
+      "numero": "2339 - 03/26",
+      "libelle": "MAAF - MRH - TEMPO Habitation 2339 (03/26)",
+      "nomContrat": "Tempo Habitation",
+      "edition": "03/2026",
+      "statut": "verifie",
+      "sourceRef": "MAAF-2339-2026-03",
+      "remarques": [
+        "Même référence 2339 que l'édition 01/21, mais nomenclature de formules entièrement renouvelée : Eco / Essentielle / Confort / Confort + remplacent Initiale / Classique / Intégrale. La référence seule ne suffit donc pas à déterminer le régime : il faut le millésime.",
+        "MAAF ne garantit pas les frais de démolition et de déblai comme un poste plafonné à part : ils sont compris dans le coût de reconstruction. Ne pas transposer ici la logique « 25 % de l'indemnité » d'autres compagnies."
+      ],
+      "formules": [
+        { "nom": "ECO", "statut": "verifie", "page": 6 },
+        { "nom": "ESSENTIELLE", "statut": "verifie", "page": 6 },
+        { "nom": "CONFORT", "statut": "verifie", "page": 6 },
+        { "nom": "CONFORT +", "statut": "verifie", "page": 6, "disponibilite": "Réservée aux propriétaires" },
+        { "nom": "Formule Responsabilité civile", "statut": "verifie", "page": 9, "observation": "Sans logement assuré : couvre la seule responsabilité civile vie privée." }
+      ],
+      "optionsIndemnisationConnues": [
+        { "nom": "Rééquipement à neuf", "statut": "verifie", "page": 49, "definition": "Mobilier et objets usuels sans vétusté déduite hors appareils électriques, électroniques ou thermiques quel que soit leur âge ; ces appareils sans vétusté jusqu'à 7 ans, avec 50 % de vétusté entre 7 et 10 ans et 70 % au-delà." },
+        { "nom": "Rééquipement à neuf étendu", "statut": "verifie", "page": 49, "definition": "Mobilier et objets usuels sans aucune vétusté déduite." }
+      ],
+      "pointsVigilance": [
+        {
+          "texte": "Les frais de démolition, de déblaiement, de dépose ou de démontage nécessaires aux réparations sont compris dans le coût de reconstruction. Il n'existe pas de garantie « frais de démolition / déblai » plafonnée séparément.",
+          "statut": "verifie",
+          "page": 48
+        },
+        {
+          "texte": "Indemnisation en deux temps. Premier règlement : coût de reconstruction au jour du sinistre, déduction faite de la vétusté et des frais de démolition, de déblaiement et de désamiantage. Second règlement, travaux faits et sur présentation des factures : le complément de vétusté (hors formule Eco) et les frais de démolition, de déblaiement et de désamiantage.",
+          "statut": "verifie",
+          "page": 48
+        },
+        { "texte": "La vétusté s'apprécie élément par élément.", "statut": "verifie", "page": 48 },
+        { "texte": "L'indemnité ne peut pas excéder le coût réel des travaux effectués.", "statut": "verifie", "page": 48 },
+        {
+          "texte": "L'indemnité se limite au coût de reconstruction vétusté déduite, frais de démolition, de déblaiement et de désamiantage déduits, sans excéder la valeur vénale du bâtiment diminuée de la valeur de sauvetage, dans cinq cas : travaux non effectués ; travaux effectués plus de 2 ans après le sinistre ; modification de l'usage des bâtiments ; reconstruction ailleurs par choix de l'assuré alors que les bâtiments ne sont pas en zone de plan de prévention des risques ; bâtiments édifiés sur un terrain dont l'assuré n'est pas propriétaire.",
+          "statut": "verifie",
+          "page": 49
+        },
+        {
+          "texte": "Bâtiments sur terrain d'autrui : reconstruction sur les lieux dans l'année suivant la clôture de l'expertise, l'indemnisation reste normale. À défaut de reconstruction, l'indemnité ne peut excéder le remboursement que le propriétaire du terrain devait à l'assuré s'il était prévu par des dispositions légales ou conventionnelles.",
+          "statut": "verifie",
+          "page": 49
+        },
+        {
+          "texte": "Vétusté du mobilier : au plus 10 % par an, avec un maximum de 80 % pour les appareils électroménagers et l'électronique de loisirs en état de fonctionnement. À défaut de justificatif d'âge, l'âge des vêtements, du linge et de la literie est fixé de gré à gré avec une indemnisation minimum garantie de 30 % de la valeur de remplacement à neuf.",
+          "statut": "verifie",
+          "page": 48
+        },
+        {
+          "texte": "Franchise supplémentaire sur la garantie Incendie si l'origine du sinistre tient au non-respect de l'une de ces mesures : ramonage annuel par un professionnel des conduits de cheminée, chaudière, poêle à bois et insert ; pose et raccordement d'un insert par un professionnel ; débroussaillage lorsqu'il existe une obligation locale.",
+          "statut": "verifie",
+          "page": 10
+        },
+        {
+          "texte": "Piscine, spa ou bain nordique : en cas de gel, l'indemnité est réduite de 50 % si les dommages ont été causés ou aggravés par l'absence de dispositif d'hivernage conforme aux préconisations du fabricant ou de l'installateur.",
+          "statut": "verifie",
+          "page": 22
+        },
+        {
+          "texte": "Franchise Catastrophes naturelles : franchise légale fixée par les pouvoirs publics. Sans franchise : catastrophes technologiques, interruption de production d'électricité, dommages causés par les secours hors sinistre garanti.",
+          "statut": "verifie",
+          "page": 9
+        }
+      ],
+      "options": [
+        {
+          "libelle": "ECO",
+          "formule": "Eco",
+          "capitaux": [
+            {
+              "nature": "Batiment",
+              "capital": "Coût de reconstruction",
+              "modalite": "Vétusté déduite",
+              "page": 6,
+              "details": {
+                "base": "Coût de reconstruction à neuf au jour du sinistre",
+                "premierReglement": "Vétusté déduite, appréciée élément par élément",
+                "complement": "Aucun : la formule Eco ne donne lieu à aucun remboursement de vétusté",
+                "plafond": "Sans excéder la valeur vénale du bâtiment diminuée de la valeur de sauvetage dans les cas listés en points de vigilance",
+                "versement": "Frais de démolition, de déblaiement et de désamiantage versés au second règlement, sur factures",
+                "delaiReconstruction": "2 ans à compter du sinistre",
+                "surJustificatifs": true
+              }
+            },
+            {
+              "nature": "Dépendances à une autre adresse",
+              "capital": "Coût de reconstruction",
+              "modalite": "Vétusté déduite",
+              "page": 6,
+              "remarque": "Dépendances situées à une autre adresse et dans la même commune."
+            },
+            {
+              "nature": "Mobilier et objets usuels",
+              "capital": "Valeur de remplacement à neuf",
+              "modalite": "Vétusté déduite",
+              "page": 6
+            }
+          ],
+          "frais": [
+            {
+              "type": "Démolition / déblai",
+              "limitation": "Compris dans le coût de reconstruction, sans plafond propre",
+              "base": "Coût de reconstruction",
+              "conditions": "Versés au second règlement, travaux faits, sur présentation des factures",
+              "page": 48,
+              "observations": "Comprend la démolition, le déblaiement, la dépose ou le démontage nécessaires aux réparations, ainsi que le désamiantage."
+            },
+            {
+              "type": "Frais annexes",
+              "limitation": "5 % du montant de l'indemnité du bâtiment et du contenu y compris les honoraires de maîtrise d'œuvre liée à la reconstruction des bâtiments assurés",
+              "base": "Indemnité du bâtiment et du contenu",
+              "pourcentage": 5,
+              "page": 7,
+              "observations": "Frais personnels et justifiés : déplacement et replacement du mobilier, honoraires de maîtrise d'œuvre, clôture provisoire de mise en sécurité, récupération d'objets volés, abonnements et cotisation d'assurance pendant la remise en état, perte de rémunération liée aux démarches."
+            },
+            {
+              "type": "Frais de coordination SPS, plans et permis de construire",
+              "limitation": "5 % de l'indemnisation au titre du coût de reconstruction des bâtiments assurés",
+              "base": "Indemnisation au titre du coût de reconstruction",
+              "pourcentage": 5,
+              "conditions": "Sur présentation de factures, et seulement lorsque les plans et documents sont obligatoires pour le dépôt du permis de construire",
+              "page": 48
+            },
+            {
+              "type": "Perte d'usage",
+              "limitation": "2 ans",
+              "page": 7
+            },
+            {
+              "type": "Frais de recherche des fuites d'eau sur canalisation encastrée ou enterrée",
+              "limitation": "4 242 €",
+              "maximum": "4 242 €",
+              "page": 6
+            }
+          ]
+        },
+        {
+          "libelle": "ESSENTIELLE",
+          "formule": "Essentielle",
+          "capitaux": [
+            {
+              "nature": "Batiment",
+              "capital": "Coût de reconstruction",
+              "modalite": "VAN 25 %",
+              "page": 6,
+              "details": {
+                "base": "Coût de reconstruction à neuf au jour du sinistre",
+                "premierReglement": "Vétusté déduite, appréciée élément par élément",
+                "complement": "Remboursement de la vétusté à hauteur de 25 % maximum sur l'habitation et les dépendances assurées ; la part excédant 25 % de vétusté n'est pas indemnisée",
+                "plafond": "Sans excéder la valeur vénale du bâtiment diminuée de la valeur de sauvetage dans les cas listés en points de vigilance",
+                "conditions": "L'installation électrique des bâtiments et les appareils immobiliers électriques intégrés restent indemnisés vétusté déduite, sans remboursement",
+                "delaiReconstruction": "2 ans à compter du sinistre",
+                "surJustificatifs": true
+              }
+            },
+            {
+              "nature": "Dépendances à une autre adresse",
+              "capital": "Coût de reconstruction",
+              "modalite": "VAN 25 %",
+              "page": 6,
+              "remarque": "Pas de remboursement de vétusté sur l'installation électrique."
+            },
+            {
+              "nature": "Mobilier et objets usuels",
+              "capital": "Valeur de remplacement à neuf",
+              "modalite": "Vétusté déduite",
+              "page": 6
+            }
+          ],
+          "frais": [
+            {
+              "type": "Démolition / déblai",
+              "limitation": "Compris dans le coût de reconstruction, sans plafond propre",
+              "base": "Coût de reconstruction",
+              "conditions": "Versés au second règlement, travaux faits, sur présentation des factures",
+              "page": 48
+            },
+            {
+              "type": "Frais annexes",
+              "limitation": "5 % du montant de l'indemnité du bâtiment et du contenu y compris les honoraires de maîtrise d'œuvre liée à la reconstruction des bâtiments assurés",
+              "base": "Indemnité du bâtiment et du contenu",
+              "pourcentage": 5,
+              "page": 7
+            },
+            {
+              "type": "Frais de coordination SPS, plans et permis de construire",
+              "limitation": "5 % de l'indemnisation au titre du coût de reconstruction des bâtiments assurés",
+              "base": "Indemnisation au titre du coût de reconstruction",
+              "pourcentage": 5,
+              "conditions": "Sur présentation de factures",
+              "page": 48
+            },
+            {
+              "type": "Frais de remise aux normes obligatoires",
+              "limitation": "273 € par m² habitable",
+              "maximum": "273 € par m² habitable",
+              "conditions": "Propriétaires, hors formule Eco. Uniquement sur la partie sinistrée et si la législation l'impose",
+              "page": 7
+            },
+            {
+              "type": "Perte d'usage",
+              "limitation": "2 ans",
+              "page": 7
+            },
+            {
+              "type": "Remboursement des mensualités de prêt immobilier",
+              "limitation": "2 ans avec un maximum de 1 515 € par mois",
+              "maximum": "1 515 € par mois",
+              "conditions": "Propriétaires, hors formule Eco, résidence principale",
+              "page": 7
+            },
+            {
+              "type": "Perte pécuniaire de l'assuré copropriétaire",
+              "limitation": "3 108 937 €",
+              "maximum": "3 108 937 €",
+              "conditions": "Copropriété non assurée et responsable",
+              "page": 7
+            },
+            {
+              "type": "Interruption de production d'électricité",
+              "limitation": "Forfait journalier de 5,50 €, plafond 1 000 €",
+              "minimum": "5,50 € par jour",
+              "maximum": "1 000 €",
+              "conditions": "Durée maximale de 6 mois, sans franchise",
+              "page": 7
+            },
+            {
+              "type": "Frais de recherche des fuites d'eau sur canalisation encastrée ou enterrée",
+              "limitation": "4 242 €",
+              "maximum": "4 242 €",
+              "page": 6
+            }
+          ]
+        },
+        {
+          "libelle": "CONFORT",
+          "formule": "Confort",
+          "capitaux": [
+            {
+              "nature": "Batiment",
+              "capital": "Coût de reconstruction",
+              "modalite": "VAN 100 %",
+              "page": 6,
+              "details": {
+                "base": "Coût de reconstruction à neuf au jour du sinistre",
+                "premierReglement": "Vétusté déduite, appréciée élément par élément",
+                "complement": "Aucune déduction de vétusté sur l'habitation et les dépendances assurées à la même adresse : la vétusté est intégralement remboursée au second règlement",
+                "plafond": "Sans excéder la valeur vénale du bâtiment diminuée de la valeur de sauvetage dans les cas listés en points de vigilance",
+                "delaiReconstruction": "2 ans à compter du sinistre",
+                "surJustificatifs": true
+              }
+            },
+            {
+              "nature": "Dépendances à une autre adresse",
+              "capital": "Coût de reconstruction",
+              "modalite": "VAN 25 %",
+              "page": 6,
+              "remarque": "Attention : la vétusté n'est intégralement remboursée que sur l'habitation et les dépendances à la même adresse. Les dépendances situées à une autre adresse dans la même commune restent plafonnées à 25 %."
+            },
+            {
+              "nature": "Mobilier et objets usuels",
+              "capital": "Valeur de remplacement à neuf",
+              "modalite": "VAN 100 %",
+              "page": 6
+            },
+            {
+              "nature": "Appareils électriques, électroniques ou thermiques",
+              "capital": "Valeur de remplacement à neuf",
+              "modalite": "VAN 100 % jusqu'à 7 ans",
+              "page": 6,
+              "details": {
+                "base": "Valeur de remplacement à neuf au jour du sinistre",
+                "complement": "Sans vétusté jusqu'à 7 ans d'ancienneté ; vétusté de 50 % déduite entre 7 et 10 ans, de 70 % au-delà de 10 ans",
+                "conditions": "Remplacement dans un délai de 2 ans, sur présentation des factures",
+                "surJustificatifs": true
+              }
+            }
+          ],
+          "frais": [
+            {
+              "type": "Démolition / déblai",
+              "limitation": "Compris dans le coût de reconstruction, sans plafond propre",
+              "base": "Coût de reconstruction",
+              "conditions": "Versés au second règlement, travaux faits, sur présentation des factures",
+              "page": 48
+            },
+            {
+              "type": "Frais annexes",
+              "limitation": "10 % du montant de l'indemnité du bâtiment et du contenu dont 5 % pour les honoraires de maîtrise d'œuvre liée à la reconstruction des bâtiments assurés",
+              "base": "Indemnité du bâtiment et du contenu",
+              "pourcentage": 10,
+              "page": 7
+            },
+            {
+              "type": "Frais de coordination SPS, plans et permis de construire",
+              "limitation": "5 % de l'indemnisation au titre du coût de reconstruction des bâtiments assurés",
+              "base": "Indemnisation au titre du coût de reconstruction",
+              "pourcentage": 5,
+              "conditions": "Sur présentation de factures",
+              "page": 48
+            },
+            {
+              "type": "Frais de remise aux normes obligatoires",
+              "limitation": "273 € par m² habitable",
+              "maximum": "273 € par m² habitable",
+              "conditions": "Propriétaires, hors formule Eco. Uniquement sur la partie sinistrée et si la législation l'impose",
+              "page": 7
+            },
+            {
+              "type": "Perte d'usage",
+              "limitation": "2 ans",
+              "page": 7
+            },
+            {
+              "type": "Remboursement des mensualités de prêt immobilier",
+              "limitation": "2 ans avec un maximum de 1 515 € par mois",
+              "maximum": "1 515 € par mois",
+              "conditions": "Propriétaires, hors formule Eco, résidence principale",
+              "page": 7
+            },
+            {
+              "type": "Perte pécuniaire de l'assuré copropriétaire",
+              "limitation": "3 108 937 €",
+              "maximum": "3 108 937 €",
+              "page": 7
+            },
+            {
+              "type": "Interruption de production d'électricité",
+              "limitation": "Forfait journalier de 5,50 €, plafond 1 000 €",
+              "maximum": "1 000 €",
+              "conditions": "Durée maximale de 6 mois, sans franchise",
+              "page": 7
+            },
+            {
+              "type": "Aménagement et mobilier extérieurs",
+              "limitation": "20 000 €, dont 384 € par arbre ou arbuste pour le dessouchage et le remplacement",
+              "maximum": "20 000 €",
+              "page": 7
+            },
+            {
+              "type": "Frais de recherche des fuites d'eau sur canalisation encastrée ou enterrée",
+              "limitation": "4 242 €",
+              "maximum": "4 242 €",
+              "page": 6
+            }
+          ]
+        },
+        {
+          "libelle": "CONFORT +",
+          "formule": "Confort +",
+          "remarque": "Formule réservée aux propriétaires. Régime bâtiment identique à Confort ; la différence porte sur le mobilier, indemnisé à neuf quel que soit l'âge des appareils.",
+          "capitaux": [
+            {
+              "nature": "Batiment",
+              "capital": "Coût de reconstruction",
+              "modalite": "VAN 100 %",
+              "page": 6,
+              "details": {
+                "base": "Coût de reconstruction à neuf au jour du sinistre",
+                "premierReglement": "Vétusté déduite, appréciée élément par élément",
+                "complement": "Aucune déduction de vétusté sur l'habitation et les dépendances assurées à la même adresse",
+                "plafond": "Sans excéder la valeur vénale du bâtiment diminuée de la valeur de sauvetage dans les cas listés en points de vigilance",
+                "delaiReconstruction": "2 ans à compter du sinistre",
+                "surJustificatifs": true
+              }
+            },
+            {
+              "nature": "Dépendances à une autre adresse",
+              "capital": "Coût de reconstruction",
+              "modalite": "VAN 25 %",
+              "page": 6
+            },
+            {
+              "nature": "Mobilier et objets usuels",
+              "capital": "Valeur de remplacement à neuf",
+              "modalite": "VAN 100 %",
+              "page": 6
+            },
+            {
+              "nature": "Appareils électriques, électroniques ou thermiques",
+              "capital": "Valeur de remplacement à neuf",
+              "modalite": "VAN 100 %",
+              "page": 6,
+              "remarque": "Sans limite d'âge, contrairement à la formule Confort qui s'arrête à 7 ans."
+            }
+          ],
+          "frais": [
+            {
+              "type": "Démolition / déblai",
+              "limitation": "Compris dans le coût de reconstruction, sans plafond propre",
+              "base": "Coût de reconstruction",
+              "conditions": "Versés au second règlement, travaux faits, sur présentation des factures",
+              "page": 48
+            },
+            {
+              "type": "Frais annexes",
+              "limitation": "10 % du montant de l'indemnité du bâtiment et du contenu dont 5 % pour les honoraires de maîtrise d'œuvre liée à la reconstruction des bâtiments assurés",
+              "base": "Indemnité du bâtiment et du contenu",
+              "pourcentage": 10,
+              "page": 7
+            },
+            {
+              "type": "Frais de coordination SPS, plans et permis de construire",
+              "limitation": "5 % de l'indemnisation au titre du coût de reconstruction des bâtiments assurés",
+              "base": "Indemnisation au titre du coût de reconstruction",
+              "pourcentage": 5,
+              "conditions": "Sur présentation de factures",
+              "page": 48
+            },
+            {
+              "type": "Frais de remise aux normes obligatoires",
+              "limitation": "273 € par m² habitable",
+              "maximum": "273 € par m² habitable",
+              "page": 7
+            },
+            {
+              "type": "Perte d'usage",
+              "limitation": "2 ans",
+              "page": 7
+            },
+            {
+              "type": "Remboursement des mensualités de prêt immobilier",
+              "limitation": "2 ans avec un maximum de 1 515 € par mois",
+              "maximum": "1 515 € par mois",
+              "page": 7
+            },
+            {
+              "type": "Perte pécuniaire de l'assuré copropriétaire",
+              "limitation": "3 108 937 €",
+              "maximum": "3 108 937 €",
+              "page": 7
+            },
+            {
+              "type": "Interruption de production d'électricité",
+              "limitation": "Forfait journalier de 5,50 €, plafond 1 000 €",
+              "maximum": "1 000 €",
+              "page": 7
+            },
+            {
+              "type": "Aménagement et mobilier extérieurs",
+              "limitation": "20 000 €, dont 384 € par arbre ou arbuste pour le dessouchage et le remplacement",
+              "maximum": "20 000 €",
+              "page": 7
+            },
+            {
+              "type": "Frais de recherche des fuites d'eau sur canalisation encastrée ou enterrée",
+              "limitation": "4 242 €",
+              "maximum": "4 242 €",
+              "page": 6
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "typeContrat": "MRH",
+      "numero": "2339 - 01/21",
+      "libelle": "MAAF - MRH - TEMPO Habitation 2339 (01/21)",
+      "nomContrat": "Tempo Habitation",
+      "edition": "01/2021",
+      "statut": "verifie",
+      "sourceRef": "MAAF-2339-2021-01",
+      "remarques": [
+        "Édition antérieure de la référence 2339, à ne surtout pas confondre avec l'édition 03/26 : les formules s'appelaient Initiale / Classique / Intégrale, et les régimes ne se correspondent pas terme à terme. Un assuré peut encore être couvert par cette édition.",
+        "Le millésime imprimé est « Réf. 2339 - 01/21 ». La borne haute de validité n'est pas connue : maaf.fr ne publie que l'édition en cours."
+      ],
+      "formules": [
+        { "nom": "INITIALE", "statut": "verifie", "page": 6, "disponibilite": "Réservée aux locataires d'appartements de 3 pièces maximum" },
+        { "nom": "CLASSIQUE", "statut": "verifie", "page": 6, "disponibilite": "Réservée aux locataires et aux propriétaires d'un logement de moins de 5 pièces" },
+        { "nom": "INTÉGRALE", "statut": "verifie", "page": 6 }
+      ],
+      "optionsIndemnisationConnues": [
+        {
+          "nom": "Rééquipement à neuf",
+          "statut": "verifie",
+          "page": 6,
+          "disponibilite": "Option en formule Classique ; incluse en formule Intégrale"
+        },
+        { "nom": "Tous risques", "statut": "verifie", "page": 6, "disponibilite": "Option en formule Intégrale" },
+        { "nom": "Cadre de vie (aménagements extérieurs)", "statut": "verifie", "page": 6 }
+      ],
+      "pointsVigilance": [
+        {
+          "texte": "Les frais de démolition, de déblaiement, de dépose ou de démontage nécessaires aux réparations sont compris dans le coût de reconstruction, sans plafond propre.",
+          "statut": "verifie"
+        },
+        {
+          "texte": "Le tableau des garanties ne porte aucune valeur en colonne Initiale pour la ligne « garages et autres dépendances non accolés » : le régime de ces biens en formule Initiale n'est pas établi par le document.",
+          "statut": "verifie",
+          "page": 7
+        }
+      ],
+      "options": [
+        {
+          "libelle": "INITIALE",
+          "formule": "Initiale",
+          "capitaux": [
+            {
+              "nature": "Batiment",
+              "capital": "Coût de reconstruction",
+              "modalite": "Vétusté déduite",
+              "page": 7,
+              "remarque": "Hors garages et autres dépendances non accolés."
+            },
+            {
+              "nature": "Mobilier et objets usuels",
+              "capital": "Valeur de remplacement à neuf",
+              "modalite": "Vétusté déduite",
+              "page": 7
+            }
+          ]
+        },
+        {
+          "libelle": "CLASSIQUE",
+          "formule": "Classique",
+          "capitaux": [
+            {
+              "nature": "Batiment",
+              "capital": "Coût de reconstruction",
+              "modalite": "VAN 25 %",
+              "page": 7,
+              "details": {
+                "base": "Coût de reconstruction à neuf au jour du sinistre",
+                "premierReglement": "Vétusté déduite",
+                "complement": "Remboursement de la vétusté dans la limite de 25 %",
+                "conditions": "Pas de remboursement de vétusté sur l'installation électrique",
+                "delaiReconstruction": "2 ans à compter du sinistre",
+                "surJustificatifs": true
+              },
+              "remarque": "Hors garages et autres dépendances non accolés."
+            },
+            {
+              "nature": "Garages et dépendances non accolés",
+              "capital": "Coût de reconstruction",
+              "modalite": "VAN 25 %",
+              "page": 7,
+              "remarque": "Pas de remboursement de vétusté sur l'installation électrique."
+            },
+            {
+              "nature": "Mobilier et objets usuels",
+              "capital": "Valeur de remplacement à neuf",
+              "modalite": "Vétusté déduite",
+              "page": 7
+            }
+          ]
+        },
+        {
+          "libelle": "CLASSIQUE + REEQUIPEMENT A NEUF",
+          "formule": "Classique",
+          "optionsIndemnisation": ["Rééquipement à neuf"],
+          "capitaux": [
+            {
+              "nature": "Batiment",
+              "capital": "Coût de reconstruction",
+              "modalite": "VAN 25 %",
+              "page": 7,
+              "remarque": "L'option Rééquipement à neuf porte sur le mobilier : elle ne modifie pas le régime du bâtiment, qui reste plafonné à 25 % de vétusté en formule Classique."
+            },
+            {
+              "nature": "Mobilier et objets usuels",
+              "capital": "Valeur de remplacement à neuf",
+              "modalite": "VAN 100 %",
+              "page": 6,
+              "statut": "deduit",
+              "remarque": "Le tableau des garanties place « Rééquipement à neuf » en option de la formule Classique et en garantie incluse de la formule Intégrale, dont le mobilier est indemnisé sans aucune déduction de vétusté. L'égalité des deux régimes est déduite de ce rapprochement, non lue comme telle."
+            }
+          ]
+        },
+        {
+          "libelle": "INTEGRALE",
+          "formule": "Intégrale",
+          "optionsIndemnisation": ["Rééquipement à neuf (inclus)"],
+          "capitaux": [
+            {
+              "nature": "Batiment",
+              "capital": "Coût de reconstruction",
+              "modalite": "VAN 100 %",
+              "page": 7,
+              "details": {
+                "base": "Coût de reconstruction à neuf au jour du sinistre",
+                "premierReglement": "Vétusté déduite",
+                "complement": "Sans aucune vétusté : le complément couvre l'intégralité de la vétusté retenue",
+                "delaiReconstruction": "2 ans à compter du sinistre",
+                "surJustificatifs": true
+              },
+              "remarque": "Hors garages et autres dépendances non accolés."
+            },
+            {
+              "nature": "Garages et dépendances non accolés",
+              "capital": "Coût de reconstruction",
+              "modalite": "VAN 25 %",
+              "page": 7,
+              "remarque": "Le plafond de 25 % subsiste sur les dépendances non accolées, même en formule Intégrale."
+            },
+            {
+              "nature": "Mobilier et objets usuels",
+              "capital": "Valeur de remplacement à neuf",
+              "modalite": "VAN 100 %",
+              "page": 7
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "typeContrat": "MRH",
+      "numero": "3845 DOM - 01/23",
+      "libelle": "MAAF - MRH - TEMPO Habitation DROM 3845 (01/23)",
+      "nomContrat": "Tempo Habitation (DROM)",
+      "edition": "01/2023",
+      "statut": "verifie",
+      "sourceRef": "MAAF-3845-DOM-2023-01",
+      "remarques": [
+        "Version destinée aux départements et régions d'outre-mer. Conserve la nomenclature Initiale / Classique / Intégrale alors que la référence métropole 2339 est passée en 03/26 à Eco / Essentielle / Confort / Confort +."
+      ],
+      "formules": [
+        { "nom": "INITIALE", "statut": "verifie", "page": 7 },
+        { "nom": "CLASSIQUE", "statut": "verifie", "page": 7 },
+        { "nom": "INTÉGRALE", "statut": "verifie", "page": 7 }
+      ],
+      "optionsIndemnisationConnues": [
+        {
+          "nom": "Rééquipement à neuf",
+          "statut": "verifie",
+          "page": 50,
+          "disponibilite": "Proposée en complément de la formule Classique, acquise automatiquement avec la formule Intégrale",
+          "definition": "Indemnisation de l'ensemble des dommages immobiliers en valeur de reconstruction à neuf au jour du sinistre, sans aucune déduction de vétusté. Les dépendances non accolées et les annexes en sont exclues : elles restent plafonnées à 25 % de remboursement de vétusté."
+        },
+        { "nom": "Tous risques", "statut": "verifie", "page": 50, "disponibilite": "Option en complément de la formule Intégrale" }
+      ],
+      "pointsVigilance": [
+        {
+          "texte": "Les frais de démolition, de déblaiement, de dépose ou de démontage nécessaires aux réparations sont compris dans le coût de reconstruction, sans plafond propre.",
+          "statut": "verifie",
+          "page": 54
+        },
+        {
+          "texte": "Frais de coordination SPS, frais de plans et de dépôt de permis de construire : pris en charge dans la limite de 5 % de l'indemnisation au titre du coût de reconstruction, sur présentation des factures.",
+          "statut": "verifie",
+          "page": 54
+        },
+        {
+          "texte": "Le complément de vétusté n'est versé que travaux faits, dans un délai de 2 ans à compter du sinistre, sur présentation des factures de réparation, avec un chiffrage élément par élément.",
+          "statut": "verifie",
+          "page": 54
+        },
+        {
+          "texte": "Bâtiments édifiés sur un terrain dont l'assuré n'est pas propriétaire : s'il reconstruit sur les lieux loués dans le délai d'un an à compter de la clôture de l'expertise, l'indemnisation reste normale. S'il ne reconstruit pas et qu'un acte antérieur au sinistre prévoyait un remboursement par le propriétaire, l'indemnité ne peut excéder la somme stipulée au bail ; à défaut de convention, elle ne peut excéder la valeur des matériaux.",
+          "statut": "verifie",
+          "page": 55
+        }
+      ],
+      "options": [
+        {
+          "libelle": "INITIALE",
+          "formule": "Initiale",
+          "capitaux": [
+            {
+              "nature": "Batiment",
+              "capital": "Coût de reconstruction",
+              "modalite": "Vétusté déduite",
+              "page": 7,
+              "remarque": "Hors garages et autres dépendances non accolés."
+            },
+            {
+              "nature": "Mobilier et objets usuels",
+              "capital": "Valeur de remplacement à neuf",
+              "modalite": "Vétusté déduite",
+              "page": 7
+            }
+          ]
+        },
+        {
+          "libelle": "CLASSIQUE",
+          "formule": "Classique",
+          "capitaux": [
+            {
+              "nature": "Batiment",
+              "capital": "Coût de reconstruction",
+              "modalite": "VAN 25 %",
+              "page": 7,
+              "details": {
+                "base": "Reconstruction à neuf au jour du sinistre",
+                "premierReglement": "Coût de reconstruction au jour du sinistre, vétusté déduite",
+                "complement": "Remboursement de la vétusté à hauteur de 25 % maximum",
+                "conditions": "Pas de remboursement de vétusté sur l'installation électrique",
+                "versement": "Travaux faits, sur présentation des factures de réparation",
+                "delaiReconstruction": "2 ans à compter du sinistre",
+                "surJustificatifs": true
+              },
+              "remarque": "Hors garages et autres dépendances non accolés."
+            },
+            {
+              "nature": "Garages et dépendances non accolés",
+              "capital": "Coût de reconstruction",
+              "modalite": "VAN 25 %",
+              "page": 7,
+              "remarque": "Pas de remboursement de vétusté sur l'installation électrique."
+            },
+            {
+              "nature": "Mobilier et objets usuels",
+              "capital": "Valeur de remplacement à neuf",
+              "modalite": "Vétusté déduite",
+              "page": 7
+            }
+          ]
+        },
+        {
+          "libelle": "CLASSIQUE + REEQUIPEMENT A NEUF",
+          "formule": "Classique",
+          "optionsIndemnisation": ["Rééquipement à neuf"],
+          "capitaux": [
+            {
+              "nature": "Batiment",
+              "capital": "Coût de reconstruction",
+              "modalite": "VAN 100 %",
+              "page": 50,
+              "details": {
+                "base": "Valeur de reconstruction à neuf au jour du sinistre, sans aucune déduction de vétusté",
+                "premierReglement": "Coût de reconstruction vétusté déduite",
+                "complement": "Complément retenu au titre de la vétusté, chiffrage élément par élément",
+                "versement": "Travaux faits, sur présentation des factures de réparation",
+                "delaiReconstruction": "2 ans à compter du sinistre",
+                "surJustificatifs": true
+              }
+            },
+            {
+              "nature": "Dépendances non accolées et annexes",
+              "capital": "Coût de reconstruction",
+              "modalite": "VAN 25 %",
+              "page": 50,
+              "remarque": "Exclues de l'option Rééquipement à neuf : indemnisées sur la base de la reconstruction à neuf au jour du sinistre, y compris le remboursement de la vétusté à hauteur de 25 % maximum."
+            },
+            {
+              "nature": "Mobilier et objets usuels",
+              "capital": "Valeur de remplacement à neuf",
+              "modalite": "Vétusté déduite",
+              "page": 7,
+              "remarque": "En formule Classique, le tableau des garanties maintient la vétusté déduite sur le mobilier."
+            }
+          ]
+        },
+        {
+          "libelle": "INTEGRALE",
+          "formule": "Intégrale",
+          "optionsIndemnisation": ["Rééquipement à neuf (inclus)"],
+          "capitaux": [
+            {
+              "nature": "Batiment",
+              "capital": "Coût de reconstruction",
+              "modalite": "VAN 100 %",
+              "page": 7,
+              "details": {
+                "base": "Coût de reconstruction sans aucune vétusté",
+                "premierReglement": "Coût de reconstruction au jour du sinistre, vétusté déduite",
+                "complement": "Complément retenu au titre de la vétusté, chiffrage élément par élément",
+                "versement": "Travaux faits, sur présentation des factures de réparation",
+                "delaiReconstruction": "2 ans à compter du sinistre",
+                "surJustificatifs": true
+              },
+              "remarque": "Hors garages et autres dépendances non accolés."
+            },
+            {
+              "nature": "Garages et dépendances non accolés",
+              "capital": "Coût de reconstruction",
+              "modalite": "VAN 25 %",
+              "page": 7
+            },
+            {
+              "nature": "Mobilier et objets usuels",
+              "capital": "Valeur de remplacement à neuf",
+              "modalite": "VAN 100 %",
+              "page": 7
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "typeContrat": "MRH",
+      "numero": "2340 - 01/26",
+      "libelle": "MAAF - MRH - TEMPO Habitation en construction 2340 (01/26)",
+      "nomContrat": "Tempo Habitation en construction",
+      "edition": "01/2026",
+      "statut": "verifie",
+      "sourceRef": "MAAF-2340-2026-01",
+      "remarques": [
+        "Contrat destiné aux maisons, appartements ou immeubles en cours de construction ou de rénovation, inoccupés et à usage privé. Régime unique : ce contrat ne comporte pas de formules."
+      ],
+      "pointsVigilance": [
+        {
+          "texte": "Ne bénéficient pas de l'indemnisation en valeur à neuf : l'installation électrique des bâtiments et les appareils immobiliers électriques intégrés (chauffage, ventilation mécanique contrôlée…), ainsi que les dépendances non attenantes au bâtiment d'habitation.",
+          "statut": "verifie",
+          "page": 24
+        },
+        {
+          "texte": "La vétusté est appréciée élément par élément (maçonnerie, plâtrerie, peinture) et exprimée en pourcentage du coût de reconstruction de chaque élément.",
+          "statut": "verifie",
+          "page": 24
+        },
+        {
+          "texte": "L'indemnité totale ne peut excéder le coût réel des travaux effectués ; la part excédant 25 % de vétusté n'est pas indemnisée.",
+          "statut": "verifie",
+          "page": 24
+        }
+      ],
+      "options": [
+        {
+          "formule": "Régime unique",
+          "capitaux": [
+            {
+              "nature": "Batiment",
+              "capital": "Coût de reconstruction",
+              "modalite": "VAN 25 %",
+              "page": 5,
+              "details": {
+                "base": "Coût de reconstruction",
+                "premierReglement": "Coût de reconstruction au jour du sinistre, vétusté déduite, appréciée élément par élément",
+                "complement": "Remboursement de la vétusté dans la limite de 25 %",
+                "plafond": "L'indemnité totale ne peut excéder le coût réel des travaux effectués",
+                "conditions": "Hors installation électrique et appareils immobiliers électriques intégrés, qui ne bénéficient pas de la valeur à neuf",
+                "versement": "Travaux faits, sur présentation des factures",
+                "delaiReconstruction": "2 ans à compter du sinistre",
+                "surJustificatifs": true
+              }
+            },
+            {
+              "nature": "Dépendances communiquant avec l'habitation",
+              "capital": "Coût de reconstruction",
+              "modalite": "VAN 25 %",
+              "page": 5
+            },
+            {
+              "nature": "Dépendances non attenantes",
+              "capital": "Coût de reconstruction",
+              "modalite": "Vétusté déduite",
+              "page": 5,
+              "remarque": "Exclues de l'indemnisation en valeur à neuf."
+            },
+            {
+              "nature": "Matériaux et fournitures",
+              "capital": "Valeur de remplacement à neuf",
+              "modalite": "Vétusté déduite",
+              "page": 5
+            },
+            {
+              "nature": "Éléments équipant une cuisine intégrée",
+              "capital": "Valeur de remplacement à neuf",
+              "modalite": "Vétusté déduite",
+              "page": 5
+            }
+          ],
+          "frais": [
+            {
+              "type": "Démolition / déblai",
+              "limitation": "Compris dans le coût de reconstruction, sans plafond propre",
+              "base": "Coût de reconstruction",
+              "page": 24,
+              "observations": "Comprend la démolition, le déblaiement, la dépose ou le démontage nécessaires aux réparations."
+            },
+            {
+              "type": "Frais annexes",
+              "limitation": "10 % de l'indemnité bâtiment et contenu",
+              "base": "Indemnité bâtiment et contenu",
+              "pourcentage": 10,
+              "page": 5
+            },
+            {
+              "type": "Perte d'usage",
+              "limitation": "1 an de valeur locative pour une résidence principale, 1 an de la moitié de la valeur locative pour une résidence secondaire",
+              "page": 5
+            },
+            {
+              "type": "Remboursement des mensualités de prêt",
+              "limitation": "1 515 €",
+              "maximum": "1 515 €",
+              "conditions": "Résidence principale",
+              "page": 5
+            },
+            {
+              "type": "Frais de recherche des fuites d'eau",
+              "limitation": "4 242 €",
+              "maximum": "4 242 €",
+              "page": 5
+            },
+            {
+              "type": "Détériorations immobilières suite à vol",
+              "limitation": "3 030 €",
+              "maximum": "3 030 €",
+              "conditions": "Logement et dépendances avec communication directe et intérieure",
+              "page": 5
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "typeContrat": "MRH",
+      "numero": "11001 - 05/26",
+      "libelle": "MAAF - MRH - TEMPO Jeunes 11001 (05/26)",
+      "nomContrat": "Tempo Jeunes",
+      "edition": "05/2026",
+      "statut": "verifie",
+      "sourceRef": "MAAF-11001-2026-05",
+      "remarques": [
+        "Contrat étudiants et apprentis : il assure le logement dont l'assuré est locataire. Il ne comporte donc aucune garantie de propriétaire sur le bâtiment.",
+        "Les trois formules (Personnelle / Logement / Tous risques) sont relevées dans le tableau des garanties. Seul le régime du mobilier est renseigné ici : le document ne porte pas de tableau d'indemnisation par formule pour les autres postes."
+      ],
+      "formules": [
+        { "nom": "PERSONNELLE", "statut": "verifie", "page": 4 },
+        { "nom": "LOGEMENT", "statut": "verifie", "page": 4 },
+        { "nom": "TOUS RISQUES", "statut": "verifie", "page": 4 }
+      ],
+      "pointsVigilance": [
+        {
+          "texte": "Contrat de locataire : aucune garantie propriétaire sur le bâtiment. Les dommages immobiliers ne peuvent être mobilisés qu'au titre de la responsabilité civile ou des détériorations immobilières.",
+          "statut": "verifie",
+          "page": 4
+        }
+      ],
+      "options": [
+        {
+          "formule": "Toutes formules",
+          "capitaux": [
+            {
+              "nature": "Mobilier et objets usuels",
+              "capital": "Valeur de remplacement à neuf",
+              "modalite": "Vétusté déduite",
+              "page": 25,
+              "details": {
+                "base": "Valeur de remplacement à neuf au jour du sinistre",
+                "premierReglement": "Vétusté déduite",
+                "complement": "Aucun",
+                "conditions": "La vétusté correspond à la dépréciation due à l'usage, exprimée en pourcentage de la valeur de remplacement"
+              }
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "typeContrat": "MRH",
       "numero": "TEMPO Habitation HA2 004/09/14",
+      "nomContrat": "Tempo Habitation",
+      "statut": "a_verifier",
+      "remarques": [
+        "Fiche héritée de la base d'origine, sans source consignée. « HA2 004/09/14 » ne correspond pas au format des références de Conditions Générales MAAF, qui sont numériques (2339, 2340, 3845, 11001) et suivies du millésime : il s'agit vraisemblablement d'une référence de Conditions Particulières ou d'un imprimé de souscription daté de septembre 2014.",
+        "La modalité « VAN 25 % » enregistrée correspond, dans la génération Initiale / Classique / Intégrale relevée en 2339 (01/21) et 3845 DOM (01/23), à la formule CLASSIQUE. Aucun document de 2014 n'a pu être consulté : le rapprochement reste à confirmer, et la formule souscrite doit être lue sur les Conditions Particulières de l'assuré.",
+        "Aucun poste de frais n'est renseigné ici : dans les éditions vérifiées, MAAF ne plafonne pas séparément les frais de démolition et de déblai, qui sont compris dans le coût de reconstruction."
+      ],
       "options": [
         {
           "capitaux": [

@@ -62,6 +62,10 @@ Base contrat découpée par compagnie, téléchargée au besoin, avec squelettes
   140 `statut`, 3 `sourceRef`, 10 `libelle` calculables et 22 dates à `null` retirés.
   `expertise.test.js` refuse désormais ces répétitions, pour qu'elles ne reviennent pas par
   petites touches.
+- La fiche MAAF héritée « TEMPO Habitation HA2 004/09/14 » est conservée et documentée : cette
+  référence ne correspond pas au format des Conditions Générales MAAF, qui sont numériques.
+  Sa modalité « VAN 25 % » correspond à la formule Classique de la génération relevée, mais
+  aucun document de 2014 n'a pu être consulté : la fiche reste en `a_verifier`.
 - Libellés de contrat : `PACIFICA - MRH - 7030A.37` et `PACIFICA - MRH - 7262A.40` remplacent
   « … 7030A.37 INTEGRALE » et « … 7262A.40 IMMO + ». Ces fiches portent maintenant plusieurs
   régimes : nommer une seule formule dans le libellé du contrat était trompeur. L'espace
@@ -96,6 +100,17 @@ Base contrat : traçabilité des sources et référentiel PACIFICA MRH.
   Initiale / Initiale + Immo+ / Intégrale, embellissements, frais de démolition et de déblais,
   pertes indirectes, frais divers, mise en conformité, dessouchage, et points de vigilance
   (murs et dépendances de plus de 20 ans, bâtiments inoccupés, délai de 2 ans).
+- Référentiel MAAF : 5 nouvelles fiches relevées sur document, dont 4 sur des Conditions
+  Générales téléchargées depuis maaf.fr. Tempo Habitation 2339 en éditions 03/26 (formules
+  Eco / Essentielle / Confort / Confort +) et 01/21 (Initiale / Classique / Intégrale),
+  Tempo Habitation DROM 3845 (01/23), Tempo Habitation en construction 2340 (01/26) et
+  Tempo Jeunes 11001 (05/26). Régimes bâtiment, dépendances et mobilier, frais annexes, frais
+  SPS et permis, remise aux normes, perte d'usage, prêt immobilier, perte pécuniaire de
+  copropriétaire, interruption de production d'électricité, et points de vigilance
+  (plafond de valeur vénale, franchise incendie liée au ramonage, hivernage de piscine).
+- Motif de résolution distinct lorsqu'une référence n'a pas de régime par défaut : « Préciser
+  la formule souscrite » au lieu de « Option non référencée », qui laissait croire à une
+  erreur de saisie.
 - Formulaire Expertise : bloc « Source contractuelle » avec lien vers le document, motif de
   résolution affiché quand la fiche ne se calcule pas, liste des points de vigilance sous les
   capitaux.

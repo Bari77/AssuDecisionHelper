@@ -268,9 +268,14 @@
 
     const option = trouverOption(fiche, s.option);
     if (!option) {
+      /* Une fiche dont toutes les options sont nommées n'a pas de régime par
+         défaut : rien n'a été mal saisi, il reste à choisir la formule. */
+      const aChoisir = optionEstVide(s.option);
       return {
         statut: 'inconnu',
-        motif: 'Option non référencée pour cette formule.',
+        motif: aChoisir
+          ? 'Préciser la formule souscrite : cette référence en compte plusieurs.'
+          : 'Option non référencée pour cette formule.',
         contrat: fiche,
         options: (fiche.options || []).map((o) => o.libelle || ''),
         source: sourcePour(db, fiche.sourceRef),

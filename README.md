@@ -254,6 +254,12 @@ vérifiée), `source_secondaire`, `a_verifier`. Il s’écrit **une fois sur la 
 jusqu’à chaque poste ; on ne le réécrit que sur l’option ou le poste dont la qualité diffère.
 Une valeur douteuse reste absente ou passe en `a_verifier` — jamais affirmée.
 
+**Un millésime, une fiche** — une même référence de Conditions Générales peut changer de
+nomenclature d’une édition à l’autre : MAAF 2339 porte les formules Initiale / Classique /
+Intégrale en 01/21 et Eco / Essentielle / Confort / Confort + en 03/26. Chaque édition est donc
+une fiche distincte, dont le `numero` porte le millésime (`2339 - 03/26`). Saisir « 2339 » seul
+répond `ambigu` et propose les deux : c’est le comportement attendu.
+
 **Source** — `sourceRef` renvoie à une entrée de la table `sources`, qui porte le document,
 sa référence exacte, son édition, son `url`, son `hote`, son `niveau` (`officiel`,
 `copie_document`, `source_secondaire`, `non_lu`), la date `verifieLe` et le
