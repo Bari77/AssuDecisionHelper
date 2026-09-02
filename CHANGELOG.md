@@ -16,7 +16,50 @@ Portée des incréments, appliquée à la base de connaissance autant qu'au code
   conclusions existantes.
 - **CORRECTIF** — libellés, ergonomie, corrections sans incidence sur le raisonnement.
 
-## [Non publié]
+## [1.4.0] - 2026-09-02
+
+Base contrat : traçabilité des sources et référentiel PACIFICA MRH.
+
+### Ajouté
+
+- `data/expertise.json` passe en `schemaVersion` 2. Table `sources` : pour chaque document,
+  compagnie, référence exacte des Conditions Générales, édition, URL, hôte, niveau de source
+  (`officiel`, `copie_document`, `source_secondaire`, `non_lu`), date et mode de vérification.
+  Une fiche, une option, un capital ou un frais s'y rattache par `sourceRef`.
+- Vocabulaire de qualité déclaré dans la base (`statutsQualite`) et porté par `statut` :
+  `verifie`, `deduit`, `source_secondaire`, `a_verifier`. Le formulaire affiche la pastille
+  correspondante à côté de chaque poste et de la source.
+- Fiches contrat : `nomContrat`, `edition`, `dateDebut`, `dateFin`, `distributeur`,
+  `formules[]`, `optionsIndemnisationConnues[]`, `pointsVigilance[]`, `remarques[]`.
+  Une option distingue désormais la formule commerciale (`formule`) de l'option
+  d'indemnisation (`optionsIndemnisation[]`).
+- Modalités d'indemnisation détaillées : `details` sur un capital (base d'évaluation, premier
+  règlement, complément, plafond, versement, délai de reconstruction, justificatifs) et
+  `base` / `pourcentage` / `plafond` / `minimum` / `maximum` / `conditions` / `observations`
+  sur un frais. `modalite` et `limitation` restent la donnée synthétique affichée en clair,
+  le reste se replie derrière « Détail contractuel ».
+- Référentiel PACIFICA MRH : nouvelles fiches 7030A.30 (01/2015), 7030A.33 (01/2018),
+  7030A.34 (12/2018), 7030A.35 (01/2020), 7030A.38 (12/2022), 7262A.39 (06/2024) et
+  7030L.31 (01/2016, réseau LCL). Trois éditions sont relevées sur document : régimes
+  Initiale / Initiale + Immo+ / Intégrale, embellissements, frais de démolition et de déblais,
+  pertes indirectes, frais divers, mise en conformité, dessouchage, et points de vigilance
+  (murs et dépendances de plus de 20 ans, bâtiments inoccupés, délai de 2 ans).
+- Formulaire Expertise : bloc « Source contractuelle » avec lien vers le document, motif de
+  résolution affiché quand la fiche ne se calcule pas, liste des points de vigilance sous les
+  capitaux.
+- Nouveau statut de résolution `documente` : la référence est identifiée mais aucun régime
+  n'est documenté. Le formulaire affiche la référence et sa source sans inventer de capital.
+
+### Modifié
+
+- 7030A.29 et 7030A.37 portent les trois régimes de leur génération au lieu d'un seul.
+- 7030A.29 : les embellissements passent de « Valeur de reconstruction » à « Valeur de
+  remplacement », conformément aux trois éditions relevées sur document.
+- La fiche héritée « INTEGRALE PNO - 7030A.38 » est conservée à l'identique et complétée de
+  sa référence de Conditions Générales et de ses remarques ; la référence 7030A.38 dispose
+  désormais de sa propre fiche.
+- `PACIFICA` restant l'assureur, `LCL` entre au référentiel des compagnies comme distributeur
+  possible.
 
 ## [1.3.0] - 2026-08-29
 

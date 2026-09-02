@@ -121,6 +121,9 @@ de dossier et la complétude des guides métier.
 rattachée au référentiel (compagnie, type). Les associations d’exemple (ACM, GENERALI,
 PACIFICA, MAAF, AXA) produisent le libellé et la modalité de bâtiment attendus. L’option vide
 ne déclenche pas une option nommée (IMMO+). Les modèles interpolent civilité, nom et date.
+Côté traçabilité : chaque `sourceRef` pointe vers une entrée de `sources` complète, tout
+`statut` appartient au vocabulaire déclaré, une donnée `verifie` est rattachable à un
+document, et chaque référence PACIFICA attendue résout vers sa propre fiche.
 
 La pipeline exécute les quatre tests avant toute publication.
 
@@ -133,6 +136,41 @@ Recopier une entrée de `contrats` dans [data/expertise.json](data/expertise.jso
 - `options[]` — sans `libelle` : régime de base. Avec `libelle`
   (« Valeur à neuf », « OPTION IMMO+ ») : régime nommé. `frais` seulement s’il y en a.
 - `natures` — optionnel : si absent, la fiche vaut pour tous les sinistres.
+
+Ces cinq clés suffisent : toutes les autres sont facultatives et les fiches qui n’en portent
+aucune fonctionnent à l’identique.
+
+### Tracer une fiche contrat
+
+Une référence de Conditions Générales est une **version contractuelle distincte** :
+7030A.29 ≠ 7030A.37 ≠ 7262A.40. Une fiche n’est jamais remplacée par une édition plus récente.
+
+Champs facultatifs, tous nourris par un document identifié :
+
+- **Fiche** — `nomContrat`, `edition` (`MM/AAAA`), `dateDebut` / `dateFin`, `distributeur`,
+  `referenceCG` quand `numero` porte aussi une formule, `formules[]` et
+  `optionsIndemnisationConnues[]` (noms documentés, sans régime associé),
+  `pointsVigilance[]` (`{ texte, statut, page }`, affichés sous les capitaux), `remarques[]`.
+- **Option** — `formule` et `optionsIndemnisation[]` séparent la formule commerciale
+  (Initiale, Intégrale, EKO, OPTIMALE…) de l’option d’indemnisation (Immo +, Équipement +).
+  Une même référence peut ainsi porter plusieurs régimes.
+- **Capital** — `details` (`base`, `premierReglement`, `complement`, `plafond`, `versement`,
+  `delaiReconstruction`, `conditions`, `surJustificatifs`), replié derrière « Détail
+  contractuel ». `modalite` reste la donnée synthétique affichée en clair.
+- **Frais** — `base`, `pourcentage`, `plafond`, `minimum`, `maximum`, `conditions`,
+  `observations`. `pourcentage` n’est renseigné que s’il figure déjà dans `limitation` :
+  le test le vérifie.
+
+**Qualité de la donnée** — `statut` sur la fiche, l’option, un capital ou un frais, avec le
+vocabulaire déclaré dans `statutsQualite` : `verifie` (relevé sur le document), `deduit`
+(repris par analogie avec une édition voisine vérifiée), `source_secondaire`, `a_verifier`.
+Une valeur douteuse reste absente ou passe en `a_verifier` — jamais affirmée.
+
+**Source** — `sourceRef` renvoie à une entrée de la table `sources`, qui porte le document,
+sa référence exacte, son édition, son `url`, son `hote`, son `niveau` (`officiel`,
+`copie_document`, `source_secondaire`, `non_lu`), la date `verifieLe` et le
+`modeVerification`. Une fiche sans régime documenté garde `options: []` et un `statut`
+`a_verifier` : le formulaire affiche alors la référence et sa source, sans inventer de capital.
 
 La vérification de risque se règle dans `verificationsRisque`, indexée par compagnie
 (repli `_defaut`). Les causes et le texte de dommages se règlent dans `modeles`,

@@ -114,6 +114,23 @@
     }
 
     const fiche = notes[0].contrat;
+
+    if (!(fiche.options || []).length) {
+      return {
+        statut: 'documente',
+        motif: "Référence identifiée, mais aucun régime d'indemnisation n'est documenté à ce jour.",
+        contrat: fiche,
+        libelle: fiche.libelle,
+        options: [],
+        capitaux: [],
+        frais: [],
+        source: sourcePour(db, fiche.sourceRef),
+        remarques: remarquesDe(fiche, null),
+        pointsVigilance: fiche.pointsVigilance || [],
+        qualite: fiche.statut || '',
+      };
+    }
+
     const option = trouverOption(fiche, s.option);
     if (!option) {
       return {
@@ -121,6 +138,9 @@
         motif: 'Option non référencée pour cette formule.',
         contrat: fiche,
         options: (fiche.options || []).map((o) => o.libelle || ''),
+        source: sourcePour(db, fiche.sourceRef),
+        remarques: remarquesDe(fiche, null),
+        qualite: fiche.statut || '',
       };
     }
 
@@ -131,7 +151,27 @@
       libelle: fiche.libelle,
       capitaux: option.capitaux || [],
       frais: option.frais || [],
+      source: sourcePour(db, option.sourceRef || fiche.sourceRef),
+      remarques: remarquesDe(fiche, option),
+      pointsVigilance: fiche.pointsVigilance || [],
+      qualite: option.statut || fiche.statut || '',
     };
+  }
+
+  /* Table sources : une fiche, une option, un capital ou un frais porte une clé
+     sourceRef ; les fiches antérieures n'en portent aucune et remontent null. */
+  function sourcePour(db, ref) {
+    if (!ref) return null;
+    const table = (db && db.sources) || {};
+    const source = table[ref];
+    if (!source) return null;
+    return Object.assign({ id: ref }, source);
+  }
+
+  function remarquesDe(fiche, option) {
+    const liste = [].concat(fiche.remarques || []);
+    if (option && option.remarque) liste.push(option.remarque);
+    return liste;
   }
 
   function numerosPour(db, compagnie, typeContrat, nature) {
@@ -213,5 +253,6 @@
     normaliserNumero: normaliserNumero,
     optionEstVide: optionEstVide,
     verificationsPour: verificationsPour,
+    sourcePour: sourcePour,
   };
 })(typeof window !== 'undefined' ? window : global);

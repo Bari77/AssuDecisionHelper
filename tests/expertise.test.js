@@ -44,10 +44,78 @@ for (const c of db.contrats) {
   if (!db.typesContrat.some((t) => t.code === c.typeContrat)) {
     echec('Type « ' + c.typeContrat + ' » hors référentiel (' + c.numero + ')');
   }
-  if (!Array.isArray(c.options) || !c.options.length) echec('Contrat sans option : ' + c.numero);
+  if (!Array.isArray(c.options)) echec('Contrat sans tableau options : ' + c.numero);
+  /* Une fiche peut rester sans régime : référence identifiée, contenu non lu.
+     Elle doit alors s'annoncer comme telle plutôt que d'être remplie au jugé. */
+  if (Array.isArray(c.options) && !c.options.length) {
+    if (c.statut !== 'a_verifier') {
+      echec('Fiche sans option : ' + c.numero + ' doit porter statut « a_verifier »');
+    }
+    if (!Array.isArray(c.remarques) || !c.remarques.length) {
+      echec('Fiche sans option : ' + c.numero + ' doit expliquer pourquoi en remarques');
+    }
+  }
   for (const o of c.options || []) {
     if (!Array.isArray(o.capitaux) || !o.capitaux.length) {
       echec('Option sans capitaux : ' + c.numero + ' / ' + (o.libelle || '(base)'));
+    }
+  }
+}
+
+/* ------------------- Traçabilité (schéma v2) ------------------- */
+
+const STATUTS = Object.keys(db.statutsQualite || {});
+const NIVEAUX = Object.keys(db.niveauxSource || {});
+if (!STATUTS.length) echec('statutsQualite absent : le vocabulaire de qualité doit être décrit dans la base');
+if (!NIVEAUX.length) echec('niveauxSource absent');
+
+for (const [id, src] of Object.entries(db.sources || {})) {
+  if (!src.document) echec('sources.' + id + ' : nom de document manquant');
+  if (!src.niveau) echec('sources.' + id + ' : niveau de source manquant');
+  else if (NIVEAUX.indexOf(src.niveau) === -1) echec('sources.' + id + ' : niveau « ' + src.niveau + ' » inconnu');
+  if (!src.verifieLe) echec('sources.' + id + ' : date de vérification manquante');
+  if (!src.modeVerification) echec('sources.' + id + ' : modeVerification manquant');
+  if (src.niveau !== 'note_de_travail' && src.niveau !== 'source_secondaire' && !src.url) {
+    echec('sources.' + id + ' : url manquante');
+  }
+}
+
+function verifierStatut(ou, valeur) {
+  if (valeur == null) return;
+  if (STATUTS.indexOf(valeur) === -1) echec(ou + ' : statut « ' + valeur + ' » hors vocabulaire');
+}
+
+for (const c of db.contrats) {
+  verifierStatut('contrat ' + c.numero, c.statut);
+  if (c.sourceRef && !(db.sources || {})[c.sourceRef]) {
+    echec('contrat ' + c.numero + ' : sourceRef « ' + c.sourceRef + ' » introuvable dans sources');
+  }
+  /* Une donnée annoncée vérifiée doit pouvoir être rattachée à un document. */
+  if (c.statut === 'verifie' && !c.sourceRef) {
+    echec('contrat ' + c.numero + ' : statut « verifie » sans sourceRef');
+  }
+  for (const o of c.options || []) {
+    verifierStatut('option ' + c.numero + '/' + (o.libelle || '(base)'), o.statut);
+    if (o.sourceRef && !(db.sources || {})[o.sourceRef]) {
+      echec('option ' + c.numero + '/' + (o.libelle || '(base)') + ' : sourceRef introuvable');
+    }
+    for (const cap of o.capitaux || []) {
+      verifierStatut('capital ' + c.numero + '/' + cap.nature, cap.statut);
+      if (cap.statut === 'verifie' && !(o.sourceRef || c.sourceRef)) {
+        echec('capital ' + c.numero + '/' + cap.nature + ' : « verifie » sans source rattachable');
+      }
+    }
+    for (const f of o.frais || []) {
+      verifierStatut('frais ' + c.numero + '/' + f.type, f.statut);
+      if (!f.type || !f.limitation) echec('frais incomplet sur ' + c.numero);
+      /* pourcentage est une donnée structurée : elle doit rester cohérente
+         avec la limitation affichée, jamais inventée à côté. */
+      if (f.pourcentage != null) {
+        if (typeof f.pourcentage !== 'number') echec('frais ' + c.numero + '/' + f.type + ' : pourcentage non numérique');
+        else if (String(f.limitation).indexOf(String(f.pourcentage) + ' %') === -1) {
+          echec('frais ' + c.numero + '/' + f.type + ' : pourcentage ' + f.pourcentage + ' absent de la limitation');
+        }
+      }
     }
   }
 }
@@ -129,6 +197,87 @@ const axa = attendu(
 if (axa.statut === 'ok' && axa.capitaux.length !== 1) {
   echec('AXA 970464 : 1 poste de capitaux attendu (bâtiment)');
 }
+
+/* ------------------- Référentiel PACIFICA (compagnie pilote) ------------------- */
+
+/* Chaque référence de Conditions Générales est une version distincte : la base
+   ne doit jamais confondre deux millésimes. */
+const REFS_PACIFICA = ['7030A.29', '7030A.30', '7030A.33', '7030A.34', '7030A.35', '7030A.37', '7030A.38', '7262A.39', '7262A.40'];
+for (const ref of REFS_PACIFICA) {
+  if (!db.contrats.some((c) => c.compagnie === 'PACIFICA' && c.numero === ref)) {
+    echec('Référence PACIFICA absente de la base : ' + ref);
+  }
+}
+
+/* L'ancienne fiche, qui mêle formule et référence dans numero, doit survivre. */
+if (!db.contrats.some((c) => c.numero === 'INTEGRALE PNO - 7030A.38')) {
+  echec('La fiche héritée « INTEGRALE PNO - 7030A.38 » a disparu');
+}
+
+/* 7030A.29 ≠ 7030A.37 ≠ 7030A.38 ≠ 7262A.40 : une saisie exacte doit tomber
+   sur la bonne fiche et sur elle seule. */
+for (const ref of REFS_PACIFICA) {
+  const r = resoudre({ compagnie: 'PACIFICA', typeContrat: 'MRH', numero: ref, option: '' });
+  /* Sans option saisie, une fiche dépourvue de régime de base répond
+     « inconnu » tout en désignant la fiche : c'est le comportement attendu. */
+  if (!r.contrat) {
+    echec('PACIFICA ' + ref + ' : la saisie exacte ne désigne aucune fiche (' + r.statut + ')');
+  } else if (r.contrat.numero !== ref) {
+    echec('PACIFICA ' + ref + ' : résout vers « ' + r.contrat.numero + ' »');
+  }
+}
+
+/* Les trois éditions lues sur document portent le régime Initiale / Immo+ /
+   Intégrale et la limitation démolition de 25 %. */
+for (const ref of ['7030A.30', '7030A.33', '7030A.35']) {
+  const base = resoudre({ compagnie: 'PACIFICA', typeContrat: 'MRH', numero: ref, option: '' });
+  if (base.statut !== 'ok') {
+    echec('PACIFICA ' + ref + ' : régime de base non résolu (' + base.statut + ')');
+    continue;
+  }
+  if (base.qualite !== 'verifie') echec('PACIFICA ' + ref + ' : le régime de base doit être vérifié');
+  if (!base.source || !base.source.url) echec('PACIFICA ' + ref + ' : source documentaire absente');
+  const bat = (base.capitaux || []).find((x) => /batiment/i.test(x.nature));
+  if (!bat || bat.modalite !== 'VAN 25 %') echec('PACIFICA ' + ref + ' : bâtiment attendu en VAN 25 % hors Immo+');
+  if (!bat || !bat.details || !/25 %/.test(bat.details.complement || '')) {
+    echec('PACIFICA ' + ref + ' : le détail du complément de 25 % est attendu');
+  }
+  const emb = (base.capitaux || []).find((x) => /embellissement/i.test(x.nature));
+  if (!emb || emb.capital !== 'Valeur de remplacement') {
+    echec('PACIFICA ' + ref + ' : embellissements attendus en valeur de remplacement');
+  }
+  const demol = (base.frais || []).find((x) => /d[ée]molition/i.test(x.type));
+  if (!demol || demol.pourcentage !== 25) echec('PACIFICA ' + ref + ' : démolition / déblai attendue à 25 %');
+  if (!(base.pointsVigilance || []).length) echec('PACIFICA ' + ref + ' : points de vigilance attendus');
+
+  const immo = resoudre({ compagnie: 'PACIFICA', typeContrat: 'MRH', numero: ref, option: 'INITIALE + IMMO+' });
+  const integrale = resoudre({ compagnie: 'PACIFICA', typeContrat: 'MRH', numero: ref, option: 'INTEGRALE' });
+  for (const [nom, r] of [['INITIALE + IMMO+', immo], ['INTEGRALE', integrale]]) {
+    if (r.statut !== 'ok') {
+      echec('PACIFICA ' + ref + ' / ' + nom + ' : non résolu (' + r.statut + ')');
+      continue;
+    }
+    const b = (r.capitaux || []).find((x) => /batiment/i.test(x.nature));
+    if (!b || b.modalite !== 'VAN 100 %') echec('PACIFICA ' + ref + ' / ' + nom + ' : bâtiment attendu en VAN 100 %');
+  }
+}
+
+/* 7262A.39 : référence connue, régime non documenté. La base doit le dire
+   plutôt que de transposer les régimes de la série 7030A. */
+const r39 = resoudre({ compagnie: 'PACIFICA', typeContrat: 'MRH', numero: '7262A.39', option: '' });
+if (r39.statut !== 'documente') echec('7262A.39 doit se résoudre en « documente », obtenu ' + r39.statut);
+if (!r39.source || !r39.source.url) echec('7262A.39 : la source du document doit rester consultable');
+if ((r39.capitaux || []).length) echec('7262A.39 : aucun capital ne doit être affirmé');
+if (E.optionsPour(db, 'PACIFICA', 'MRH', '7262A.39', '').length) {
+  echec('7262A.39 : la liste des options doit rester vide');
+}
+
+/* Les fiches antérieures, sans champ v2, restent muettes sur la traçabilité
+   sans faire échouer la résolution. */
+const acm = resoudre({ compagnie: 'ACM', typeContrat: 'MRH', numero: '16.07.20-04/ 2008', option: '' });
+if (acm.source !== null) echec('Une fiche sans sourceRef doit remonter source = null');
+if (acm.qualite !== '') echec('Une fiche sans statut doit remonter une qualité vide');
+if (E.sourcePour(db, 'REF-INEXISTANTE') !== null) echec('sourcePour doit remonter null sur une clé inconnue');
 
 if (E.verificationsPour(db, 'ACM').length === 0) echec('Liste de vérification de risque ACM absente');
 if (E.verificationsPour(db, 'THELEM').length === 0) echec('Le repli _defaut des vérifications de risque est vide');
