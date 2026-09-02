@@ -15,6 +15,7 @@ LABEL org.opencontainers.image.title="AssuDecisionHelper" \
 COPY --chown=101:101 nginx.conf /etc/nginx/conf.d/default.conf
 COPY --chown=101:101 index.html /usr/share/nginx/html/index.html
 COPY --chown=101:101 expertise.html /usr/share/nginx/html/expertise.html
+COPY --chown=101:101 phrases.html /usr/share/nginx/html/phrases.html
 COPY --chown=101:101 assets/ /usr/share/nginx/html/assets/
 COPY --chown=101:101 data/ /usr/share/nginx/html/data/
 

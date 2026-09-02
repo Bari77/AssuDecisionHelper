@@ -556,8 +556,64 @@ if (acm.source !== null) echec('Une fiche sans sourceRef doit remonter source = 
 if (acm.qualite !== '') echec('Une fiche sans statut doit remonter une qualité vide');
 if (E.sourcePour(db, 'REF-INEXISTANTE') !== null) echec('sourcePour doit remonter null sur une clé inconnue');
 
-if (E.verificationsPour(db, 'ACM').length === 0) echec('Liste de vérification de risque ACM absente');
-if (E.verificationsPour(db, 'THELEM').length === 0) echec('Le repli _defaut des vérifications de risque est vide');
+/* ------------------- Phrases type ------------------- */
+
+/* L'ordre des sections est un choix éditorial : on vérifie qu'elles sont
+   toutes là, pas dans quel ordre elles ont été rangées. */
+const TITRES_ATTENDUS = ['Vérification de risque', 'Observations conclusions', 'Recours', 'Instruction assistance'];
+const sections = E.phrasesTypePour(db);
+if (sections.length !== TITRES_ATTENDUS.length) {
+  echec('phrasesType : ' + TITRES_ATTENDUS.length + ' sections attendues, obtenu ' + sections.length);
+}
+for (const titre of TITRES_ATTENDUS) {
+  if (!sections.some((s) => s.titre === titre)) echec('phrasesType : section « ' + titre + ' » absente');
+}
+const titresVus = new Set();
+for (const section of sections) {
+  if (!section.titre) echec('phrasesType : une section sans titre');
+  if (titresVus.has(section.titre)) echec('phrasesType : titre dupliqué « ' + section.titre + ' »');
+  titresVus.add(section.titre);
+  if (!section.phrases.length) echec('phrasesType : section « ' + section.titre + ' » sans phrase');
+  for (const phrase of section.phrases) {
+    if (typeof phrase !== 'string') echec('phrasesType : « ' + section.titre + ' » contient une phrase non textuelle');
+    else if (phrase.trim() !== phrase) echec('phrasesType : phrase avec un blanc en bord dans « ' + section.titre + ' »');
+  }
+}
+
+/* Les phrases de vérification de risque vivent désormais dans phrasesType, et
+   nulle part ailleurs : plus de bloc verificationsRisque à tenir à jour. */
+if (db.verificationsRisque) {
+  echec('verificationsRisque doit avoir disparu : ses phrases sont dans la section « Vérification de risque »');
+}
+if (E.verificationsPour) echec('verificationsPour n’a plus de source de données et doit être retirée du moteur');
+const verifSection = sections.find((s) => s.titre === 'Vérification de risque');
+if (!verifSection || !verifSection.phrases.some((p) => /vérification du risque n'a pas pu être réalisée/.test(p))) {
+  echec('phrasesType : la phrase de vérification de risque a été perdue');
+}
+if (E.phrasesTypePour({}).length !== 0) echec('phrasesType absent : une liste vide est attendue');
+/* Une section vide de phrases ne doit pas casser la page. */
+if (E.phrasesTypePour({ phrasesType: [{ titre: 'X' }] })[0].phrases.length !== 0) {
+  echec('phrasesType : une section sans phrases doit remonter une liste vide, pas une erreur');
+}
+
+/* Contenus attendus, aux endroits attendus. */
+const attenduPhrases = [
+  ['Observations conclusions', /garanties mobilisables.*mode indemnitaire prévu au contrat/],
+  ['Observations conclusions', /le hangar constaté lors de la visite est exclu des garanties/],
+  ['Observations conclusions', /activation de la garantie Tempête, lesquelles ne sont pas réunies/],
+  /* Un seul bloc : la phrase de convocation, puis les deux mentions de recours
+     dont l'expert écarte celle qui ne s'applique pas. */
+  ['Recours', /^Nous avons convoqué le tiers, M\. .+bien que convoquée, n'était pas représentée\./],
+  ['Recours', /\n- Unilatéral\/Refus de la régularisation\n- Après expertise contradictoire$/],
+  ['Instruction assistance', /^Bonjour,\n.*société C2IS.*enfumage généralisé du logement\.\nCdlt$/],
+];
+for (const [titre, motif] of attenduPhrases) {
+  const section = sections.find((s) => s.titre === titre);
+  if (!section || !section.phrases.some((p) => motif.test(p))) {
+    echec('phrasesType : phrase manquante dans « ' + titre + ' » (' + motif + ')');
+  }
+}
+
 
 if (resoudre({ compagnie: 'AXA', typeContrat: 'MRH' }).statut !== 'incomplet') {
   echec('Sans numéro, la résolution doit rester incomplète');
@@ -602,6 +658,248 @@ if (E.interpoler('Bonjour {{x}}', {}).includes('[x]') === false) {
   echec('Un champ vide doit laisser un crochet');
 }
 
+/* ------------------- Dates, périodes et accords ------------------- */
+
+if (E.formaterDate('2026-02-01') !== '1er février 2026') {
+  echec('Le premier du mois s’écrit « 1er » : obtenu « ' + E.formaterDate('2026-02-01') + ' »');
+}
+if (E.formaterDate('2026-02-11') !== '11 février 2026') echec('Format de date simple incorrect');
+
+const periodes = [
+  [['2026-02-11', '2026-02-12'], 'Entre le 11 et le 12 février 2026', 'même mois : mois et année non répétés'],
+  [['2026-01-31', '2026-02-01'], 'Entre le 31 janvier et le 1er février 2026', 'mois différents, même année'],
+  [['2025-12-31', '2026-01-01'], 'Entre le 31 décembre 2025 et le 1er janvier 2026', 'années différentes'],
+  [['2026-02-11', ''], 'Le 11 février 2026', 'date de fin absente'],
+  [['2026-02-11', '2026-02-11'], 'Le 11 février 2026', 'fin identique au début'],
+  [['2026-02-12', '2026-02-11'], 'Le 12 février 2026', 'fin antérieure au début : ignorée'],
+  [['', '2026-02-12'], '', 'sans date de début, pas de période'],
+];
+for (const [[d, f], attenduTexte, cas] of periodes) {
+  const obtenu = E.periodeSinistre(d, f);
+  if (obtenu !== attenduTexte) {
+    echec('Période (' + cas + ') : obtenu « ' + obtenu + ' », attendu « ' + attenduTexte + ' »');
+  }
+}
+
+/* La qualité nomme le bien : c'est son article qui commande l'accord. */
+const accordQualiteF = E.accordDuBien(db, "propriétaire occupant d'une maison individuelle", '');
+if (accordQualiteF.situe !== 'située') echec('Une qualité en « d’une » doit donner « située »');
+const accordQualiteM = E.accordDuBien(db, "locataire d'un appartement", '');
+if (accordQualiteM.situe !== 'situé') echec('Une qualité en « d’un » doit donner « situé »');
+if (E.accordDuBien(db, "propriétaire d'une maison", 'appartement').situe !== 'située') {
+  echec('La qualité doit l’emporter sur le type de bien');
+}
+/* « d’une » ne doit jamais être lu comme « d’un ». */
+if (E.accordDuBien(db, "syndic d'une copropriété d'un immeuble", '').situe !== 'située') {
+  echec('Le premier article de la phrase doit décider');
+}
+if (E.accordDuBien(db, "propriétaire d’une maison individuelle", '').situe !== 'située') {
+  echec('L’apostrophe typographique doit être reconnue');
+}
+
+/* À défaut d'article dans la qualité, on retombe sur genresTypeBien. */
+const accordF = E.accordDuBien(db, 'propriétaire occupant', 'maison individuelle');
+if (accordF.typeBienArticle !== "d'une" || accordF.situe !== 'située') {
+  echec('Repli attendu au féminin pour « maison individuelle »');
+}
+const accordM = E.accordDuBien(db, 'locataire', 'appartement');
+if (accordM.typeBienArticle !== "d'un" || accordM.situe !== 'situé') {
+  echec('Repli attendu au masculin pour « appartement »');
+}
+if (E.accordDuBien(db, 'locataire', 'grange').typeBienArticle !== "d'un") {
+  echec('Un type de bien non déclaré doit tomber au masculin');
+}
+
+/* Chaque type de bien du référentiel doit produire une phrase correcte : un
+   féminin oublié dans genresTypeBien donnerait « d'un maison individuelle ». */
+for (const bien of db.typesBien) {
+  const a = E.accordDuBien(db, '', bien);
+  const feminin = /^(maison|villa|grange|dépendance)/i.test(bien);
+  if (feminin && a.typeBienArticle !== "d'une") {
+    echec('« ' + bien + ' » semble féminin mais n’est pas déclaré dans genresTypeBien');
+  }
+}
+
+/* Les qualités du référentiel nomment le bien : chacune doit s'accorder toute
+   seule, sans dépendre du type de bien. */
+for (const q of db.qualites) {
+  if (!E.accordDuBien(db, q, '').situe) echec('Qualité « ' + q + ' » : accord non déterminé');
+  if (/\bd['’]une?\b/i.test(q)) continue;
+  echec('Qualité « ' + q + ' » : elle doit nommer le bien (« … d’une maison individuelle »)');
+}
+
+/* ------------------- Blocs conditionnels des modèles ------------------- */
+
+const gabarit = 'Vent de {{vitesseVent}} km/h.{{#alentour}}\n\nDommages alentour.{{/alentour}}\n\nSuite.';
+const avec = E.interpoler(gabarit, { vitesseVent: '96.1', alentour: 'oui' });
+const sans = E.interpoler(gabarit, { vitesseVent: '96.1', alentour: 'non' });
+if (!/Dommages alentour/.test(avec)) echec('Bloc conditionnel : « oui » doit garder le paragraphe');
+if (/Dommages alentour/.test(sans)) echec('Bloc conditionnel : « non » doit écarter le paragraphe');
+if (/\n\n\n/.test(sans)) echec('Bloc conditionnel écarté : aucune ligne vide en trop ne doit rester');
+if (sans !== 'Vent de 96.1 km/h.\n\nSuite.') echec('Bloc écarté, obtenu : ' + JSON.stringify(sans));
+if (/\{\{/.test(avec) || /\{\{/.test(sans)) echec('Aucune balise ne doit subsister après interpolation');
+for (const vide of ['', undefined, 'NON', ' non ', 'false', '0']) {
+  if (/Dommages/.test(E.interpoler(gabarit, { alentour: vide }))) {
+    echec('Bloc conditionnel : « ' + vide + ' » doit être traité comme une négation');
+  }
+}
+if (!/Dommages/.test(E.interpoler(gabarit, { alentour: 'OUI' }))) {
+  echec('Bloc conditionnel : la casse ne doit pas compter');
+}
+
+const clesGabarit = E.variablesDe(gabarit);
+for (const attendue of ['vitesseVent', 'alentour']) {
+  if (clesGabarit.indexOf(attendue) === -1) echec('variablesDe doit relever « ' + attendue + ' »');
+}
+
+/* ------------------- Modèle TEMPÊTE ------------------- */
+
+const qualiteTest = db.qualites[0];
+const tempete = E.modelePour(db, 'TEMPETE');
+if (!tempete.causesCirconstances || tempete === db.modeles._defaut) {
+  echec('Modèle TEMPETE absent');
+} else {
+  const utilisees = E.variablesDe(tempete.causesCirconstances);
+  for (const cle of ['civilite', 'nom', 'qualite', 'situe', 'adresse', 'periode', 'commune', 'tempete', 'dateSinistre', 'vitesseVent', 'alentour']) {
+    if (utilisees.indexOf(cle) === -1) echec('Modèle TEMPETE : variable {{' + cle + '}} attendue');
+  }
+  const rendu = E.interpoler(
+    tempete.causesCirconstances,
+    Object.assign(
+      {
+        civilite: 'MME',
+        nom: 'CHRISTELLE VICECONTE',
+        qualite: qualiteTest,
+        adresse: '582 ROUTE DE CHEZ GOUNET 19270 SAINT PARDOUX L ORTIGIER',
+        commune: 'SAINT PARDOUX L ORTIGIER',
+        periode: E.periodeSinistre('2026-02-11', '2026-02-12'),
+        dateSinistre: E.formaterDate('2026-02-11'),
+        tempete: 'NILS',
+        vitesseVent: '96.1',
+        alentour: 'oui',
+      },
+      E.accordDuBien(db, qualiteTest, '')
+    )
+  );
+  if (!/est propriétaire occupant d'une maison individuelle, située au 582/.test(rendu)) {
+    echec('Modèle TEMPETE : accord de la phrase d’ouverture incorrect');
+  }
+  /* La qualité nomme déjà le bien : le modèle ne doit pas le répéter. */
+  if (/maison individuelle.*maison individuelle/.test(rendu.split('\n')[0])) {
+    echec('Modèle TEMPETE : le type de bien est répété dans la phrase d’ouverture');
+  }
+  /* La seconde qualité se termine par une proposition : la virgule avant le
+     participe n'est pas cosmétique, elle rend la phrase lisible. */
+  const rendu2 = E.interpoler(
+    tempete.causesCirconstances,
+    Object.assign({ qualite: db.qualites[1] }, E.accordDuBien(db, db.qualites[1], ''))
+  );
+  if (!/donnée en location vide, située/.test(rendu2)) {
+    echec('Modèle TEMPETE : la virgule avant le participe manque, obtenu : ' + rendu2.split('\n')[0]);
+  }
+  if (!/Entre le 11 et le 12 février 2026, la commune de SAINT PARDOUX L ORTIGIER/.test(rendu)) {
+    echec('Modèle TEMPETE : période ou commune mal rendues');
+  }
+  if (!/tempête dénommée « NILS »/.test(rendu)) echec('Modèle TEMPETE : nom de la tempête absent');
+  if (!/relevée le 11 février 2026 .* est de 96\.1 km\/h/.test(rendu)) {
+    echec('Modèle TEMPETE : phrase de vitesse de vent incorrecte');
+  }
+  if (!/dommages similaires ont été constatés/.test(rendu)) echec('Modèle TEMPETE : paragraphe alentour absent');
+  const renduSans = E.interpoler(
+    tempete.causesCirconstances,
+    Object.assign({ qualite: qualiteTest, alentour: 'non' }, E.accordDuBien(db, qualiteTest, ''))
+  );
+  if (/dommages similaires/.test(renduSans)) echec('Modèle TEMPETE : le paragraphe alentour doit pouvoir être écarté');
+  if (/\n\n\n/.test(renduSans)) echec('Modèle TEMPETE : ligne vide en trop après retrait du paragraphe alentour');
+  if (typeof tempete.dommages !== 'string' || !/partiellement détruit/.test(tempete.dommages)) {
+    echec('Modèle TEMPETE : texte de dommages constatés attendu');
+  }
+}
+
+/* ------------------- Modèle CHUTE D'ARBRE (DEFENSE RECOURS) ------------------- */
+
+const NATURE_ARBRE = "CHUTE D'ARBRE (DEFENSE RECOURS)";
+if (db.natures.indexOf(NATURE_ARBRE) === -1) echec('Nature « ' + NATURE_ARBRE + ' » absente du référentiel');
+
+const arbre = E.modelePour(db, NATURE_ARBRE);
+if (arbre === db.modeles._defaut) {
+  echec('Modèle « ' + NATURE_ARBRE + ' » absent : la nature retombe sur le modèle par défaut');
+} else {
+  /* Même corps que TEMPÊTE : mêmes champs de formulaire, sans retouche du HTML. */
+  const clesArbre = E.variablesDe(arbre.causesCirconstances);
+  const clesTempete = E.variablesDe(tempete.causesCirconstances);
+  for (const cle of clesTempete) {
+    if (clesArbre.indexOf(cle) === -1) echec('Modèle chute d’arbre : variable {{' + cle + '}} attendue comme en TEMPÊTE');
+  }
+
+  /* Le paragraphe d'exposition au vent n'a pas de sens ici : on ne va pas
+     écrire « sans arbres à proximité immédiate » dans un dossier de chute
+     d'arbre. Le texte s'arrête au bloc alentour. */
+  if (/environnement isolé|rafales de vent/.test(arbre.causesCirconstances)) {
+    echec('Modèle chute d’arbre : le paragraphe d’exposition au vent ne doit pas y figurer');
+  }
+
+  const champsArbre = Object.assign(
+    {
+      civilite: 'MME',
+      nom: 'CHRISTELLE VICECONTE',
+      qualite: qualiteTest,
+      adresse: '582 ROUTE DE CHEZ GOUNET 19270 SAINT PARDOUX L ORTIGIER',
+      commune: 'SAINT PARDOUX L ORTIGIER',
+      periode: E.periodeSinistre('2026-02-11', '2026-02-12'),
+      dateSinistre: E.formaterDate('2026-02-11'),
+      tempete: 'NILS',
+      vitesseVent: '96.1',
+    },
+    E.accordDuBien(db, qualiteTest, '')
+  );
+
+  const avecAlentour = E.interpoler(arbre.causesCirconstances, Object.assign({}, champsArbre, { alentour: 'oui' }));
+  const sansAlentour = E.interpoler(arbre.causesCirconstances, Object.assign({}, champsArbre, { alentour: 'non' }));
+
+  if (!/bonne construction\.$/.test(avecAlentour)) {
+    echec('Modèle chute d’arbre : le texte doit finir sur « bonne construction. », obtenu « …' + avecAlentour.slice(-40) + ' »');
+  }
+  if (!/96\.1 km\/h\.$/.test(sansAlentour)) {
+    echec('Modèle chute d’arbre sans dommages alentour : le texte doit finir sur la vitesse de vent, obtenu « …' + sansAlentour.slice(-40) + ' »');
+  }
+  for (const [cas, texte] of [['avec', avecAlentour], ['sans', sansAlentour]]) {
+    if (/\s$/.test(texte)) echec('Modèle chute d’arbre (' + cas + ' alentour) : blanc en fin de texte');
+    if (/\n\n\n/.test(texte)) echec('Modèle chute d’arbre (' + cas + ' alentour) : ligne vide en trop');
+  }
+  if (arbre.dommages !== tempete.dommages) {
+    echec('Modèle chute d’arbre : le texte de dommages constatés doit être celui de TEMPÊTE');
+  }
+}
+
+/* Un modèle indexé sur une nature absente du référentiel serait inatteignable. */
+for (const cle of Object.keys(db.modeles || {})) {
+  if (cle.charAt(0) === '_') continue;
+  if (db.natures.indexOf(cle) === -1) {
+    echec('modeles.' + cle + ' : cette nature n’existe pas dans natures, le modèle ne sera jamais affiché');
+  }
+}
+
+/* La valeur préremplie de la tempête vit dans le référentiel, pas dans le code. */
+if (!(db.valeursParDefaut || {}).tempete) {
+  echec('valeursParDefaut.tempete attendu dans le référentiel');
+}
+
+/* Tout modèle doit s'accorder : plus de « d'un {{typeBien}} » en dur. */
+for (const cle of Object.keys(db.modeles || {})) {
+  const texte = db.modeles[cle].causesCirconstances || '';
+  if (/d'un\s+\{\{typeBien\}\}|d’un\s+\{\{typeBien\}\}/.test(texte)) {
+    echec('modeles.' + cle + ' : utiliser {{typeBienArticle}} plutôt qu’un article figé');
+  }
+  if (/\{\{typeBien\}\}\s+situé\b/.test(texte)) {
+    echec('modeles.' + cle + ' : utiliser {{situe}} plutôt qu’un participe figé');
+  }
+  /* Un bloc ouvert doit être fermé, sinon la balise part dans le rapport. */
+  const ouverts = (texte.match(/\{\{#(\w+)\}\}/g) || []).length;
+  const fermes = (texte.match(/\{\{\/(\w+)\}\}/g) || []).length;
+  if (ouverts !== fermes) echec('modeles.' + cle + ' : ' + ouverts + ' bloc(s) ouvert(s) pour ' + fermes + ' fermé(s)');
+}
+
 const defaut = E.modelePour(db, 'BRIS DE GLACE');
 if (!defaut.causesCirconstances) echec('Le modèle par défaut doit s’appliquer aux natures sans fiche dédiée');
 if (defaut.dommages !== db.modeles._defaut.dommages) {
@@ -615,6 +913,7 @@ console.log('  natures     : ' + db.natures.length);
 console.log('  compagnies  : ' + db.compagnies.length);
 console.log('  compagnies chargées : ' + paquets.length + ' fichier(s) dans data/compagnies/');
 console.log('  contrats    : ' + db.contrats.length);
+console.log('  phrases type: ' + sections.length + ' section(s), ' + sections.reduce((n, s) => n + s.phrases.length, 0) + ' phrase(s)');
 
 if (echecs.length) {
   console.error('\n' + echecs.length + ' anomalie(s) :');

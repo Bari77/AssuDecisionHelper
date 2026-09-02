@@ -345,13 +345,59 @@
     return modeles[nature] || modeles._defaut || { causesCirconstances: '', dommages: '' };
   }
 
+  /* Un modèle porte des variables {{cle}} et des blocs conditionnels
+     {{#cle}}…{{/cle}}, gardés seulement si la réponse est affirmative. Le saut
+     de ligne se met à l'intérieur du bloc, sinon un paragraphe écarté laisse
+     une ligne vide derrière lui. */
+  const BLOC_CONDITIONNEL = /\{\{#(\w+)\}\}([\s\S]*?)\{\{\/\1\}\}/g;
+
+  function estAffirmatif(valeur) {
+    const t = String(valeur == null ? '' : valeur)
+      .trim()
+      .toLowerCase();
+    return t !== '' && t !== 'non' && t !== 'false' && t !== '0';
+  }
+
   function interpoler(modele, champs) {
     const vars = champs || {};
-    return String(modele || '').replace(/\{\{(\w+)\}\}/g, function (_, cle) {
+    let texte = String(modele || '');
+
+    /* Boucle : un bloc peut en contenir un autre. */
+    let precedent;
+    do {
+      precedent = texte;
+      texte = texte.replace(BLOC_CONDITIONNEL, function (_, cle, contenu) {
+        return estAffirmatif(vars[cle]) ? contenu : '';
+      });
+    } while (texte !== precedent);
+
+    return texte.replace(/\{\{(\w+)\}\}/g, function (_, cle) {
       const v = vars[cle];
       if (v == null || String(v).trim() === '') return '[' + cle + ']';
       return String(v).trim();
     });
+  }
+
+  /* Clés qu'un modèle utilise réellement, variables et blocs confondus : le
+     formulaire n'affiche que les champs correspondants. */
+  function variablesDe(modele) {
+    const cles = [];
+    String(modele || '').replace(/\{\{[#/]?(\w+)\}\}/g, function (_, cle) {
+      if (cles.indexOf(cle) === -1) cles.push(cle);
+      return '';
+    });
+    return cles;
+  }
+
+  function decouperDate(valeur) {
+    const m = String(valeur || '').match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (!m) return null;
+    return { annee: parseInt(m[1], 10), mois: parseInt(m[2], 10), jour: parseInt(m[3], 10) };
+  }
+
+  /* « 1er » et non « 1 » : le texte part dans un rapport. */
+  function jourEnLettres(jour) {
+    return jour === 1 ? '1er' : String(jour);
   }
 
   function formaterDate(valeur) {
@@ -372,15 +418,87 @@
       'novembre',
       'décembre',
     ];
-    return parseInt(m[3], 10) + ' ' + mois[parseInt(m[2], 10) - 1] + ' ' + m[1];
+    return jourEnLettres(parseInt(m[3], 10)) + ' ' + mois[parseInt(m[2], 10) - 1] + ' ' + m[1];
   }
 
-  function verificationsPour(db, compagnie) {
-    const bloc = (db && db.verificationsRisque) || {};
-    if (compagnie && Array.isArray(bloc[compagnie]) && bloc[compagnie].length) {
-      return bloc[compagnie].slice();
+  function nomDuMois(numero) {
+    const mois = [
+      'janvier',
+      'février',
+      'mars',
+      'avril',
+      'mai',
+      'juin',
+      'juillet',
+      'août',
+      'septembre',
+      'octobre',
+      'novembre',
+      'décembre',
+    ];
+    return mois[numero - 1] || '';
+  }
+
+  /* Période d'un sinistre étalé sur une ou deux journées, sans répéter ce que
+     les deux dates ont en commun : « Entre le 11 et le 12 février 2026 »,
+     « Entre le 31 janvier et le 1er février 2026 », « Le 11 février 2026 ». */
+  function periodeSinistre(debut, fin) {
+    const d = decouperDate(debut);
+    if (!d) return '';
+    const f = decouperDate(fin);
+    const seul = 'Le ' + formaterDate(debut);
+    if (!f) return seul;
+
+    const rangDebut = d.annee * 10000 + d.mois * 100 + d.jour;
+    const rangFin = f.annee * 10000 + f.mois * 100 + f.jour;
+    if (rangFin <= rangDebut) return seul;
+
+    if (d.annee === f.annee && d.mois === f.mois) {
+      return 'Entre le ' + jourEnLettres(d.jour) + ' et le ' + formaterDate(fin);
     }
-    return Array.isArray(bloc._defaut) ? bloc._defaut.slice() : [];
+    if (d.annee === f.annee) {
+      return 'Entre le ' + jourEnLettres(d.jour) + ' ' + nomDuMois(d.mois) + ' et le ' + formaterDate(fin);
+    }
+    return 'Entre le ' + formaterDate(debut) + ' et le ' + formaterDate(fin);
+  }
+
+  /* Genre lu dans une phrase qui nomme le bien : c'est son article qui décide.
+     « propriétaire occupant d'une maison individuelle » → féminin.
+     « d'une » ne peut pas être pris pour « d'un » : la limite de mot \b tombe
+     après « un », et « une » n'en a pas à cet endroit. */
+  function genreDansPhrase(phrase) {
+    const t = String(phrase || '');
+    if (/\bd['’]une\b/i.test(t)) return 'f';
+    if (/\bd['’]un\b/i.test(t)) return 'm';
+    return '';
+  }
+
+  /* Accord du participe et de l'article sur le bien décrit : « d'une maison
+     individuelle située » contre « d'un appartement situé ».
+
+     La qualité saisie nomme le bien, elle a donc le dernier mot. À défaut
+     d'article dans la qualité, le genre est celui déclaré pour le type de bien
+     dans le référentiel (genresTypeBien) ; le masculin reste le repli. */
+  function accordDuBien(db, qualite, typeBien) {
+    const genres = (db && db.genresTypeBien) || {};
+    const genre = genreDansPhrase(qualite) || String(genres[typeBien] || '').toLowerCase();
+    const feminin = genre === 'f';
+    return {
+      typeBienArticle: feminin ? "d'une" : "d'un",
+      situe: feminin ? 'située' : 'situé',
+    };
+  }
+
+  /* Sections de la page « Phrases type ». */
+  function phrasesTypePour(db) {
+    return ((db && db.phrasesType) || []).map(function (section) {
+      return {
+        titre: section.titre || '',
+        phrases: (section.phrases || []).filter(function (p) {
+          return String(p || '').trim() !== '';
+        }),
+      };
+    });
   }
 
   global.EXPERTISE = {
@@ -389,10 +507,13 @@
     optionsPour: optionsPour,
     modelePour: modelePour,
     interpoler: interpoler,
+    variablesDe: variablesDe,
     formaterDate: formaterDate,
+    periodeSinistre: periodeSinistre,
+    accordDuBien: accordDuBien,
     normaliserNumero: normaliserNumero,
     optionEstVide: optionEstVide,
-    verificationsPour: verificationsPour,
+    phrasesTypePour: phrasesTypePour,
     sourcePour: sourcePour,
     preparer: preparer,
     fusionner: fusionner,

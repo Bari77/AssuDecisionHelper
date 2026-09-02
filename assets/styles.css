@@ -132,13 +132,6 @@ body {
   letter-spacing: 0.04em;
 }
 
-.tabs {
-  display: flex;
-  gap: 4px;
-  flex-wrap: wrap;
-  flex: 1;
-}
-
 a.brand {
   text-decoration: none;
   color: inherit;
@@ -147,27 +140,15 @@ a.tab {
   text-decoration: none;
 }
 
-.topbar__expertise {
-  appearance: none;
-  font: inherit;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--accent);
-  text-decoration: none;
-  padding: 7px 14px;
-  border-radius: 7px;
-  border: 1px solid var(--accent-line);
-  background: var(--accent-soft);
-  flex: none;
+/* Navigation principale : rendue par assets/nav.js, donc identique partout.
+   Toutes les destinations portent la même classe .tab, qu'elles mènent à une
+   autre page ou à une vue de l'assistant. */
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex-wrap: wrap;
   margin-left: auto;
-}
-.topbar__expertise:hover {
-  border-color: var(--accent);
-}
-.topbar__expertise.is-active {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: #fff;
 }
 
 .tab {
@@ -180,15 +161,87 @@ a.tab {
   padding: 7px 13px;
   border-radius: 7px;
   cursor: pointer;
+  white-space: nowrap;
 }
 .tab:hover {
   background: var(--bg-soft);
   color: var(--ink);
 }
+.tab:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
 .tab.is-active {
   background: var(--accent-soft);
   color: var(--accent);
   font-weight: 600;
+}
+
+.nav__menu {
+  position: relative;
+}
+.nav__declencheur {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.nav__chevron {
+  width: 13px;
+  height: 13px;
+  flex: none;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .nav__chevron {
+    transition: transform 0.15s ease;
+  }
+}
+.nav__menu.is-open .nav__chevron {
+  transform: rotate(180deg);
+}
+
+.nav__liste {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 20;
+  min-width: 250px;
+  margin: 0;
+  padding: 5px;
+  list-style: none;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  box-shadow: var(--shadow);
+}
+/* Une entrée de menu est un bouton sur l'assistant et un lien ailleurs : sans
+   la remise à plat que porte .tab, le bouton garderait l'habillage natif et le
+   lien son soulignement, et les deux pages n'auraient pas le même menu. */
+.nav__item {
+  display: grid;
+  gap: 1px;
+  width: 100%;
+  text-align: left;
+  white-space: normal;
+  padding: 8px 11px;
+}
+.nav__item:hover,
+.nav__item:focus-visible {
+  background: var(--bg-soft);
+}
+.nav__item.is-active {
+  background: var(--accent-soft);
+}
+.nav__item-titre {
+  font-size: 14px;
+  color: var(--ink);
+}
+.nav__item.is-active .nav__item-titre {
+  color: var(--accent);
+}
+.nav__item-apercu {
+  font-size: 12px;
+  color: var(--ink-faint);
+  font-weight: 400;
 }
 
 /* ---------------- Mise en page ---------------- */
@@ -1004,6 +1057,11 @@ a.src__titre:hover {
   display: grid;
   gap: 4px;
 }
+/* display: grid ci-dessus l'emporterait sur la feuille du navigateur : sans
+   cette règle, un champ masqué par l'attribut hidden resterait affiché. */
+.field[hidden] {
+  display: none;
+}
 .field__label {
   font-size: 12px;
   color: var(--ink-faint);
@@ -1171,32 +1229,62 @@ a.src__titre:hover {
   margin: 0;
 }
 
-.exp-card--causes {
-  border-color: #e6cfa8;
-  background: #fffdf7;
+/* Grille des causes et circonstances : 10 colonnes, chaque champ déclarant sa
+   largeur en HTML via data-largeur. Sous 760 px on retombe à deux colonnes et
+   les largeurs ne s'appliquent plus, sinon un champ de 2/10 serait illisible. */
+.exp-champs {
+  display: grid;
+  gap: 12px 14px;
+  margin-bottom: 14px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+@media (min-width: 760px) {
+  .exp-champs {
+    grid-template-columns: repeat(10, minmax(0, 1fr));
+  }
+  /* Échelle complète : toute valeur de 1 à 10 a sa règle, pour qu’un
+     data-largeur écrit à la main ne puisse jamais rester sans effet. */
+  .exp-champs > [data-largeur='1'] {
+    grid-column: span 1;
+  }
+  .exp-champs > [data-largeur='2'] {
+    grid-column: span 2;
+  }
+  .exp-champs > [data-largeur='3'] {
+    grid-column: span 3;
+  }
+  .exp-champs > [data-largeur='4'] {
+    grid-column: span 4;
+  }
+  .exp-champs > [data-largeur='5'] {
+    grid-column: span 5;
+  }
+  .exp-champs > [data-largeur='6'] {
+    grid-column: span 6;
+  }
+  .exp-champs > [data-largeur='7'] {
+    grid-column: span 7;
+  }
+  .exp-champs > [data-largeur='8'] {
+    grid-column: span 8;
+  }
+  .exp-champs > [data-largeur='9'] {
+    grid-column: span 9;
+  }
+  .exp-champs > [data-largeur='10'] {
+    grid-column: span 10;
+  }
+}
+@media (max-width: 460px) {
+  .exp-champs {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 .exp-grid {
   display: grid;
   gap: 12px;
   margin-bottom: 12px;
-}
-.exp-grid--2 {
-  grid-template-columns: 1fr 1fr;
-}
-.exp-grid--5 {
-  grid-template-columns: repeat(2, 1fr);
-}
-@media (min-width: 720px) {
-  .exp-grid--5 {
-    grid-template-columns: 0.7fr 1.2fr 1.4fr 1fr 1fr;
-  }
-}
-@media (max-width: 640px) {
-  .exp-grid--2,
-  .exp-grid--5 {
-    grid-template-columns: 1fr;
-  }
 }
 
 .saisie {
@@ -1274,56 +1362,53 @@ a.src__titre:hover {
   font-size: 13.5px;
 }
 
+/* Champ calculé : bleu, et copiable d'un clic sur toute sa surface, comme une
+   carte de la page Phrases type. Pas de !important : .calcule est déclarée
+   après .field__input, elle l'emporte déjà — et les classes d'état pourraient
+   sinon ne plus rien peser. */
 .calcule,
 output.calcule {
   display: block;
-  border-color: #7aa7c9 !important;
-  background: #f3f8fc !important;
+  border-color: #7aa7c9;
+  background: #f3f8fc;
   min-height: 38px;
   white-space: pre-wrap;
-}
-.calcule-cell {
-  background: #f3f8fc;
 }
 .calcule-wrap {
   position: relative;
 }
-.calcule-wrap .calcule {
-  padding-right: 36px;
+.calcule-wrap.has-texte {
+  cursor: pointer;
 }
+.calcule-wrap.has-texte:hover .calcule {
+  border-color: #5b90b8;
+  background: #eaf2f9;
+}
+.calcule-wrap.is-copie .calcule {
+  border-color: #b7dbcb;
+  background: #e8f0e9;
+}
+.calcule-wrap.is-echec .calcule {
+  border-color: #e6c2c2;
+  background: #fbeceb;
+}
+/* Place réservée au bouton (30 px + 5 px de marge) pour que le texte ne passe
+   pas dessous. */
+.calcule-wrap .calcule {
+  padding-right: 42px;
+}
+/* Le bouton d'un champ calculé EST celui des cartes copiables : .calcule-copy
+   ne fait que le positionner. Aucune propriété d'apparence ici, sinon les deux
+   écrans n'auraient pas le même bouton. */
 .calcule-copy {
   position: absolute;
   top: 50%;
-  right: 4px;
+  right: 5px;
   transform: translateY(-50%);
-  width: 28px;
-  height: 28px;
-  display: grid;
-  place-items: center;
-  border: 0;
-  border-radius: 6px;
-  padding: 0;
-  background: transparent;
-  color: #4a7fa3;
-  cursor: pointer;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.12s ease, background 0.12s ease, color 0.12s ease;
 }
-.calcule-wrap.has-texte:hover .calcule-copy,
-.calcule-wrap.has-texte:focus-within .calcule-copy,
-.calcule-copy:focus-visible {
-  opacity: 1;
-  pointer-events: auto;
-}
-.calcule-copy:hover,
-.calcule-copy:focus-visible {
-  background: #e4eef6;
-  color: #2f5f82;
-}
-.calcule-copy.is-copied {
-  background: #e8f0e9;
-  color: #2f6b45;
+/* Rien à copier, pas de bouton : c'est un comportement, pas un style. */
+.calcule-wrap:not(.has-texte) .calcule-copy {
+  display: none;
 }
 .calcule-wrap:has(.exp-texte) .calcule-copy {
   top: 8px;
@@ -1346,31 +1431,9 @@ pre.exp-texte {
   margin-top: 12px;
 }
 
-.exp-verif-liste {
+.exp-copies {
   display: grid;
   gap: 8px;
-}
-.exp-copie {
-  background: var(--bg-soft);
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  padding: 12px 14px;
-  font-size: 14px;
-  line-height: 1.5;
-  color: var(--ink);
-  cursor: pointer;
-  white-space: pre-wrap;
-}
-.exp-copie:hover {
-  background: #eceef2;
-}
-.exp-copie:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 1px;
-}
-.exp-copie.is-copied {
-  background: #e8f0e9;
-  border-color: #b7dbcb;
 }
 
 .exp-pile {
@@ -1395,6 +1458,104 @@ pre.exp-texte {
   font-size: 12px;
   color: var(--ink-faint);
 }
+/* ---------------- Phrases type ---------------- */
+
+.phrases-cols {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  align-items: start;
+}
+/* C'est le gap de la grille qui espace les sections : la marge de .exp-card
+   s'y ajouterait et doublerait l'écart entre deux rangées. */
+.phrases-cols > .exp-card {
+  margin-bottom: 0;
+}
+.phrases-pile {
+  display: grid;
+  gap: 8px;
+}
+
+/* Carte copiable : le texte, et le bouton en haut à droite. Le padding droit
+   réserve la place du bouton pour que le texte ne passe pas dessous. */
+.copie {
+  position: relative;
+  background: var(--bg-soft);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 12px 46px 12px 14px;
+  cursor: pointer;
+  transition: background 0.12s ease, border-color 0.12s ease;
+}
+.copie:hover {
+  background: #eceef2;
+}
+.copie.is-copie {
+  background: #e8f0e9;
+  border-color: #b7dbcb;
+}
+.copie.is-echec {
+  background: #fbeceb;
+  border-color: #e6c2c2;
+}
+.copie__texte {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--ink);
+  white-space: pre-wrap;
+}
+.copie__bouton {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  appearance: none;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: var(--bg);
+  color: var(--ink-faint);
+  cursor: pointer;
+}
+.copie__bouton:hover {
+  color: var(--accent);
+  border-color: var(--accent-line);
+}
+.copie__bouton:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+.copie__bouton.is-fait {
+  color: var(--cidecop);
+  border-color: #b7dbcb;
+  background: var(--cidecop-bg);
+}
+.copie__icone {
+  width: 15px;
+  height: 15px;
+  grid-area: 1 / 1;
+}
+/* Les deux icônes se superposent dans la même cellule : on bascule laquelle
+   est visible, sans que le bouton change de taille. */
+.copie__icone--fait,
+.copie__bouton.is-fait .copie__icone--copier {
+  opacity: 0;
+  transform: scale(0.7);
+}
+.copie__bouton.is-fait .copie__icone--fait {
+  opacity: 1;
+  transform: scale(1);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .copie__icone {
+    transition: opacity 0.15s ease, transform 0.15s ease;
+  }
+}
+
 /* Squelettes d'attente : occupent la place du contenu à venir, pour que le
    formulaire ne saute pas au moment où les données arrivent. */
 .skel {
@@ -1626,7 +1787,6 @@ textarea.field__input {
   .dossier,
   .texte__barre .btn,
   .montant-aide,
-  .topbar__expertise,
   .exp-card__head .btn {
     display: none !important;
   }

@@ -20,11 +20,7 @@
             <span>Expertise après sinistre</span>
           </span>
         </a>
-        <nav class="tabs" aria-label="Sections">
-          <a class="tab" href="index.html">Assistant</a>
-          <a class="tab" href="index.html?vue=guides">Guides métier</a>
-        </nav>
-        <a class="topbar__expertise is-active" href="expertise.html">Expertise</a>
+        <nav class="nav" id="nav-principal" aria-label="Navigation principale"></nav>
       </div>
     </header>
 
@@ -83,46 +79,69 @@
         </div>
 
         <div class="exp-col exp-col--textes">
-          <section class="exp-card" aria-labelledby="titre-verif">
-            <h2 id="titre-verif">Vérification de risque</h2>
-            <div id="exp-verif-liste" class="exp-verif-liste"></div>
-          </section>
-
-          <section class="exp-card exp-card--causes" aria-labelledby="titre-causes">
+          <section class="exp-card" aria-labelledby="titre-causes">
             <h2 id="titre-causes">Causes et circonstances</h2>
-            <div class="exp-grid exp-grid--5">
-              <div class="field">
+            <!-- Une seule grille de 10 colonnes : data-largeur donne à chaque
+                 champ la place que son contenu réclame, et un champ masqué
+                 laisse les autres se replacer. Les champs porteurs de
+                 data-champ-modele n'apparaissent que si le modèle de la nature
+                 choisie cite l'une de leurs variables. -->
+            <div class="exp-champs">
+              <div class="field" data-largeur="2">
                 <span class="field__label">Civilité</span>
                 <input type="hidden" id="exp-civilite" />
                 <div id="combo-civilite"></div>
               </div>
-              <label class="field">
+              <label class="field" data-largeur="5">
                 <span class="field__label">Nom</span>
                 <input id="exp-nom" class="field__input saisie" />
               </label>
-              <label class="field">
-                <span class="field__label">Adresse</span>
-                <input id="exp-adresse" class="field__input saisie" />
-              </label>
-              <label class="field">
-                <span class="field__label">Commune</span>
-                <input id="exp-commune" class="field__input saisie" />
-              </label>
-              <label class="field">
+              <label class="field" data-largeur="3">
                 <span class="field__label">Date de visite</span>
                 <input id="exp-date" class="field__input saisie" type="date" />
               </label>
-            </div>
-            <div class="exp-grid exp-grid--2">
-              <div class="field">
+
+              <label class="field" data-largeur="7">
+                <span class="field__label">Adresse</span>
+                <input id="exp-adresse" class="field__input saisie" />
+              </label>
+              <label class="field" data-largeur="3">
+                <span class="field__label">Commune</span>
+                <input id="exp-commune" class="field__input saisie" />
+              </label>
+
+              <div class="field" data-largeur="10">
                 <span class="field__label">Qualité</span>
                 <input type="hidden" id="exp-qualite" />
                 <div id="combo-qualite"></div>
               </div>
-              <div class="field">
+              <div class="field" data-largeur="4" data-champ-modele="typeBien" hidden>
                 <span class="field__label">Type de bien</span>
                 <input type="hidden" id="exp-bien" />
                 <div id="combo-bien"></div>
+              </div>
+
+              <label class="field" data-largeur="3" data-champ-modele="dateSinistre periode" hidden>
+                <span class="field__label">Sinistre du</span>
+                <input id="exp-sinistre-debut" class="field__input saisie" type="date" />
+              </label>
+              <label class="field" data-largeur="3" data-champ-modele="periode" hidden>
+                <span class="field__label">au (facultatif)</span>
+                <input id="exp-sinistre-fin" class="field__input saisie" type="date" />
+              </label>
+              <label class="field" data-largeur="4" data-champ-modele="vitesseVent" hidden>
+                <span class="field__label">Vent max. (km/h)</span>
+                <input id="exp-vent" class="field__input saisie" inputmode="decimal" />
+              </label>
+
+              <label class="field" data-largeur="7" data-champ-modele="tempete" hidden>
+                <span class="field__label">Nom de la tempête</span>
+                <input id="exp-tempete" class="field__input saisie" />
+              </label>
+              <div class="field" data-largeur="3" data-champ-modele="alentour" hidden>
+                <span class="field__label">Dommages alentour</span>
+                <input type="hidden" id="exp-alentour" />
+                <div id="combo-alentour"></div>
               </div>
             </div>
             <div id="exp-causes" class="exp-texte calcule"></div>
@@ -130,7 +149,7 @@
 
           <section class="exp-card" aria-labelledby="titre-dommages">
             <h2 id="titre-dommages">Dommages constatés</h2>
-            <div id="exp-dommages" class="exp-verif-liste"></div>
+            <div id="exp-dommages" class="exp-copies"></div>
           </section>
         </div>
       </div>
@@ -143,6 +162,8 @@
     </footer>
 
     <script src="assets/version.js"></script>
+    <script src="assets/nav.js"></script>
+    <script src="assets/copie.js"></script>
     <script src="assets/expertise-moteur.js"></script>
     <script src="assets/expertise.js"></script>
   </body>

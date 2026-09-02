@@ -63,7 +63,7 @@ jobs:
 
       - name: Contrôler la syntaxe des scripts
         run: |
-          for f in assets/version.js assets/rules.js assets/sources.js assets/guides.js assets/textes.js assets/parcours.js assets/app.js assets/expertise-moteur.js assets/expertise.js; do
+          for f in assets/version.js assets/rules.js assets/sources.js assets/guides.js assets/textes.js assets/parcours.js assets/nav.js assets/app.js assets/expertise-moteur.js assets/expertise.js assets/copie.js assets/phrases.js; do
             node --check "$f" && echo "  ok  $f"
           done
           node --check tools/construire-index.js && echo "  ok  tools/construire-index.js"

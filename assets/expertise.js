@@ -10,7 +10,6 @@
 
   let db = null;
   let natureDommages = '';
-  let verifCie = '';
   const combos = {};
 
   const adh = window.ADH || { sigle: 'ADH', nom: 'AssuDecisionHelper', version: '0.0.0' };
@@ -269,17 +268,39 @@
   }
 
   function champsTexte() {
-    return {
-      civilite: $('exp-civilite').value,
-      nom: $('exp-nom').value,
-      adresse: $('exp-adresse').value,
-      commune: $('exp-commune').value,
-      date: E.formaterDate($('exp-date').value) || $('exp-date').value,
-      qualite: $('exp-qualite').value,
-      typeBien: $('exp-bien').value,
-      nature: $('exp-nature').value,
-      compagnie: $('exp-compagnie').value,
-    };
+    const qualite = $('exp-qualite').value;
+    const typeBien = $('exp-bien').value;
+    const debut = $('exp-sinistre-debut').value;
+    return Object.assign(
+      {
+        civilite: $('exp-civilite').value,
+        nom: $('exp-nom').value,
+        adresse: $('exp-adresse').value,
+        commune: $('exp-commune').value,
+        date: E.formaterDate($('exp-date').value) || $('exp-date').value,
+        qualite: qualite,
+        typeBien: typeBien,
+        nature: $('exp-nature').value,
+        compagnie: $('exp-compagnie').value,
+        dateSinistre: E.formaterDate(debut) || debut,
+        periode: E.periodeSinistre(debut, $('exp-sinistre-fin').value),
+        tempete: $('exp-tempete').value,
+        vitesseVent: $('exp-vent').value,
+        alentour: $('exp-alentour').value,
+      },
+      E.accordDuBien(db, qualite, typeBien)
+    );
+  }
+
+  /* Les champs marqués data-champ-modele ne s'affichent que si le modèle actif
+     cite l'une de leurs variables. Un nouveau modèle fait donc apparaître ses
+     champs sans toucher au HTML. */
+  function ajusterChampsModele(modele) {
+    const utilisees = E.variablesDe(modele.causesCirconstances);
+    document.querySelectorAll('[data-champ-modele]').forEach((champ) => {
+      const cles = champ.getAttribute('data-champ-modele').split(/\s+/);
+      champ.hidden = !cles.some((cle) => utilisees.indexOf(cle) !== -1);
+    });
   }
 
   /* ---------------------------------------------------------------------------
@@ -297,6 +318,7 @@
     'combo-civilite',
     'combo-qualite',
     'combo-bien',
+    'combo-alentour',
   ];
 
   function squelette(variante, largeur) {
@@ -345,7 +367,6 @@
   function squelettesInitiaux() {
     CHAMPS_COMBO.forEach((id) => attendre($(id), squelette('champ')));
     squelettesContrat();
-    attendre($('exp-verif-liste'), squelette('bloc'));
     attendre($('exp-dommages'), squelette('bloc'));
     attendre($('exp-causes'), squelette('texte', '96%'), squelette('texte', '88%'), squelette('texte', '54%'));
   }
@@ -562,24 +583,13 @@
     host.appendChild(ul);
   }
 
+  /* Phrases copiables : les mêmes cartes que la page Phrases type. */
   function renderCopies(host, phrases) {
     libere(host);
     host.replaceChildren();
     (phrases || []).forEach((texte) => {
       if (!texte) return;
-      const bloc = document.createElement('div');
-      bloc.className = 'exp-copie';
-      bloc.textContent = texte;
-      bloc.title = 'Cliquer pour copier';
-      bloc.tabIndex = 0;
-      bloc.addEventListener('click', () => copierTexte(texte, bloc));
-      bloc.addEventListener('keydown', (ev) => {
-        if (ev.key === 'Enter' || ev.key === ' ') {
-          ev.preventDefault();
-          copierTexte(texte, bloc);
-        }
-      });
-      host.appendChild(bloc);
+      host.appendChild(window.COPIE.carte(texte));
     });
   }
 
@@ -588,31 +598,22 @@
     return t !== '' && t !== '—';
   }
 
-  function boutonCopiePour(cible) {
-    const b = document.createElement('button');
-    b.type = 'button';
-    b.className = 'calcule-copy';
-    b.setAttribute('aria-label', 'Copier');
-    b.title = 'Copier';
-    b.innerHTML =
-      '<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
-    b.addEventListener('click', (ev) => {
-      ev.preventDefault();
-      ev.stopPropagation();
-      const t = (cible.textContent || '').trim();
-      if (!texteCopiable(t)) return;
-      copierTexte(t, b);
-    });
-    return b;
-  }
-
+  /* Champs calculés : mêmes bouton, coche et clic sur toute la surface que les
+     cartes de la page Phrases type. Le texte est relu à chaque clic, le champ
+     changeant de contenu au fil de la saisie. */
   function armerCalcule(el) {
     if (!el || el.closest('.calcule-wrap')) return;
     const wrap = document.createElement('div');
     wrap.className = 'calcule-wrap';
     el.parentNode.insertBefore(wrap, el);
     wrap.appendChild(el);
-    wrap.appendChild(boutonCopiePour(el));
+    const declencheur = window.COPIE.bouton(() => el.textContent, {
+      classe: 'calcule-copy',
+      libelle: 'Copier le champ',
+      hote: wrap,
+    });
+    wrap.appendChild(declencheur);
+    window.COPIE.rendreCliquable(wrap, declencheur);
   }
 
   function syncCopiesCalcule() {
@@ -625,31 +626,6 @@
       const btn = wrap.querySelector('.calcule-copy');
       if (btn) btn.tabIndex = ok ? 0 : -1;
     });
-  }
-
-  function copierTexte(texte, el) {
-    if (!navigator.clipboard || !navigator.clipboard.writeText) return;
-    navigator.clipboard.writeText(texte).then(
-      () => {
-        if (!el) return;
-        el.classList.add('is-copied');
-        setTimeout(() => el.classList.remove('is-copied'), 1200);
-      },
-      () => {}
-    );
-  }
-
-  function renderVerif() {
-    const cie = $('exp-compagnie').value;
-    const host = $('exp-verif-liste');
-    if (!cie) {
-      host.replaceChildren();
-      verifCie = '';
-      return;
-    }
-    if (cie === verifCie && host.children.length) return;
-    verifCie = cie;
-    renderCopies(host, E.verificationsPour(db, cie));
   }
 
   function renderDommages() {
@@ -671,6 +647,7 @@
     if (!db) return;
     libere($('exp-causes'));
     const modele = E.modelePour(db, $('exp-nature').value);
+    ajusterChampsModele(modele);
     $('exp-causes').textContent = E.interpoler(modele.causesCirconstances, champsTexte());
     syncCopiesCalcule();
   }
@@ -753,7 +730,6 @@
     if (issue.statut === 'chargement') {
       squelettesContrat();
       renderMotif(issue);
-      renderVerif();
       renderDommages();
       renderTextes();
       demanderCompagnie(issue.compagnie);
@@ -786,15 +762,16 @@
     renderMotif(issue);
     renderSource(issue);
     renderVigilance(issue);
-    renderVerif();
     renderDommages();
     renderTextes();
     syncCopiesCalcule();
   }
 
-  ['exp-nom', 'exp-adresse', 'exp-commune', 'exp-date'].forEach((id) => {
-    $(id).addEventListener('input', renderTextes);
-  });
+  ['exp-nom', 'exp-adresse', 'exp-commune', 'exp-date', 'exp-sinistre-debut', 'exp-sinistre-fin', 'exp-tempete', 'exp-vent'].forEach(
+    (id) => {
+      $(id).addEventListener('input', renderTextes);
+    }
+  );
 
   function comboVide(libelle) {
     return { value: '', label: libelle };
@@ -868,12 +845,23 @@
         placeholder: 'Choisir…',
         onChange: renderTextes,
       });
+      combos.alentour = creerCombo($('combo-alentour'), {
+        hidden: $('exp-alentour'),
+        vide: choisir,
+        placeholder: 'Choisir…',
+        onChange: renderTextes,
+      });
       combos.nature.setItems(trierAlpha(json.natures));
       combos.compagnie.setItems(trierAlpha(json.compagnies));
       combos.type.setItems(trierAlpha(json.typesContrat));
       combos.civilite.setItems(json.civilites);
       combos.qualite.setItems(json.qualites);
       combos.bien.setItems(json.typesBien);
+      combos.alentour.setItems(['oui', 'non']);
+      /* La tempête en cours est préremplie depuis le référentiel : à mettre à
+         jour dans data/expertise.json à chaque nouvel épisode nommé. */
+      const defauts = json.valeursParDefaut || {};
+      if (defauts.tempete) $('exp-tempete').value = defauts.tempete;
       render();
     })
     .catch((err) => {
@@ -881,7 +869,7 @@
         libere($(id));
         $(id).replaceChildren();
       });
-      ['exp-libelle', 'exp-capitaux', 'exp-frais', 'exp-source', 'exp-verif-liste', 'exp-dommages', 'exp-causes'].forEach(
+      ['exp-libelle', 'exp-capitaux', 'exp-frais', 'exp-source', 'exp-dommages', 'exp-causes'].forEach(
         (id) => {
           libere($(id));
           $(id).replaceChildren();

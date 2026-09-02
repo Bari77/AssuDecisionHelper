@@ -42,6 +42,10 @@ navigateur, ou le servir depuis n'importe quel hébergement statique.
 | --- | --- |
 | [index.html](index.html) | Structure de la page, comparatif des conventions |
 | [expertise.html](expertise.html) | Formulaire d’expertise (capitaux, frais, textes) |
+| [phrases.html](phrases.html) | **Phrases type** de dossier, copiables au clic |
+| [assets/phrases.js](assets/phrases.js) | Rendu de la page Phrases type |
+| [assets/nav.js](assets/nav.js) | **Navigation principale**, rendue à l’identique sur les trois pages |
+| [assets/copie.js](assets/copie.js) | Cartes copiables : bouton, presse-papiers, coche de confirmation |
 | [data/expertise.json](data/expertise.json) | **Référentiel** : natures, compagnies, modèles de rédaction, index des fiches |
 | [data/compagnies/](data/compagnies/) | **Fiches contrat**, un fichier par compagnie, téléchargé au besoin |
 | [tools/construire-index.js](tools/construire-index.js) | Régénère l’index des fiches dans le référentiel |
@@ -266,10 +270,70 @@ sa référence exacte, son édition, son `url`, son `hote`, son `niveau` (`offic
 `modeVerification`. Une fiche sans régime documenté garde `options: []` et un `statut`
 `a_verifier` : le formulaire affiche alors la référence et sa source, sans inventer de capital.
 
-La vérification de risque se règle dans `verificationsRisque`, indexée par compagnie
-(repli `_defaut`). Les causes et le texte de dommages se règlent dans `modeles`,
-indexés par le code de nature (`GRELE`, `INCENDIE`, …) avec repli sur `_defaut`.
-`dommages` est une chaîne (sauts de ligne conservés) : un clic copie tout le bloc.
+Les causes et le texte de dommages se règlent dans `modeles`, indexés par le code de nature
+(`GRELE`, `TEMPETE`, `INCENDIE`, …) avec repli sur `_defaut`. `dommages` est une chaîne
+(sauts de ligne conservés) : un clic copie tout le bloc. Les phrases de vérification de risque,
+elles, vivent dans `phrasesType` et s’affichent dans l’onglet **Phrases type**.
+
+### Alimenter les phrases type
+
+L’onglet **Phrases type** rend le bloc `phrasesType` du référentiel : une liste de sections,
+chacune avec un `titre` et ses `phrases`. Un clic sur une phrase, ou sur son bouton, la copie.
+
+```json
+{ "titre": "Recours", "phrases": ["Nous avons convoqué le tiers, M. …"] }
+```
+
+Les sauts de ligne d’une phrase sont conservés à l’affichage comme à la copie : une instruction
+d’assistance s’écrit donc en courriel (`"Bonjour,\n…\nCdlt"`), et une phrase peut porter les
+mentions entre lesquelles l’expert choisit (`"…\n- Unilatéral\n- Après expertise contradictoire"`).
+
+Ajouter une section ou en changer l’ordre ne demande aucune retouche de code. Le test vérifie la
+présence des sections attendues — sans figer leur ordre —, l’absence de doublon de titre,
+qu’aucune section n’est vide et qu’aucune phrase ne porte de blanc en bord.
+
+### Écrire un modèle de rédaction
+
+Un modèle porte des **variables** `{{cle}}` et des **blocs conditionnels**
+`{{#cle}}…{{/cle}}`, gardés seulement si la réponse est affirmative — toute valeur non vide
+autre que `non`, `false` ou `0`. Le saut de ligne se met **à l’intérieur** du bloc, sinon un
+paragraphe écarté laisse une ligne vide derrière lui :
+
+```
+… est de {{vitesseVent}} km/h.{{#alentour}}
+
+Par ailleurs, des dommages similaires ont été constatés …{{/alentour}}
+
+L’habitation est située …
+```
+
+Une variable sans valeur laisse un crochet (`[vitesseVent]`) : l’expert voit ce qui reste à
+compléter.
+
+**Variables toujours disponibles** — `civilite`, `nom`, `adresse`, `commune`, `qualite`,
+`typeBien`, `date` (date de visite), `nature`, `compagnie`.
+
+**Variables calculées** — `periode` (« Entre le 11 et le 12 février 2026 » avec deux dates,
+« Le 11 février 2026 » avec une seule), `dateSinistre`, `typeBienArticle` (« d’une » / « d’un »)
+et `situe` (« située » / « situé »).
+
+**Accord du participe** — une entrée de `qualites` nomme le bien
+(« propriétaire occupant d’une maison individuelle ») : c’est **son article** qui donne le genre,
+donc `situe` s’accorde tout seul, y compris sur une valeur ajoutée à la main. À défaut d’article
+dans la qualité, le genre est celui déclaré dans `genresTypeBien` pour le type de bien, le
+masculin restant le repli.
+
+La phrase d’ouverture d’un modèle s’écrit donc `est {{qualite}}, {{situe}} au {{adresse}}` —
+sans répéter le type de bien. La virgule n’est pas cosmétique : une qualité peut se terminer par
+une proposition (« …, donnée en location vide »), et la phrase serait illisible sans elle.
+
+**Champs du formulaire** — les champs propres à une nature portent
+`data-champ-modele="cle1 cle2"` dans [expertise.html](expertise.html) et n’apparaissent que si
+le modèle actif cite l’une de ces clés. Ajouter un modèle qui utilise `{{vitesseVent}}` fait
+donc apparaître le champ correspondant sans toucher au HTML.
+
+**Valeurs préremplies** — `valeursParDefaut` dans le référentiel. `tempete` y porte le nom de
+l’épisode en cours : **à mettre à jour à chaque nouvelle tempête nommée**.
 
 ## Logique de qualification
 

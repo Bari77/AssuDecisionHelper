@@ -13,20 +13,14 @@
   <body>
     <header class="topbar">
       <div class="wrap topbar__inner">
-        <div class="brand">
+        <a class="brand" href="index.html">
           <span class="brand__mark" aria-hidden="true"></span>
           <span class="brand__text">
             <strong>ADH <span class="brand__version" id="brand-version"></span></strong>
             <span>IRSI · CIDECOP · CIDEPIEC</span>
           </span>
-        </div>
-        <nav class="tabs" aria-label="Sections">
-          <button class="tab is-active" data-view="assistant" type="button">Assistant</button>
-          <button class="tab" data-view="guides" type="button">Guides métier</button>
-          <button class="tab" data-view="fiches" type="button">Fiches conventions</button>
-          <button class="tab" data-view="sources" type="button">Sources</button>
-        </nav>
-        <a class="topbar__expertise" href="expertise.html">Expertise</a>
+        </a>
+        <nav class="nav" id="nav-principal" aria-label="Navigation principale"></nav>
       </div>
     </header>
 
@@ -182,6 +176,7 @@
     <script src="assets/guides.js"></script>
     <script src="assets/textes.js"></script>
     <script src="assets/parcours.js"></script>
+    <script src="assets/nav.js"></script>
     <script src="assets/app.js"></script>
   </body>
 </html>

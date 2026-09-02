@@ -19,6 +19,7 @@
     "BRIS DE MACHINE",
     "CAT. NATURELLE",
     "CHOC DE VEHICULE",
+    "CHUTE D'ARBRE (DEFENSE RECOURS)",
     "DEFENSE RECOURS",
     "DÉGAT DES EAUX",
     "DOM ELECTRIQUES",
@@ -111,10 +112,8 @@
     "MLLE"
   ],
   "qualites": [
-    "propriétaire occupant",
-    "locataire",
-    "propriétaire non occupant",
-    "syndicat des copropriétaires"
+    "propriétaire occupant d'une maison individuelle",
+    "propriétaire non occupante d'une maison individuelle de plus de 10 ans, donnée en location vide"
   ],
   "typesBien": [
     "maison individuelle",
@@ -122,11 +121,40 @@
     "immeuble en copropriété",
     "local professionnel"
   ],
-  "verificationsRisque": {
-    "_defaut": [
-      "La vérification du risque n'a pas pu être réalisée. Lors de notre expertise, l'assuré était représenté par son couvreur, lequel ne disposait pas des clés du logement, ne nous permettant pas d'accéder à l'intérieur de l'habitation."
-    ]
+  "genresTypeBien": {
+    "maison individuelle": "f"
   },
+  "valeursParDefaut": {
+    "tempete": "NILS"
+  },
+  "phrasesType": [
+    {
+      "titre": "Observations conclusions",
+      "phrases": [
+        "Au regard des causes et circonstances du sinistre, et en l’absence des conditions du contrat, nous n’avons pas été en mesure de vérifier les garanties mobilisables. Nous laissons donc le soin à la compagnie d’apprécier l’application des garanties, de vérifier le mode indemnitaire prévu au contrat et de statuer sur l’indemnisation du sinistre.",
+        "Au vu des éléments présents au dossier, notamment les plans et les conditions particulières, il apparaît que le hangar constaté lors de la visite est exclu des garanties du contrat.",
+        "Au regard des conditions nécessaires à l’activation de la garantie Tempête, lesquelles ne sont pas réunies en l’espèce, nous laissons le soin à la compagnie d’apprécier l’application de la garantie et de statuer sur l’indemnisation du sinistre."
+      ]
+    },
+    {
+      "titre": "Vérification de risque",
+      "phrases": [
+        "La vérification du risque n'a pas pu être réalisée. Lors de notre expertise, l'assuré était représenté par son couvreur, lequel ne disposait pas des clés du logement, ne nous permettant pas d'accéder à l'intérieur de l'habitation."
+      ]
+    },
+    {
+      "titre": "Recours",
+      "phrases": [
+        "Nous avons convoqué le tiers, M. .............., qui était présent lors de notre intervention. En revanche, la compagnie d'assurance de M. .................., bien que convoquée, n'était pas représentée.\n- Unilatéral/Refus de la régularisation\n- Après expertise contradictoire"
+      ]
+    },
+    {
+      "titre": "Instruction assistance",
+      "phrases": [
+        "Bonjour,\nDemande d’intervention de la société C2IS pour établir un devis de décontamination à la suite d’un enfumage généralisé du logement.\nCdlt"
+      ]
+    }
+  ],
   "fichesParCompagnie": {
     "ACM": {
       "fichier": "compagnies/acm.json",
@@ -279,8 +307,16 @@
       "causesCirconstances": "Modèle par défaut, veuillez modifier le expertise.json pour ajouter le modèle de causes et circonstances de ce type de sinistre.",
       "dommages": "Dommages par défaut, veuillez modifier le expertise.json pour ajouter le modèle de dommages de ce type de sinistre."
     },
+    "CHUTE D'ARBRE (DEFENSE RECOURS)": {
+      "causesCirconstances": "{{civilite}} {{nom}} est {{qualite}}, {{situe}} au {{adresse}}.\n\n{{periode}}, la commune de {{commune}} a été impactée par la tempête dénommée « {{tempete}} », phénomène météorologique de notoriété publique ayant touché une large partie du Sud-Ouest de la France.\n\nLa vitesse maximale de vent relevée le {{dateSinistre}} à la station météorologique la plus proche est de {{vitesseVent}} km/h.{{#alentour}}\n\nPar ailleurs, des dommages similaires ont été constatés sur la commune à cette même période sur des bâtiments de bonne construction.{{/alentour}}",
+      "dommages": "D’après les éléments recueillis lors de l’expertise, des dommages ont été constatés sur le ......, les ........., ainsi que sur le .............., lequel est partiellement détruit."
+    },
+    "TEMPETE": {
+      "causesCirconstances": "{{civilite}} {{nom}} est {{qualite}}, {{situe}} au {{adresse}}.\n\n{{periode}}, la commune de {{commune}} a été impactée par la tempête dénommée « {{tempete}} », phénomène météorologique de notoriété publique ayant touché une large partie du Sud-Ouest de la France.\n\nLa vitesse maximale de vent relevée le {{dateSinistre}} à la station météorologique la plus proche est de {{vitesseVent}} km/h.{{#alentour}}\n\nPar ailleurs, des dommages similaires ont été constatés sur la commune à cette même période sur des bâtiments de bonne construction.{{/alentour}}\n\nL’habitation est située dans un environnement isolé, sans arbres à proximité immédiate susceptibles de faire obstacle au vent. Cette configuration a pu favoriser une exposition plus importante du bâtiment aux rafales de vent.",
+      "dommages": "D’après les éléments recueillis lors de l’expertise, des dommages ont été constatés sur le ......, les ........., ainsi que sur le .............., lequel est partiellement détruit."
+    },
     "GRELE": {
-      "causesCirconstances": "{{civilite}} {{nom}} est {{qualite}} d'un {{typeBien}} situé {{adresse}}.\n\nLe {{date}}, en fin de journée, un orage supercellulaire a traversé le secteur de {{commune}}.\n\nCet épisode météorologique s'est accompagné de violentes rafales de vent, de fortes précipitations ainsi que de chutes de grêle, dont les grêlons ont localement atteint plusieurs centimètres de diamètre.\n\nCet événement a provoqué de nombreux dégâts sur des bâtiments de bonne construction, tant sur la commune de {{commune}} que sur les communes avoisinantes.\n\nLors de notre expertise, nous avons constaté que les dommages affectant le bien assuré sont compatibles avec les effets de cet épisode de grêle.",
+      "causesCirconstances": "{{civilite}} {{nom}} est {{qualite}}, {{situe}} {{adresse}}.\n\nLe {{date}}, en fin de journée, un orage supercellulaire a traversé le secteur de {{commune}}.\n\nCet épisode météorologique s'est accompagné de violentes rafales de vent, de fortes précipitations ainsi que de chutes de grêle, dont les grêlons ont localement atteint plusieurs centimètres de diamètre.\n\nCet événement a provoqué de nombreux dégâts sur des bâtiments de bonne construction, tant sur la commune de {{commune}} que sur les communes avoisinantes.\n\nLors de notre expertise, nous avons constaté que les dommages affectant le bien assuré sont compatibles avec les effets de cet épisode de grêle.",
       "dommages": "Dommages d’impacts de gêle sur .........\nTâches au ......... avec dégradation de la peinture suite aux infiltrations"
     }
   }

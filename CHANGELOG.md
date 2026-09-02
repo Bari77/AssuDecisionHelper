@@ -16,6 +16,128 @@ Portée des incréments, appliquée à la base de connaissance autant qu'au code
   conclusions existantes.
 - **CORRECTIF** — libellés, ergonomie, corrections sans incidence sur le raisonnement.
 
+## [2.1.0] - 2026-09-02
+
+Navigation unifiée, onglet Phrases type, modèles TEMPÊTE et CHUTE D'ARBRE, et un seul geste de
+copie dans toute l'application.
+
+### Ajouté
+
+- Onglet **Phrases type** ([phrases.html](phrases.html)) : quatre sections de phrases bateau —
+  vérification de risque, observations et conclusions, recours, instruction assistance —
+  alimentées par le bloc `phrasesType` du référentiel. Chaque phrase est une carte portant un
+  bouton de copie en haut à droite ; un clic sur le bouton ou sur la carte copie la phrase, et
+  le bouton passe brièvement à la coche verte. Ajouter une section ou en changer l'ordre ne
+  demande aucune retouche de code.
+- [assets/copie.js](assets/copie.js) : cartes copiables réutilisables (presse-papiers, bascule
+  d'icône, signalement d'échec). Une sélection de texte en cours n'est jamais écrasée par un
+  clic sur la carte ; le bouton, lui, copie toujours et reste le seul contrôle atteignable au
+  clavier.
+- Modèle de rédaction **TEMPÊTE** : causes et circonstances (période du sinistre, tempête
+  nommée, vitesse de vent relevée, dommages constatés alentour, exposition du bâtiment) et
+  dommages constatés.
+- Nature **CHUTE D'ARBRE (DEFENSE RECOURS)** et son modèle : même corps que TEMPÊTE, mais le
+  texte s'arrête au bloc des dommages constatés alentour. Le paragraphe d'exposition au vent
+  est écarté : « sans arbres à proximité immédiate » n'a pas de sens dans un dossier de chute
+  d'arbre. Les champs du formulaire apparaissent d'eux-mêmes, sans retouche du HTML.
+- Modèles : blocs conditionnels `{{#cle}}…{{/cle}}`, gardés seulement si la réponse est
+  affirmative. Le paragraphe « dommages similaires alentour » s'écarte ainsi sans laisser de
+  ligne vide.
+- Variables calculées disponibles dans les modèles : `periode` (« Entre le 11 et le 12 février
+  2026 » avec deux dates, « Le 11 février 2026 » avec une seule, sans répéter le mois ni
+  l'année communs), `dateSinistre`, `typeBienArticle` et `situe`.
+- Formulaire : champs « Sinistre du / au », « Nom de la tempête », « Vent max. (km/h) » et
+  « Dommages alentour ». Ils portent `data-champ-modele` et n'apparaissent que si le modèle de
+  la nature choisie cite leurs variables : un futur modèle fait apparaître ses champs sans
+  toucher au HTML.
+- `valeursParDefaut` dans le référentiel : le nom de la tempête en cours y est prérempli
+  (« NILS ») plutôt que codé en dur.
+
+### Modifié
+
+- Navigation principale unifiée et rendue par [assets/nav.js](assets/nav.js) : les trois pages
+  ne portent plus qu'un conteneur vide, ce qui rend impossible la dérive d'un menu à l'autre.
+  Quatre destinations partout, toutes du même style : Assistant, Documentation, Expertise,
+  Phrases type. Les trois styles de boutons concurrents (`.tab` bouton, `.tab` lien,
+  `.topbar__expertise` en pastille) sont ramenés à un seul.
+- Les trois contenus de consultation — Fiches conventions (IRSI · CIDECOP · CIDEPIEC), Guides
+  métier, Sources — passent sous un menu déroulant « Documentation », avec un aperçu sous
+  chaque entrée. Le déclencheur s'allume quand l'une de ses vues est ouverte, sinon plus rien
+  dans la barre ne signalait où l'on se trouvait.
+- Une vue de l'assistant reste un bouton sur index.html, pour basculer sans recharger : un lien
+  aurait perdu le parcours en cours. Ailleurs, c'est un lien vers `index.html?vue=…`.
+- La marque est un lien vers l'accueil sur les trois pages ; elle ne l'était pas sur l'accueil.
+- Causes et circonstances : une seule grille de 10 colonnes remplace les trois grilles aux
+  proportions figées. Chaque champ déclare sa largeur en HTML (`data-largeur`), donc l'adresse
+  est large, la civilité étroite, et la qualité — dont les valeurs sont très longues — prend
+  toute la rangée au lieu d'une moitié. Un champ masqué laisse les autres se replacer.
+- Le champ de la tempête est intitulé « Nom de la tempête » et porté à 7 colonnes sur 10, soit
+  516 px : la place est reprise au combo « Dommages alentour », qui n'a que « oui » et « non »
+  à afficher et se contente de 3 colonnes.
+- Un seul geste de copie dans toute l'application : les phrases de la page Phrases type, les
+  dommages constatés du formulaire Expertise et ses champs calculés partagent le bouton de
+  [assets/copie.js](assets/copie.js) — même icône, même coche verte, même durée. Les deux
+  mécanismes concurrents du formulaire (blocs `.exp-copie` cliquables et bouton
+  `.calcule-copy` maison) sont remplacés par celui-ci. `.calcule-copy` ne fait plus que
+  positionner le bouton : il ne porte aucune propriété d'apparence, et le test le vérifie.
+  Un champ sans rien à copier n'affiche pas de bouton — c'est un comportement, non un style.
+- Les champs bleus du formulaire Expertise se copient d'un clic sur toute leur surface, comme
+  les cartes de la page Phrases type : survol, teinte verte à la copie et coche sur le bouton.
+  Une sélection de texte en cours n'est jamais écrasée, et un champ à « — » n'est pas cliquable.
+  `COPIE.rendreCliquable()` porte ce geste pour les deux écrans.
+- La carte « Causes et circonstances » perd sa teinte propre (bordure ambre, fond crème) et se
+  présente comme les autres. Le code couleur reste porté par les champs eux-mêmes : rose pour
+  ce qui se saisit, bleu pour ce qui est calculé.
+- Liste des qualités : deux entrées qui nomment le bien, « propriétaire occupant d'une maison
+  individuelle » et « propriétaire non occupante d'une maison individuelle de plus de 10 ans,
+  donnée en location vide ». Les quatre entrées génériques précédentes (dont « locataire » et
+  « syndicat des copropriétaires ») sont retirées.
+- La phrase d'ouverture des modèles ne répète plus le type de bien, que la qualité porte
+  désormais : `est {{qualite}}, {{situe}} au {{adresse}}`. Le champ « Type de bien » passe en
+  `data-champ-modele` et disparaît donc du formulaire tant qu'aucun modèle ne cite
+  `{{typeBien}}`.
+- L'accord de `situe` se lit dans l'article de la qualité (« d'une » → « située »), et ne
+  retombe sur `genresTypeBien` que si la qualité ne nomme pas le bien. Une qualité ajoutée à la
+  main s'accorde ainsi sans déclaration supplémentaire.
+
+### Corrigé
+
+- Les entrées du menu « Documentation » restaient sans effet sur l'assistant. La barre est
+  désormais rendue immédiatement et non au `DOMContentLoaded` : un script classique en fin de
+  `body` s'exécute alors que `readyState` vaut encore « loading », si bien que la barre
+  arrivait après app.js — lequel ne recense les `[data-view]` qu'une fois. Le harnais de test
+  annonçait `readyState: 'complete'` et ne pouvait pas voir le défaut ; il rejoue le vrai cas.
+- Le menu « Documentation » n'avait pas le même aspect d'une page à l'autre : ses entrées
+  conservent la classe `.tab`, sans laquelle le bouton gardait son habillage natif sur
+  l'assistant et le lien son soulignement ailleurs.
+- Les champs propres à une nature se chevauchaient, en tempête comme en chute d'arbre. À
+  2 colonnes sur 10, soit 137 px, un `input type="date"` n'avait plus la place de son masque
+  « jj/mm/aaaa » ni de son icône et débordait sur son voisin. Ils passent sur deux rangées —
+  `Sinistre du (3)`, `au (3)`, `Vent max. (4)`, puis le nom de la tempête et les dommages
+  alentour — et l'échelle `data-largeur` est déclarée en entier, de 1 à 10, une valeur sans
+  règle CSS faisant retomber le champ sur une seule colonne. Le test refuse une date sous
+  200 px et une largeur déclarée sans règle.
+- `.calcule` perd ses `!important` : la règle est déclarée après `.field__input` et l'emportait
+  déjà. Ils empêchaient les classes d'état de teinter le champ à la copie.
+- `.field[hidden]` : sans cette règle, `display: grid` de `.field` l'emportait sur la feuille
+  du navigateur et un champ masqué restait affiché.
+- Le premier jour du mois s'écrit « 1er » et non « 1 » dans les textes de dossier.
+- Modèle GRÊLE : l'article et le participe s'accordent au type de bien. La phrase d'ouverture
+  écrivait « d'un maison individuelle situé » dès que le bien était une maison.
+
+### Retiré
+
+- Carte « Vérification de risque » du formulaire Expertise, et propriété `verificationsRisque`
+  du référentiel. Ces phrases sont des formules toutes faites, sans lien avec le contrat
+  résolu : elles vivent désormais dans la section correspondante de l'onglet Phrases type.
+  `verificationsPour()` disparaît du moteur avec sa source de données, ainsi que le renvoi
+  `reprend` de `phrasesType`, qui n'existait que pour éviter de recopier ce bloc.
+- Classes CSS `.topbar__expertise`, `.tabs`, `.exp-grid--2`, `.exp-grid--5`, `.exp-copie` et
+  `.phrases-intro`, sans usage après la refonte de la navigation, de la grille des causes et
+  de la copie.
+- Ligne « Un clic sur une phrase, ou sur son bouton, la copie dans le presse-papiers. » de la
+  page Phrases type : le bouton de chaque carte le dit déjà.
+
 ## [2.0.0] - 2026-09-02
 
 Base contrat découpée par compagnie, téléchargée au besoin, avec squelettes d'attente.
@@ -258,7 +380,9 @@ Version initiale.
 
 Le détail de ces réserves est affiché dans l'onglet « Sources » du site.
 
-[Non publié]: https://github.com/OWNER/AssuDecisionHelper/compare/1.3.0...HEAD
+[2.1.0]: https://github.com/OWNER/AssuDecisionHelper/compare/2.0.0...2.1.0
+[2.0.0]: https://github.com/OWNER/AssuDecisionHelper/compare/1.4.0...2.0.0
+[1.4.0]: https://github.com/OWNER/AssuDecisionHelper/compare/1.3.0...1.4.0
 [1.3.0]: https://github.com/OWNER/AssuDecisionHelper/compare/1.2.1...1.3.0
 [1.2.1]: https://github.com/OWNER/AssuDecisionHelper/compare/1.2.0...1.2.1
 [1.2.0]: https://github.com/OWNER/AssuDecisionHelper/compare/1.1.0...1.2.0
