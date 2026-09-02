@@ -66,7 +66,10 @@ jobs:
           for f in assets/version.js assets/rules.js assets/sources.js assets/guides.js assets/textes.js assets/parcours.js assets/app.js assets/expertise-moteur.js assets/expertise.js; do
             node --check "$f" && echo "  ok  $f"
           done
-          node -e "JSON.parse(require('fs').readFileSync('data/expertise.json','utf8')); console.log('  ok  data/expertise.json')"
+          node --check tools/construire-index.js && echo "  ok  tools/construire-index.js"
+          for f in data/expertise.json data/compagnies/*.json; do
+            node -e "JSON.parse(require('fs').readFileSync(process.argv[1],'utf8'))" "$f" && echo "  ok  $f"
+          done
 
       - name: Valider l'arbre de décision
         run: node tests/tree.test.js

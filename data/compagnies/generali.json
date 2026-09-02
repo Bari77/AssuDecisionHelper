@@ -1,0 +1,27 @@
+{
+  "compagnie": "GENERALI",
+  "contrats": [
+    {
+      "typeContrat": "MRH",
+      "numero": "GA5X25N",
+      "libelle": "GENERALI IARD - MRH - GA5X25N",
+      "options": [
+        {
+          "capitaux": [
+            {
+              "nature": "Batiment",
+              "capital": "Valeur de reconstruction",
+              "modalite": "VAN 25 %"
+            }
+          ],
+          "frais": [
+            {
+              "type": "Démolition / déblai",
+              "limitation": "Selon frais justifiés"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

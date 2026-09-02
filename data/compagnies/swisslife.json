@@ -1,0 +1,20 @@
+{
+  "compagnie": "SWISSLIFE",
+  "contrats": [
+    {
+      "typeContrat": "MRH",
+      "numero": "8132O",
+      "options": [
+        {
+          "capitaux": [
+            {
+              "nature": "Batiment",
+              "capital": "Valeur de reconstruction",
+              "modalite": "VAN 25 %"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

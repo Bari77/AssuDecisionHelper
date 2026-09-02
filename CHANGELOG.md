@@ -16,6 +16,58 @@ Portée des incréments, appliquée à la base de connaissance autant qu'au code
   conclusions existantes.
 - **CORRECTIF** — libellés, ergonomie, corrections sans incidence sur le raisonnement.
 
+## [2.0.0] - 2026-09-02
+
+Base contrat découpée par compagnie, téléchargée au besoin, avec squelettes d'attente.
+
+### Ajouté
+
+- Squelettes d'attente dans le formulaire Expertise : les champs et les panneaux occupent
+  leur place définitive pendant le téléchargement, la mise en page ne saute plus. Animation
+  désactivée sous `prefers-reduced-motion`.
+- [tools/construire-index.js](tools/construire-index.js) : régénère `fichesParCompagnie` à
+  partir de [data/compagnies/](data/compagnies/). `expertise.test.js` refuse un index périmé.
+- Moteur : `preparer()` (référentiel + amorces de l'index), `fusionner()` (intègre un fichier
+  de compagnie, remplace ses amorces, ne modifie pas la base reçue) et `fichierCompagnie()`.
+- Nouveau statut de résolution `chargement` : la fiche est à l'index mais son fichier n'est
+  pas arrivé. Le formulaire montre des squelettes au lieu d'un « numéro non référencé »
+  mensonger.
+- Héritage dans les fichiers de compagnie, pour qu'ils restent tenables à la main : une fiche
+  ne répète jamais ce que son parent dit déjà. `compagnie` vient de l'en-tête du fichier ;
+  `statut` et `sourceRef` descendent de la fiche vers ses options puis vers chaque poste ;
+  `libelle`, s'il n'est pas écrit, vaut « compagnie - type - numéro ». Un champ écrit
+  l'emporte toujours. `completerPaquet()` applique ces règles ; la résolution ne voit que des
+  fiches complètes.
+- `typeContrat` et `nomContrat` sont volontairement exclus de cet héritage et se déclarent sur
+  chaque fiche : ils décrivent le produit et non l'assureur, et un même fichier portera à
+  terme une MRH et une MRP. En en-tête, ils donneraient une fiche MRP nommée « Assurance
+  Habitation » et résolue en MRH, sans avertissement ; oubliés sur une fiche, ils font
+  échouer le test. Celui-ci refuse aussi qu'on les remonte en en-tête.
+
+### Modifié
+
+- `data/expertise.json` passe en `schemaVersion` 3 et ne porte plus les fiches contrat : il
+  reste le référentiel commun (listes, vérifications de risque, modèles, vocabulaire de
+  qualité) et gagne `fichesParCompagnie`, l'index des fiches. Il tombe de 60 à 8 ko.
+- Les fiches vivent dans [data/compagnies/](data/compagnies/), un fichier par compagnie
+  (`{ compagnie, sources, contrats }`). Le formulaire télécharge le référentiel au démarrage,
+  puis le fichier d'une compagnie au moment où elle est choisie — ou dès qu'un numéro saisi
+  la désigne. Un fichier déjà obtenu n'est pas redemandé ; deux demandes simultanées ne font
+  qu'une requête.
+- L'index ne porte que les clés de recherche : tous les numéros de toutes les compagnies
+  restent proposés, et la compagnie d'un numéro saisi reste devinée, sans rien télécharger.
+- Échec de téléchargement d'une compagnie : message nommant la compagnie, retour à « — » et
+  aucune nouvelle tentative. Les autres compagnies restent utilisables.
+- Les fichiers de compagnie sont allégés de tout ce que leur parent dit déjà : 20 `compagnie`,
+  140 `statut`, 3 `sourceRef`, 10 `libelle` calculables et 22 dates à `null` retirés.
+  `expertise.test.js` refuse désormais ces répétitions, pour qu'elles ne reviennent pas par
+  petites touches.
+- Libellés de contrat : `PACIFICA - MRH - 7030A.37` et `PACIFICA - MRH - 7262A.40` remplacent
+  « … 7030A.37 INTEGRALE » et « … 7262A.40 IMMO + ». Ces fiches portent maintenant plusieurs
+  régimes : nommer une seule formule dans le libellé du contrat était trompeur. L'espace
+  manquant de « PACIFICA - MRH -7030A.29 » disparaît au passage.
+- La pipeline contrôle la syntaxe de tous les fichiers de `data/` et de `tools/`.
+
 ## [1.4.0] - 2026-09-02
 
 Base contrat : traçabilité des sources et référentiel PACIFICA MRH.

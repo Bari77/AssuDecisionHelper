@@ -1,0 +1,22 @@
+{
+  "compagnie": "BPCE",
+  "contrats": [
+    {
+      "typeContrat": "MRH",
+      "numero": "BANQUE POPULAIRE BP H404",
+      "libelle": "BPCE - MRH - H404 Formule premium",
+      "options": [
+        {
+          "libelle": "Formule premium",
+          "capitaux": [
+            {
+              "nature": "Batiment",
+              "capital": "Valeur de reconstruction",
+              "modalite": "VAN 100 %"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

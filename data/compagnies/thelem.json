@@ -1,0 +1,20 @@
+{
+  "compagnie": "THELEM",
+  "contrats": [
+    {
+      "typeContrat": "MRH",
+      "numero": "NEOLOGIS2 CONFORT 405",
+      "options": [
+        {
+          "capitaux": [
+            {
+              "nature": "Batiment",
+              "capital": "Valeur de reconstruction",
+              "modalite": "VAN 25 %"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

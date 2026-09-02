@@ -4,7 +4,12 @@
    Entrée : compagnie + type de contrat + numéro + option (+ nature, optionnelle).
    Sortie : libellé calculé, capitaux, frais.
 
-   Sans DOM, donc testable. La base vit dans data/expertise.json.
+   Sans DOM, donc testable. Le référentiel vit dans data/expertise.json ; les
+   fiches contrat vivent dans data/compagnies/<compagnie>.json et arrivent au
+   fil du besoin. Tant qu'un fichier de compagnie n'est pas arrivé, ses fiches
+   sont représentées par des amorces issues de l'index : elles suffisent à
+   proposer le numéro et à deviner la compagnie, et la résolution répond
+   « chargement » plutôt que « inconnu ».
    --------------------------------------------------------------------------- */
 
 (function (global) {
@@ -63,6 +68,127 @@
     return options.find((o) => normaliserTexte(o.libelle) === cible) || null;
   }
 
+  /* ---------------------------------------------------------------------------
+     Héritage. Un fichier de compagnie ne répète jamais ce que dit son parent :
+
+       compagnie         écrite en tête du fichier, servie à toutes ses fiches
+       statut, sourceRef descendent de la fiche vers ses options, puis de
+                         l'option vers chacun de ses postes
+       libelle           calculé « compagnie - type - numéro » s'il n'est pas
+                         écrit
+
+     Un champ écrit l'emporte toujours sur celui du parent.
+
+     N'héritent volontairement PAS : typeContrat et nomContrat. Ils décrivent le
+     produit, pas l'assureur ; un même fichier finira par porter une MRH et une
+     MRP. Un défaut d'en-tête y serait silencieusement faux, alors qu'un champ
+     manquant est refusé par le test. Chaque fiche déclare donc son type.
+
+     Tout se joue ici : la résolution, elle, voit des fiches complètes.
+     --------------------------------------------------------------------------- */
+
+  function heriter(objet, defauts) {
+    const sortie = Object.assign({}, objet);
+    Object.keys(defauts).forEach(function (cle) {
+      if (sortie[cle] == null && defauts[cle] != null) sortie[cle] = defauts[cle];
+    });
+    return sortie;
+  }
+
+  function libelleParDefaut(fiche) {
+    return [fiche.compagnie, fiche.typeContrat, fiche.numero].filter(Boolean).join(' - ');
+  }
+
+  function completerFiche(fiche, entete) {
+    const complete = heriter(fiche, { compagnie: entete.compagnie });
+    if (!complete.libelle) complete.libelle = libelleParDefaut(complete);
+
+    complete.options = (fiche.options || []).map(function (option) {
+      const o = heriter(option, { statut: complete.statut, sourceRef: complete.sourceRef });
+      /* Le statut qualifie chaque poste dans l'interface : il descend jusque-là.
+         La source, elle, est lue au niveau de l'option par resoudre(). */
+      const posteHerite = { statut: o.statut };
+      if (option.capitaux) o.capitaux = option.capitaux.map((c) => heriter(c, posteHerite));
+      if (option.frais) o.frais = option.frais.map((f) => heriter(f, posteHerite));
+      return o;
+    });
+    return complete;
+  }
+
+  /* Fiches d'un fichier de compagnie, complétées. Fonctionne aussi sur le
+     référentiel, dont l'en-tête ne porte pas de compagnie : chaque fiche
+     déclare alors la sienne. */
+  function completerPaquet(paquet) {
+    const entete = paquet || {};
+    return (entete.contrats || []).map((fiche) => completerFiche(fiche, entete));
+  }
+
+  function cleFiche(fiche) {
+    return normaliserTexte(fiche.compagnie) + '|' + fiche.typeContrat + '|' + normaliserNumero(fiche.numero);
+  }
+
+  /* Amorces : les clés de recherche d'une compagnie dont le fichier n'est pas
+     encore arrivé. Elles ne portent aucun régime, seulement de quoi être
+     trouvées. */
+  function amorces(db) {
+    const index = (db && db.fichesParCompagnie) || {};
+    const liste = [];
+    Object.keys(index).forEach(function (compagnie) {
+      (index[compagnie].references || []).forEach(function (ref) {
+        liste.push({
+          compagnie: compagnie,
+          typeContrat: ref.typeContrat,
+          numero: ref.numero,
+          differe: true,
+        });
+      });
+    });
+    return liste;
+  }
+
+  /* Base de départ : référentiel + amorces de l'index. Les fiches écrites en
+     dur dans le référentiel, s'il y en a, sont conservées. */
+  function preparer(referentiel) {
+    const base = Object.assign({}, referentiel);
+    const propres = completerPaquet(referentiel);
+    const vues = new Set(propres.map(cleFiche));
+    base.contrats = propres.concat(amorces(base).filter((a) => !vues.has(cleFiche(a))));
+    base.sources = Object.assign({}, (referentiel && referentiel.sources) || {});
+    return base;
+  }
+
+  /* Intègre un fichier de compagnie : ses fiches remplacent les amorces (et
+     toute version antérieure) de la même compagnie. Renvoie une nouvelle base,
+     l'ancienne n'est pas modifiée. */
+  function fusionner(db, paquet) {
+    if (!paquet || !paquet.compagnie) return db;
+    const cible = normaliserTexte(paquet.compagnie);
+    const arrivantes = completerPaquet(paquet);
+    const remplacees = new Set(arrivantes.map(cleFiche));
+
+    const contrats = (db.contrats || [])
+      .filter(function (fiche) {
+        if (normaliserTexte(fiche.compagnie) !== cible) return true;
+        /* Une amorce de cette compagnie disparaît ; une fiche écrite en dur
+           dans le référentiel ne survit que si le paquet ne la redéfinit pas. */
+        return !fiche.differe && !remplacees.has(cleFiche(fiche));
+      })
+      .concat(arrivantes);
+
+    return Object.assign({}, db, {
+      contrats: contrats,
+      sources: Object.assign({}, db.sources || {}, paquet.sources || {}),
+      compagniesChargees: (db.compagniesChargees || []).concat([paquet.compagnie]),
+    });
+  }
+
+  function fichierCompagnie(db, compagnie) {
+    const index = (db && db.fichesParCompagnie) || {};
+    const cible = normaliserTexte(compagnie);
+    const nom = Object.keys(index).find((c) => normaliserTexte(c) === cible);
+    return nom ? index[nom].fichier || null : null;
+  }
+
   function filtrerContrats(db, saisie) {
     const liste = (db && db.contrats) || [];
     return liste.filter((c) => {
@@ -114,6 +240,15 @@
     }
 
     const fiche = notes[0].contrat;
+
+    if (fiche.differe) {
+      return {
+        statut: 'chargement',
+        motif: 'Fiche contrat en cours de téléchargement…',
+        compagnie: fiche.compagnie,
+        fichier: fichierCompagnie(db, fiche.compagnie),
+      };
+    }
 
     if (!(fiche.options || []).length) {
       return {
@@ -254,5 +389,9 @@
     optionEstVide: optionEstVide,
     verificationsPour: verificationsPour,
     sourcePour: sourcePour,
+    preparer: preparer,
+    fusionner: fusionner,
+    fichierCompagnie: fichierCompagnie,
+    completerPaquet: completerPaquet,
   };
 })(typeof window !== 'undefined' ? window : global);

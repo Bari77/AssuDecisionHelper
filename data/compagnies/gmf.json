@@ -1,0 +1,22 @@
+{
+  "compagnie": "GMF",
+  "contrats": [
+    {
+      "typeContrat": "MRH",
+      "numero": "Habitation 2012",
+      "libelle": "GMF - MRH - CONFORT 2012",
+      "options": [
+        {
+          "libelle": "CONFORT",
+          "capitaux": [
+            {
+              "nature": "Batiment",
+              "capital": "Valeur de reconstruction",
+              "modalite": "VAN 25 %"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

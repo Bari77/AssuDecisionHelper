@@ -1395,6 +1395,46 @@ pre.exp-texte {
   font-size: 12px;
   color: var(--ink-faint);
 }
+/* Squelettes d'attente : occupent la place du contenu à venir, pour que le
+   formulaire ne saute pas au moment où les données arrivent. */
+.skel {
+  display: block;
+  border-radius: 6px;
+  background: linear-gradient(90deg, var(--line-soft) 25%, var(--line) 37%, var(--line-soft) 63%);
+  background-size: 400% 100%;
+  animation: skel-glisse 1.4s ease-in-out infinite;
+}
+.skel--champ {
+  height: 38px;
+  border-radius: 8px;
+}
+.skel--label {
+  height: 10px;
+  margin-bottom: 2px;
+}
+.skel--texte {
+  height: 13px;
+  margin-bottom: 8px;
+}
+.skel--bloc {
+  height: 76px;
+  border-radius: 8px;
+}
+@keyframes skel-glisse {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: 0 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .skel {
+    animation: none;
+    background: var(--line-soft);
+  }
+}
+
 .exp-poste__note {
   margin: 0;
   font-size: 12.5px;

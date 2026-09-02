@@ -282,6 +282,74 @@
     };
   }
 
+  /* ---------------------------------------------------------------------------
+     Squelettes d'attente. Deux portées : au démarrage tout le formulaire est en
+     attente du référentiel ; ensuite seuls les panneaux liés au contrat
+     attendent le fichier de la compagnie.
+     --------------------------------------------------------------------------- */
+
+  const CHAMPS_COMBO = [
+    'combo-nature',
+    'combo-compagnie',
+    'combo-type',
+    'combo-numero',
+    'combo-option',
+    'combo-civilite',
+    'combo-qualite',
+    'combo-bien',
+  ];
+
+  function squelette(variante, largeur) {
+    const el = document.createElement('span');
+    el.className = 'skel' + (variante ? ' skel--' + variante : '');
+    if (largeur) el.style.width = largeur;
+    el.setAttribute('aria-hidden', 'true');
+    return el;
+  }
+
+  function squelettePoste(lignes) {
+    const bloc = document.createElement('div');
+    bloc.className = 'exp-poste';
+    const largeurs = ['62%', '84%', '48%'];
+    for (let i = 0; i < lignes; i++) {
+      const ligne = document.createElement('div');
+      ligne.className = 'exp-poste__ligne';
+      ligne.appendChild(squelette('label', '30%'));
+      ligne.appendChild(squelette('champ', largeurs[i % largeurs.length]));
+      bloc.appendChild(ligne);
+    }
+    return bloc;
+  }
+
+  function attendre(host, ...contenu) {
+    if (!host) return;
+    host.setAttribute('aria-busy', 'true');
+    host.replaceChildren(...contenu);
+  }
+
+  function libere(host) {
+    if (host) host.removeAttribute('aria-busy');
+  }
+
+  /* Panneaux dépendant de la fiche contrat : rejoués à chaque téléchargement
+     de compagnie. */
+  function squelettesContrat() {
+    attendre($('exp-libelle'), squelette('champ', '70%'));
+    attendre($('exp-capitaux'), squelettePoste(3), squelettePoste(3));
+    attendre($('exp-frais'), squelettePoste(2));
+    attendre($('exp-source'), squelette('label', '26%'), squelette('texte', '80%'));
+    libere($('exp-vigilance'));
+    $('exp-vigilance').replaceChildren();
+  }
+
+  function squelettesInitiaux() {
+    CHAMPS_COMBO.forEach((id) => attendre($(id), squelette('champ')));
+    squelettesContrat();
+    attendre($('exp-verif-liste'), squelette('bloc'));
+    attendre($('exp-dommages'), squelette('bloc'));
+    attendre($('exp-causes'), squelette('texte', '96%'), squelette('texte', '88%'), squelette('texte', '54%'));
+  }
+
   function pileVide(host) {
     host.replaceChildren();
     const p = document.createElement('p');
@@ -365,6 +433,7 @@
   }
 
   function renderPile(host, postes, champs, detailsFrais) {
+    libere(host);
     host.replaceChildren();
     if (!postes || !postes.length) {
       pileVide(host);
@@ -415,6 +484,7 @@
 
   function renderSource(issue) {
     const host = $('exp-source');
+    libere(host);
     host.replaceChildren();
 
     const fiche = issue.contrat;
@@ -493,6 +563,7 @@
   }
 
   function renderCopies(host, phrases) {
+    libere(host);
     host.replaceChildren();
     (phrases || []).forEach((texte) => {
       if (!texte) return;
@@ -598,9 +669,71 @@
 
   function renderTextes() {
     if (!db) return;
+    libere($('exp-causes'));
     const modele = E.modelePour(db, $('exp-nature').value);
     $('exp-causes').textContent = E.interpoler(modele.causesCirconstances, champsTexte());
     syncCopiesCalcule();
+  }
+
+  /* ---------------------------------------------------------------------------
+     Chargement paresseux : une compagnie, un fichier. La promesse mémorisée
+     sert à la fois de cache et de dédoublonnage des appels concurrents.
+     --------------------------------------------------------------------------- */
+
+  const BASE_DONNEES = 'data/';
+  const paquets = new Map();
+  const echoues = new Set();
+
+  function chargerJson(chemin) {
+    return fetch(BASE_DONNEES + chemin, { cache: 'no-store' }).then((r) => {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    });
+  }
+
+  function signaler(message) {
+    const zone = $('exp-erreur');
+    zone.hidden = !message;
+    zone.textContent = message || '';
+  }
+
+  function chargerCompagnie(compagnie) {
+    if (!compagnie || echoues.has(compagnie)) return Promise.resolve(false);
+    if (paquets.has(compagnie)) return paquets.get(compagnie);
+
+    const fichier = E.fichierCompagnie(db, compagnie);
+    /* Compagnie du référentiel sans fiche : rien à télécharger, et il ne faut
+       pas retenter à chaque rendu. */
+    if (!fichier) {
+      const rien = Promise.resolve(false);
+      paquets.set(compagnie, rien);
+      return rien;
+    }
+
+    const attente = chargerJson(fichier).then(
+      (paquet) => {
+        db = E.fusionner(db, paquet);
+        signaler('');
+        return true;
+      },
+      (err) => {
+        echoues.add(compagnie);
+        /* Un paquet vide retire les amorces de l'index : la résolution répond
+           alors « numéro non référencé » au lieu de rester en chargement. */
+        db = E.fusionner(db, { compagnie: compagnie, contrats: [] });
+        signaler('Impossible de charger les fiches ' + compagnie + ' (' + err.message + ').');
+        return false;
+      }
+    );
+    paquets.set(compagnie, attente);
+    return attente;
+  }
+
+  /* Relance un rendu quand la compagnie est arrivée — ou quand elle a échoué,
+     ses amorces ayant alors disparu. Dans les deux cas la branche
+     « chargement » n'est plus atteinte : pas de boucle. */
+  function demanderCompagnie(compagnie) {
+    chargerCompagnie(compagnie).then(render);
   }
 
   function render() {
@@ -614,8 +747,22 @@
     }
 
     const issue = E.resoudre(db, s);
+
+    /* La fiche existe à l'index mais son fichier n'est pas là : on affiche des
+       squelettes plutôt qu'un « numéro non référencé » mensonger. */
+    if (issue.statut === 'chargement') {
+      squelettesContrat();
+      renderMotif(issue);
+      renderVerif();
+      renderDommages();
+      renderTextes();
+      demanderCompagnie(issue.compagnie);
+      return;
+    }
+
     /* « documente » : la référence est identifiée, seul le régime manque. */
     const identifie = issue.statut === 'ok' || issue.statut === 'documente';
+    libere($('exp-libelle'));
     $('exp-libelle').textContent = identifie ? issue.libelle : '—';
 
     const champsCapitaux = [
@@ -653,13 +800,11 @@
     return { value: '', label: libelle };
   }
 
-  fetch('data/expertise.json', { cache: 'no-store' })
-    .then((r) => {
-      if (!r.ok) throw new Error('HTTP ' + r.status);
-      return r.json();
-    })
+  squelettesInitiaux();
+
+  chargerJson('expertise.json')
     .then((json) => {
-      db = json;
+      db = E.preparer(json);
       const choisir = comboVide('Choisir…');
       combos.nature = creerCombo($('combo-nature'), {
         hidden: $('exp-nature'),
@@ -671,7 +816,12 @@
         hidden: $('exp-compagnie'),
         vide: choisir,
         placeholder: 'Choisir…',
-        onChange: render,
+        /* Le fichier de la compagnie est demandé dès son choix, sans attendre
+           qu'un numéro soit saisi. */
+        onChange: function (compagnie) {
+          render();
+          chargerCompagnie(compagnie).then(render);
+        },
       });
       combos.type = creerCombo($('combo-type'), {
         hidden: $('exp-type'),
@@ -726,9 +876,17 @@
       combos.bien.setItems(json.typesBien);
       render();
     })
-    .catch(() => {
-      const zone = $('exp-erreur');
-      zone.hidden = false;
-      zone.textContent = 'Impossible de charger les fiches contrat.';
+    .catch((err) => {
+      CHAMPS_COMBO.forEach((id) => {
+        libere($(id));
+        $(id).replaceChildren();
+      });
+      ['exp-libelle', 'exp-capitaux', 'exp-frais', 'exp-source', 'exp-verif-liste', 'exp-dommages', 'exp-causes'].forEach(
+        (id) => {
+          libere($(id));
+          $(id).replaceChildren();
+        }
+      );
+      signaler('Impossible de charger le référentiel des contrats (' + err.message + ').');
     });
 })();

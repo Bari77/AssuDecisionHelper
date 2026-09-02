@@ -1,0 +1,20 @@
+{
+  "compagnie": "AXA",
+  "contrats": [
+    {
+      "typeContrat": "MRH",
+      "numero": "970464 l 03 2023",
+      "options": [
+        {
+          "capitaux": [
+            {
+              "nature": "Batiment",
+              "capital": "Valeur de reconstruction",
+              "modalite": "VAN 25 %"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

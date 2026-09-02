@@ -28,8 +28,13 @@ navigateur, ou le servir depuis n'importe quel hébergement statique.
 - Le parcours est reflété dans l'URL : copier le lien partage le cas d'espèce à l'identique
   (`…/index.html#immeuble=copropriete&evenement=dde&causeExclue=non&montant=t2&…`).
 - Le menu **Expertise** (en-tête, à droite) ouvre le formulaire de dossier : capitaux et textes
-  calculés d’après [data/expertise.json](data/expertise.json). Pour ajouter une formule, recopier
-  une entrée de `contrats` (compagnie, type, numéro, option → capitaux / frais).
+  calculés d’après [data/expertise.json](data/expertise.json) et les fiches de
+  [data/compagnies/](data/compagnies/). Pour ajouter une formule, recopier une entrée de
+  `contrats` dans le fichier de la compagnie (compagnie, type, numéro, option → capitaux /
+  frais), puis relancer `node tools/construire-index.js`.
+- Le formulaire ne télécharge que ce dont il a besoin : le référentiel au démarrage, puis le
+  fichier d’une compagnie au moment où elle est choisie. Des squelettes occupent la place du
+  contenu pendant l’attente.
 
 ## Structure
 
@@ -37,7 +42,9 @@ navigateur, ou le servir depuis n'importe quel hébergement statique.
 | --- | --- |
 | [index.html](index.html) | Structure de la page, comparatif des conventions |
 | [expertise.html](expertise.html) | Formulaire d’expertise (capitaux, frais, textes) |
-| [data/expertise.json](data/expertise.json) | **Base contrat** : natures, compagnies, fiches, modèles de rédaction |
+| [data/expertise.json](data/expertise.json) | **Référentiel** : natures, compagnies, modèles de rédaction, index des fiches |
+| [data/compagnies/](data/compagnies/) | **Fiches contrat**, un fichier par compagnie, téléchargé au besoin |
+| [tools/construire-index.js](tools/construire-index.js) | Régénère l’index des fiches dans le référentiel |
 | [assets/expertise-moteur.js](assets/expertise-moteur.js) | Résolution des fiches (sans DOM) |
 | [assets/expertise.js](assets/expertise.js) | Interface du formulaire |
 | [assets/version.js](assets/version.js) | **Version applicative** — source de vérité unique |
@@ -124,21 +131,101 @@ ne déclenche pas une option nommée (IMMO+). Les modèles interpolent civilité
 Côté traçabilité : chaque `sourceRef` pointe vers une entrée de `sources` complète, tout
 `statut` appartient au vocabulaire déclaré, une donnée `verifie` est rattachable à un
 document, et chaque référence PACIFICA attendue résout vers sa propre fiche.
+Côté découpage : le test fusionne tous les fichiers de [data/compagnies/](data/compagnies/),
+vérifie que `fichesParCompagnie` les reflète exactement, qu’une fiche non téléchargée reste
+proposée et se résout en `chargement`, et que la fusion remplace l’amorce sans doublon.
 
 La pipeline exécute les quatre tests avant toute publication.
 
+### Où vivent les données
+
+[data/expertise.json](data/expertise.json) est le **référentiel commun** : listes, vérifications
+de risque, modèles de rédaction, vocabulaire de qualité, et `fichesParCompagnie` — l’index des
+fiches. Les **fiches contrat** vivent dans [data/compagnies/](data/compagnies/), un fichier par
+compagnie :
+
+```
+data/expertise.json              référentiel + index          ~8 ko
+data/compagnies/pacifica.json    { compagnie, sources, contrats }
+data/compagnies/acm.json         idem
+```
+
+Le formulaire télécharge le référentiel au démarrage, puis le fichier d’une compagnie au moment
+où elle est choisie — ou dès qu’un numéro saisi la désigne. Un fichier déjà obtenu n’est pas
+redemandé, et deux demandes simultanées ne déclenchent qu’une requête.
+
+L’index ne porte que les clés de recherche (`typeContrat`, `numero`) : il suffit à proposer tous
+les numéros de toutes les compagnies et à deviner la compagnie d’un numéro saisi, sans rien
+télécharger. Tant que le fichier n’est pas arrivé, ces fiches sont des **amorces** (`differe`) et
+la résolution répond `chargement` — jamais « numéro non référencé ».
+
+**Après toute modification d’un fichier de compagnie**, régénérer l’index :
+
+```bash
+node tools/construire-index.js
+```
+
+`expertise.test.js` refuse un index périmé. Un tableau `contrats` peut aussi rester dans le
+référentiel : il est fusionné avec les fiches téléchargées.
+
+### Ne jamais répéter ce que le parent dit déjà
+
+**Un champ absent est repris du parent** — mais seulement là où le parent ne peut pas se
+tromper. C’est la règle qui rend les fichiers tenables à la main, et le test refuse toute
+répétition inutile.
+
+| Champ | Vient de | Écrit plus bas seulement si… |
+| --- | --- | --- |
+| `compagnie` | l’en-tête du fichier | jamais : le fichier *est* la compagnie |
+| `statut` | la fiche → l’option → le poste | la qualité de cette donnée diffère de son parent |
+| `sourceRef` | la fiche → l’option | cette option vient d’un autre document |
+| `libelle` | calculé `compagnie - type - numéro` | le libellé attendu n’est pas celui-là |
+
+**`typeContrat` et `nomContrat` ne s’héritent pas** et se déclarent sur chaque fiche. Ils
+décrivent le produit, pas l’assureur : un même fichier finira par porter une MRH et une MRP.
+En en-tête, ils deviendraient un défaut muet — une fiche MRP nommée « Assurance Habitation »
+et résolue en MRH, sans un mot. Un champ oublié, lui, fait échouer le test :
+
+```
+compagnies/thelem.json : la fiche NEOLOGIS2 CONFORT 405 doit déclarer son typeContrat
+compagnies/thelem.json : « typeContrat » se déclare sur chaque fiche, jamais en en-tête
+```
+
+Une date à `null` ne s’écrit pas : l’absence du champ dit déjà « inconnu ».
+
+Un fichier complet tient donc en vingt lignes :
+
+```json
+{
+  "compagnie": "THELEM",
+  "contrats": [
+    {
+      "typeContrat": "MRH",
+      "numero": "NEOLOGIS2 CONFORT 405",
+      "options": [
+        {
+          "capitaux": [
+            { "nature": "Batiment", "capital": "Valeur de reconstruction", "modalite": "VAN 25 %" }
+          ]
+        }
+      ]
+    }
+  ]
+}
+```
+
 ### Alimenter une fiche contrat
 
-Recopier une entrée de `contrats` dans [data/expertise.json](data/expertise.json) :
+Recopier une entrée de `contrats` dans le fichier de la compagnie
+(`data/compagnies/<compagnie>.json`) :
 
-- `compagnie` / `typeContrat` / `numero` — clés de recherche.
-- `libelle` — texte bleu « CONTRAT ».
+- `typeContrat` / `numero` — clés de recherche, avec `compagnie` héritée de l’en-tête.
 - `options[]` — sans `libelle` : régime de base. Avec `libelle`
   (« Valeur à neuf », « OPTION IMMO+ ») : régime nommé. `frais` seulement s’il y en a.
 - `natures` — optionnel : si absent, la fiche vaut pour tous les sinistres.
 
-Ces cinq clés suffisent : toutes les autres sont facultatives et les fiches qui n’en portent
-aucune fonctionnent à l’identique.
+`numero` et un `options[]` porteur de `capitaux` suffisent : tout le reste est facultatif et
+les fiches qui n’en portent rien fonctionnent à l’identique.
 
 ### Tracer une fiche contrat
 
@@ -161,9 +248,10 @@ Champs facultatifs, tous nourris par un document identifié :
   `observations`. `pourcentage` n’est renseigné que s’il figure déjà dans `limitation` :
   le test le vérifie.
 
-**Qualité de la donnée** — `statut` sur la fiche, l’option, un capital ou un frais, avec le
-vocabulaire déclaré dans `statutsQualite` : `verifie` (relevé sur le document), `deduit`
-(repris par analogie avec une édition voisine vérifiée), `source_secondaire`, `a_verifier`.
+**Qualité de la donnée** — `statut`, avec le vocabulaire déclaré dans `statutsQualite` :
+`verifie` (relevé sur le document), `deduit` (repris par analogie avec une édition voisine
+vérifiée), `source_secondaire`, `a_verifier`. Il s’écrit **une fois sur la fiche** et descend
+jusqu’à chaque poste ; on ne le réécrit que sur l’option ou le poste dont la qualité diffère.
 Une valeur douteuse reste absente ou passe en `a_verifier` — jamais affirmée.
 
 **Source** — `sourceRef` renvoie à une entrée de la table `sources`, qui porte le document,

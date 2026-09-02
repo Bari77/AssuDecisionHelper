@@ -7,4 +7,5 @@ Dockerfile
 README.md
 CHANGELOG.md
 tests
+tools
 *.md

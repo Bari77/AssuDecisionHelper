@@ -1,0 +1,47 @@
+{
+  "compagnie": "ACM",
+  "contrats": [
+    {
+      "typeContrat": "MRH",
+      "numero": "16.07.20-04/ 2008",
+      "libelle": "ACM - MRH - 160720 - 042008",
+      "options": [
+        {
+          "capitaux": [
+            {
+              "nature": "Batiment",
+              "capital": "Valeur de reconstruction",
+              "modalite": "Vétusté déduite"
+            }
+          ]
+        },
+        {
+          "libelle": "Valeur à neuf",
+          "capitaux": [
+            {
+              "nature": "Batiment",
+              "capital": "Valeur de reconstruction",
+              "modalite": "VAN 25 %"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "typeContrat": "MRH",
+      "numero": "BQ 16.46.43-04/21",
+      "libelle": "ACM - MRH - 164643 - 042021",
+      "options": [
+        {
+          "capitaux": [
+            {
+              "nature": "Batiment",
+              "capital": "Valeur de reconstruction",
+              "modalite": "VAN 25 %"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
