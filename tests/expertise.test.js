@@ -752,38 +752,74 @@ for (const attendue of ['vitesseVent', 'alentour']) {
   if (clesGabarit.indexOf(attendue) === -1) echec('variablesDe doit relever « ' + attendue + ' »');
 }
 
-/* ------------------- Modèle TEMPÊTE ------------------- */
+/* Bloc inversé {{^cle}}…{{/cle}} : la négation d'une constatation s'écrit dans
+   le même modèle que son affirmation, et les deux ne sortent jamais ensemble. */
+const inverse = 'Constat.{{#alentour}}\n\nDommages alentour.{{/alentour}}{{^alentour}}\n\nAucun dommage alentour.{{/alentour}}\n\nSuite.';
+const inverseOui = E.interpoler(inverse, { alentour: 'oui' });
+const inverseNon = E.interpoler(inverse, { alentour: 'non' });
+if (inverseOui !== 'Constat.\n\nDommages alentour.\n\nSuite.') {
+  echec('Bloc inversé : « oui » doit garder l’affirmation seule, obtenu ' + JSON.stringify(inverseOui));
+}
+if (inverseNon !== 'Constat.\n\nAucun dommage alentour.\n\nSuite.') {
+  echec('Bloc inversé : « non » doit garder la négation seule, obtenu ' + JSON.stringify(inverseNon));
+}
+/* Une clé sans valeur vaut négation : c'est la branche inversée qui sort. */
+if (!/Aucun dommage/.test(E.interpoler(inverse, {}))) {
+  echec('Bloc inversé : une clé absente doit être traitée comme une négation');
+}
+if (E.variablesDe('{{^alentour}}x{{/alentour}}').indexOf('alentour') === -1) {
+  echec('variablesDe doit relever la clé d’un bloc inversé, sinon son champ resterait masqué');
+}
 
+/* ------------------- Modèle TEMPÊTE (rafales locales, par défaut) ------------------- */
+
+/* Case « Phénomène » décochée : aucun épisode nommé, donc aucune notoriété
+   publique à invoquer. Le texte constate les dommages, les rattache à des vents
+   violents, relève les rafales sur la commune et conclut sur l'exposition du
+   bâtiment isolé. */
 const qualiteTest = db.qualites[0];
 const tempete = E.modelePour(db, 'TEMPETE');
 if (!tempete.causesCirconstances || tempete === db.modeles._defaut) {
   echec('Modèle TEMPETE absent');
 } else {
   const utilisees = E.variablesDe(tempete.causesCirconstances);
-  for (const cle of ['civilite', 'nom', 'qualite', 'situe', 'adresse', 'periode', 'commune', 'tempete', 'dateSinistre', 'vitesseVent', 'alentour']) {
+  for (const cle of ['civilite', 'nom', 'qualite', 'situe', 'adresse', 'periode', 'commune', 'vitesseVent', 'alentour']) {
     if (utilisees.indexOf(cle) === -1) echec('Modèle TEMPETE : variable {{' + cle + '}} attendue');
   }
-  const rendu = E.interpoler(
-    tempete.causesCirconstances,
-    Object.assign(
-      {
-        civilite: 'MME',
-        nom: 'CHRISTELLE VICECONTE',
-        qualite: qualiteTest,
-        adresse: '582 ROUTE DE CHEZ GOUNET 19270 SAINT PARDOUX L ORTIGIER',
-        commune: 'SAINT PARDOUX L ORTIGIER',
-        periode: E.periodeSinistre('2026-02-11', '2026-02-12'),
-        dateSinistre: E.formaterDate('2026-02-11'),
-        tempete: 'NILS',
-        vitesseVent: '96.1',
-        alentour: 'oui',
-      },
-      E.accordDuBien(db, qualiteTest, '')
-    )
-  );
-  if (!/est propriétaire occupant d'une maison individuelle, située au 582/.test(rendu)) {
-    echec('Modèle TEMPETE : accord de la phrase d’ouverture incorrect');
+  /* Rien à saisir côté tempête tant que la case est décochée : le champ « Nom
+     de la tempête » ne doit pas apparaître, ce qui suppose que ce texte-ci ne
+     cite pas {{tempete}}. */
+  if (utilisees.indexOf('tempete') !== -1) {
+    echec('Modèle TEMPETE : le texte par défaut ne doit pas citer {{tempete}}, il n’y a pas d’épisode nommé');
   }
+
+  const champsTempete = Object.assign(
+    {
+      civilite: 'M.',
+      nom: 'GILLES ISCAN',
+      qualite: qualiteTest,
+      adresse: 'COURTEMASSOL, 840 impasse de Courtemassol, 46600 MONTVALENT',
+      commune: 'MONTVALENT',
+      periode: E.periodeSinistre('2026-08-03', ''),
+      vitesseVent: '94,2',
+    },
+    E.accordDuBien(db, qualiteTest, '')
+  );
+
+  const rendu = E.interpoler(tempete.causesCirconstances, champsTempete);
+  const attendus = [
+    [/^M\. GILLES ISCAN est propriétaire occupant d'une maison individuelle, située au COURTEMASSOL/, 'phrase d’ouverture'],
+    [/Ces dommages sont consécutifs à des vents violents\./, 'lien de causalité avec le vent'],
+    [/Le 3 août 2026, la commune de MONTVALENT a été impactée par de fortes rafales de vent\./, 'rafales sur la commune'],
+    [/La vitesse maximale de vent relevée à la station météorologique la plus proche est de 94,2 km\/h\./, 'vitesse relevée'],
+    [/aucun dommage similaire n’a été constaté sur la commune/, 'absence de dommages comparables'],
+    [/localement les vents ont pu dépasser 100 km\/h\.$/, 'exposition du bâtiment'],
+  ];
+  for (const [motif, quoi] of attendus) {
+    if (!motif.test(rendu)) echec('Modèle TEMPETE : ' + quoi + ' absent ou mal rendu');
+  }
+  if (/\{\{|\[/.test(rendu)) echec('Modèle TEMPETE : balise ou variable non résolue, obtenu ' + rendu);
+
   /* La qualité nomme déjà le bien : le modèle ne doit pas le répéter. */
   if (/maison individuelle.*maison individuelle/.test(rendu.split('\n')[0])) {
     echec('Modèle TEMPETE : le type de bien est répété dans la phrase d’ouverture');
@@ -797,22 +833,112 @@ if (!tempete.causesCirconstances || tempete === db.modeles._defaut) {
   if (!/donnée en location vide, située/.test(rendu2)) {
     echec('Modèle TEMPETE : la virgule avant le participe manque, obtenu : ' + rendu2.split('\n')[0]);
   }
-  if (!/Entre le 11 et le 12 février 2026, la commune de SAINT PARDOUX L ORTIGIER/.test(rendu)) {
-    echec('Modèle TEMPETE : période ou commune mal rendues');
-  }
-  if (!/tempête dénommée « NILS »/.test(rendu)) echec('Modèle TEMPETE : nom de la tempête absent');
-  if (!/relevée le 11 février 2026 .* est de 96\.1 km\/h/.test(rendu)) {
-    echec('Modèle TEMPETE : phrase de vitesse de vent incorrecte');
-  }
-  if (!/dommages similaires ont été constatés/.test(rendu)) echec('Modèle TEMPETE : paragraphe alentour absent');
-  const renduSans = E.interpoler(
+
+  /* Des dommages comparables aux alentours renversent le paragraphe, sans
+     jamais laisser les deux formulations sortir ensemble. */
+  const renduAlentour = E.interpoler(
     tempete.causesCirconstances,
-    Object.assign({ qualite: qualiteTest, alentour: 'non' }, E.accordDuBien(db, qualiteTest, ''))
+    Object.assign({}, champsTempete, { alentour: 'oui' })
   );
-  if (/dommages similaires/.test(renduSans)) echec('Modèle TEMPETE : le paragraphe alentour doit pouvoir être écarté');
-  if (/\n\n\n/.test(renduSans)) echec('Modèle TEMPETE : ligne vide en trop après retrait du paragraphe alentour');
+  if (!/des dommages similaires ont été constatés/.test(renduAlentour)) {
+    echec('Modèle TEMPETE : « alentour » à oui doit affirmer les dommages comparables');
+  }
+  if (/aucun dommage similaire/.test(renduAlentour)) {
+    echec('Modèle TEMPETE : l’affirmation et sa négation ne doivent jamais sortir ensemble');
+  }
+  for (const [cas, texte] of [['sans', rendu], ['avec', renduAlentour]]) {
+    if (/\n\n\n/.test(texte)) echec('Modèle TEMPETE (' + cas + ' alentour) : ligne vide en trop');
+    if (/\s$/.test(texte)) echec('Modèle TEMPETE (' + cas + ' alentour) : blanc en fin de texte');
+  }
+
   if (typeof tempete.dommages !== 'string' || !/partiellement détruit/.test(tempete.dommages)) {
     echec('Modèle TEMPETE : texte de dommages constatés attendu');
+  }
+}
+
+/* ------------------- Variante « Phénomène » de TEMPÊTE ------------------- */
+
+/* Case cochée : l'épisode est nommé et de notoriété publique. Le texte s'appuie
+   sur cette notoriété plutôt que sur la seule mesure de vent — et c'est cette
+   variante, elle seule, qui réclame le nom de la tempête. */
+const phenomene = E.variantesDe(tempete).find((v) => v.champ === 'phenomene');
+if (!phenomene) {
+  echec('Modèle TEMPETE : variante « phenomene » attendue dans modeles.TEMPETE.variantes');
+} else {
+  if (!phenomene.libelle) echec('Variante phenomene : libellé attendu, c’est lui qui nomme la case à cocher');
+
+  /* La case ne sert à rien si le modèle ne change pas quand elle est cochée. */
+  const coche = E.modelePour(db, 'TEMPETE', { phenomene: 'oui' });
+  if (coche.causesCirconstances !== phenomene.causesCirconstances) {
+    echec('Variante phenomene : cochée, elle doit remplacer les causes et circonstances');
+  }
+  if (coche.dommages !== tempete.dommages) {
+    echec('Variante phenomene : le texte de dommages constatés doit rester celui du modèle');
+  }
+  for (const valeur of [undefined, '', 'non']) {
+    if (E.modelePour(db, 'TEMPETE', { phenomene: valeur }).causesCirconstances !== tempete.causesCirconstances) {
+      echec('Variante phenomene : « ' + valeur + ' » ne doit pas l’activer');
+    }
+  }
+
+  /* C'est ce texte qui cite {{tempete}} : le champ « Nom de la tempête »
+     n'apparaît dans le formulaire que parce que la variante le réclame. */
+  const clesPhenomene = E.variablesDe(phenomene.causesCirconstances);
+  for (const cle of ['civilite', 'nom', 'qualite', 'situe', 'adresse', 'periode', 'commune', 'tempete', 'dateSinistre', 'vitesseVent', 'alentour']) {
+    if (clesPhenomene.indexOf(cle) === -1) echec('Variante phenomene : variable {{' + cle + '}} attendue');
+  }
+
+  const champsPhenomene = Object.assign(
+    {
+      civilite: 'MME',
+      nom: 'CHRISTELLE VICECONTE',
+      qualite: qualiteTest,
+      adresse: '582 ROUTE DE CHEZ GOUNET 19270 SAINT PARDOUX L ORTIGIER',
+      commune: 'SAINT PARDOUX L ORTIGIER',
+      periode: E.periodeSinistre('2026-02-11', '2026-02-12'),
+      dateSinistre: E.formaterDate('2026-02-11'),
+      tempete: 'NILS',
+      vitesseVent: '96.1',
+      alentour: 'oui',
+    },
+    E.accordDuBien(db, qualiteTest, '')
+  );
+
+  const renduPhenomene = E.interpoler(phenomene.causesCirconstances, champsPhenomene);
+  const attendus = [
+    [/^MME CHRISTELLE VICECONTE est propriétaire occupant d'une maison individuelle, située au 582/, 'phrase d’ouverture'],
+    [/Entre le 11 et le 12 février 2026, la commune de SAINT PARDOUX L ORTIGIER/, 'période et commune'],
+    [/tempête dénommée « NILS », phénomène météorologique de notoriété publique/, 'notoriété de l’épisode nommé'],
+    [/relevée le 11 février 2026 .* est de 96\.1 km\/h/, 'vitesse relevée et sa date'],
+    [/dommages similaires ont été constatés/, 'paragraphe alentour'],
+  ];
+  for (const [motif, quoi] of attendus) {
+    if (!motif.test(renduPhenomene)) echec('Variante phenomene : ' + quoi + ' absent ou mal rendu');
+  }
+  if (/\{\{|\[/.test(renduPhenomene)) {
+    echec('Variante phenomene : balise ou variable non résolue, obtenu ' + renduPhenomene);
+  }
+
+  /* Nom de la tempête laissé vide : le crochet est ce qui dit à l'expert qu'il
+     reste à le saisir. Sans lui, un rapport partirait sur un épisode anonyme. */
+  const sansNom = E.interpoler(
+    phenomene.causesCirconstances,
+    Object.assign({}, champsPhenomene, { tempete: '' })
+  );
+  if (!/dénommée « \[tempete\] »/.test(sansNom)) {
+    echec('Variante phenomene : un nom de tempête vide doit laisser « [tempete] » à compléter');
+  }
+
+  const renduSans = E.interpoler(
+    phenomene.causesCirconstances,
+    Object.assign({}, champsPhenomene, { alentour: 'non' })
+  );
+  if (/dommages similaires/.test(renduSans)) {
+    echec('Variante phenomene : le paragraphe alentour doit pouvoir être écarté');
+  }
+  for (const [cas, texte] of [['avec', renduPhenomene], ['sans', renduSans]]) {
+    if (/\n\n\n/.test(texte)) echec('Variante phenomene (' + cas + ' alentour) : ligne vide en trop');
+    if (/\s$/.test(texte)) echec('Variante phenomene (' + cas + ' alentour) : blanc en fin de texte');
   }
 }
 
@@ -825,11 +951,15 @@ const arbre = E.modelePour(db, NATURE_ARBRE);
 if (arbre === db.modeles._defaut) {
   echec('Modèle « ' + NATURE_ARBRE + ' » absent : la nature retombe sur le modèle par défaut');
 } else {
-  /* Même corps que TEMPÊTE : mêmes champs de formulaire, sans retouche du HTML. */
+  /* Même corps que la tempête nommée — la variante, pas le texte par défaut :
+     c'est elle qui raconte un épisode nommé. Mêmes champs de formulaire, donc,
+     sans retouche du HTML. */
   const clesArbre = E.variablesDe(arbre.causesCirconstances);
-  const clesTempete = E.variablesDe(tempete.causesCirconstances);
-  for (const cle of clesTempete) {
-    if (clesArbre.indexOf(cle) === -1) echec('Modèle chute d’arbre : variable {{' + cle + '}} attendue comme en TEMPÊTE');
+  const clesNommee = E.variablesDe((phenomene || tempete).causesCirconstances);
+  for (const cle of clesNommee) {
+    if (clesArbre.indexOf(cle) === -1) {
+      echec('Modèle chute d’arbre : variable {{' + cle + '}} attendue comme dans la tempête nommée');
+    }
   }
 
   /* Le paragraphe d'exposition au vent n'a pas de sens ici : on ne va pas
@@ -885,19 +1015,36 @@ if (!(db.valeursParDefaut || {}).tempete) {
   echec('valeursParDefaut.tempete attendu dans le référentiel');
 }
 
-/* Tout modèle doit s'accorder : plus de « d'un {{typeBien}} » en dur. */
+/* Tout modèle doit s'accorder : plus de « d'un {{typeBien}} » en dur. Une
+   variante part dans le même rapport que le modèle qui la porte : elle passe
+   par les mêmes contrôles. */
+const textesModeles = [];
 for (const cle of Object.keys(db.modeles || {})) {
-  const texte = db.modeles[cle].causesCirconstances || '';
+  const modele = db.modeles[cle];
+  textesModeles.push(['modeles.' + cle, modele.causesCirconstances || '']);
+  (modele.variantes || []).forEach(function (variante, i) {
+    const nom = 'modeles.' + cle + '.variantes[' + i + ']';
+    if (!variante.champ) echec(nom + ' : champ attendu, c’est lui qui commande la case à cocher');
+    if (!variante.libelle) echec(nom + ' : libelle attendu, c’est lui qui nomme la case');
+    if (!variante.causesCirconstances) {
+      echec(nom + ' : causesCirconstances attendu, sans quoi la variante est ignorée');
+    }
+    textesModeles.push([nom, variante.causesCirconstances || '']);
+  });
+}
+
+for (const [nom, texte] of textesModeles) {
   if (/d'un\s+\{\{typeBien\}\}|d’un\s+\{\{typeBien\}\}/.test(texte)) {
-    echec('modeles.' + cle + ' : utiliser {{typeBienArticle}} plutôt qu’un article figé');
+    echec(nom + ' : utiliser {{typeBienArticle}} plutôt qu’un article figé');
   }
   if (/\{\{typeBien\}\}\s+situé\b/.test(texte)) {
-    echec('modeles.' + cle + ' : utiliser {{situe}} plutôt qu’un participe figé');
+    echec(nom + ' : utiliser {{situe}} plutôt qu’un participe figé');
   }
-  /* Un bloc ouvert doit être fermé, sinon la balise part dans le rapport. */
-  const ouverts = (texte.match(/\{\{#(\w+)\}\}/g) || []).length;
+  /* Un bloc ouvert doit être fermé, sinon la balise part dans le rapport. Les
+     blocs inversés {{^cle}} comptent, ils se ferment comme les autres. */
+  const ouverts = (texte.match(/\{\{[#^](\w+)\}\}/g) || []).length;
   const fermes = (texte.match(/\{\{\/(\w+)\}\}/g) || []).length;
-  if (ouverts !== fermes) echec('modeles.' + cle + ' : ' + ouverts + ' bloc(s) ouvert(s) pour ' + fermes + ' fermé(s)');
+  if (ouverts !== fermes) echec(nom + ' : ' + ouverts + ' bloc(s) ouvert(s) pour ' + fermes + ' fermé(s)');
 }
 
 const defaut = E.modelePour(db, 'BRIS DE GLACE');

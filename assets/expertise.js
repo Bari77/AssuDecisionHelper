@@ -288,8 +288,52 @@
         vitesseVent: $('exp-vent').value,
         alentour: $('exp-alentour').value,
       },
-      E.accordDuBien(db, qualite, typeBien)
+      E.accordDuBien(db, qualite, typeBien),
+      valeursVariantes()
     );
+  }
+
+  /* ---------------------------------------------------------------------------
+     Variantes du modèle. Le référentiel déclare, pour une nature, des textes de
+     rechange commandés chacun par une case à cocher (modeles.<nature>.variantes) :
+     les cases sont donc rendues ici, libellé compris, et non écrites dans le HTML.
+     --------------------------------------------------------------------------- */
+
+  let variantesRendues = null;
+
+  function ajusterVariantes(liste) {
+    const host = $('exp-variantes');
+    host.hidden = !liste.length;
+    /* renderTextes est rejoué à chaque frappe : sans cette signature, les
+       cases seraient reconstruites — donc décochées — sous les doigts. */
+    const signature = JSON.stringify(liste.map((v) => [v.champ, v.libelle]));
+    if (signature === variantesRendues) return;
+    variantesRendues = signature;
+
+    host.replaceChildren(
+      ...liste.map(function (variante) {
+        const label = document.createElement('label');
+        label.className = 'exp-case';
+        const coche = document.createElement('input');
+        coche.type = 'checkbox';
+        coche.dataset.variante = variante.champ;
+        coche.addEventListener('change', renderTextes);
+        const texte = document.createElement('span');
+        texte.textContent = variante.libelle || variante.champ;
+        label.append(coche, texte);
+        return label;
+      })
+    );
+  }
+
+  function valeursVariantes() {
+    const valeurs = {};
+    $('exp-variantes')
+      .querySelectorAll('input[data-variante]')
+      .forEach(function (coche) {
+        valeurs[coche.dataset.variante] = coche.checked ? 'oui' : 'non';
+      });
+    return valeurs;
   }
 
   /* Les champs marqués data-champ-modele ne s'affichent que si le modèle actif
@@ -646,9 +690,13 @@
   function renderTextes() {
     if (!db) return;
     libere($('exp-causes'));
-    const modele = E.modelePour(db, $('exp-nature').value);
+    const nature = $('exp-nature').value;
+    /* Les cases d'abord : le modèle retenu dépend de ce qu'elles disent. */
+    ajusterVariantes(E.variantesDe(E.modelePour(db, nature)));
+    const champs = champsTexte();
+    const modele = E.modelePour(db, nature, champs);
     ajusterChampsModele(modele);
-    $('exp-causes').textContent = E.interpoler(modele.causesCirconstances, champsTexte());
+    $('exp-causes').textContent = E.interpoler(modele.causesCirconstances, champs);
     syncCopiesCalcule();
   }
 

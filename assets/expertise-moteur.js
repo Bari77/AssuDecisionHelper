@@ -340,16 +340,36 @@
     return toutes;
   }
 
-  function modelePour(db, nature) {
+  /* Variantes d'un modèle. Chacune déclare le champ qui la commande — une case
+     à cocher du formulaire — et son libellé : la case vit dans le référentiel,
+     pas dans le HTML, comme les autres champs propres à une nature. */
+  function variantesDe(modele) {
+    return ((modele && modele.variantes) || []).filter(function (v) {
+      return v && v.champ && v.causesCirconstances;
+    });
+  }
+
+  /* Une variante cochée réécrit les causes et circonstances : un phénomène de
+     vent localisé ne se raconte pas comme une tempête nommée, et deux textes
+     séparés se relisent mieux qu'un seul criblé de conditions. Le texte de
+     dommages constatés, lui, reste celui du modèle. */
+  function modelePour(db, nature, champs) {
     const modeles = (db && db.modeles) || {};
-    return modeles[nature] || modeles._defaut || { causesCirconstances: '', dommages: '' };
+    const base = modeles[nature] || modeles._defaut || { causesCirconstances: '', dommages: '' };
+    const active = variantesDe(base).find(function (v) {
+      return estAffirmatif((champs || {})[v.champ]);
+    });
+    if (!active) return base;
+    return Object.assign({}, base, { causesCirconstances: active.causesCirconstances });
   }
 
   /* Un modèle porte des variables {{cle}} et des blocs conditionnels
-     {{#cle}}…{{/cle}}, gardés seulement si la réponse est affirmative. Le saut
-     de ligne se met à l'intérieur du bloc, sinon un paragraphe écarté laisse
-     une ligne vide derrière lui. */
-  const BLOC_CONDITIONNEL = /\{\{#(\w+)\}\}([\s\S]*?)\{\{\/\1\}\}/g;
+     {{#cle}}…{{/cle}}, gardés seulement si la réponse est affirmative, ou
+     {{^cle}}…{{/cle}} pour le cas contraire — de quoi écrire une constatation
+     et sa négation sans dédoubler le modèle. Le saut de ligne se met à
+     l'intérieur du bloc, sinon un paragraphe écarté laisse une ligne vide
+     derrière lui. */
+  const BLOC_CONDITIONNEL = /\{\{([#^])(\w+)\}\}([\s\S]*?)\{\{\/\2\}\}/g;
 
   function estAffirmatif(valeur) {
     const t = String(valeur == null ? '' : valeur)
@@ -366,8 +386,8 @@
     let precedent;
     do {
       precedent = texte;
-      texte = texte.replace(BLOC_CONDITIONNEL, function (_, cle, contenu) {
-        return estAffirmatif(vars[cle]) ? contenu : '';
+      texte = texte.replace(BLOC_CONDITIONNEL, function (_, signe, cle, contenu) {
+        return estAffirmatif(vars[cle]) === (signe === '#') ? contenu : '';
       });
     } while (texte !== precedent);
 
@@ -382,7 +402,7 @@
      formulaire n'affiche que les champs correspondants. */
   function variablesDe(modele) {
     const cles = [];
-    String(modele || '').replace(/\{\{[#/]?(\w+)\}\}/g, function (_, cle) {
+    String(modele || '').replace(/\{\{[#^/]?(\w+)\}\}/g, function (_, cle) {
       if (cles.indexOf(cle) === -1) cles.push(cle);
       return '';
     });
@@ -506,6 +526,7 @@
     numerosPour: numerosPour,
     optionsPour: optionsPour,
     modelePour: modelePour,
+    variantesDe: variantesDe,
     interpoler: interpoler,
     variablesDe: variablesDe,
     formaterDate: formaterDate,

@@ -16,6 +16,46 @@ Portée des incréments, appliquée à la base de connaissance autant qu'au code
   conclusions existantes.
 - **CORRECTIF** — libellés, ergonomie, corrections sans incidence sur le raisonnement.
 
+## [2.2.0] - 2026-09-03
+
+Variante « Phénomène » du modèle TEMPÊTE : l'épisode nommé de notoriété publique et le coup de
+vent purement local se rédigent chacun tout seul, une case décidant lequel.
+
+### Ajouté
+
+- Modèles : bloc **variantes**. Un modèle peut porter des textes de rechange, chacun commandé
+  par une case à cocher du formulaire. La variante déclare le `champ` qui la commande et son
+  `libelle` : la case est donc rendue depuis le référentiel, sans retouche du HTML, comme les
+  champs porteurs de `data-champ-modele`. Cochée, elle remplace les causes et circonstances ;
+  le texte de dommages constatés, lui, reste celui du modèle.
+- Variante **Phénomène ?** du modèle TEMPÊTE : cochée, elle rend le texte de l'épisode nommé
+  de notoriété publique — « la tempête dénommée « NILS », phénomène météorologique de notoriété
+  publique » — et réclame le nom de la tempête. C'est elle, et elle seule, qui cite
+  `{{tempete}}` : le champ « Nom de la tempête » n'apparaît donc que cochée, sans une ligne de
+  validation à écrire.
+- Modèles : blocs conditionnels **inversés** `{{^cle}}…{{/cle}}`, gardés quand la réponse est
+  négative. Une constatation et sa négation vivent ainsi dans le même modèle — « des dommages
+  similaires ont été constatés » ou « aucun dommage similaire n'a été constaté » selon
+  « Dommages alentour », sans jamais sortir ensemble.
+
+### Modifié
+
+- **Le texte TEMPÊTE rendu par défaut change.** Case décochée, le modèle décrit désormais un
+  sinistre de vent **sans épisode nommé** : la notoriété publique ne peut pas être invoquée, le
+  texte constate les dommages, les rattache à des vents violents, relève les rafales sur la
+  commune et la vitesse mesurée à la station la plus proche, note l'absence de dommages
+  comparables sur des bâtiments de bonne construction, puis conclut sur l'exposition du
+  bâtiment isolé — où les vents ont pu dépasser 100 km/h localement. Le texte de l'épisode
+  nommé, inchangé, est passé sous la case « Phénomène ? ».
+- `modelePour(db, nature, champs)` prend un troisième argument facultatif : l'état des champs,
+  qui décide de la variante retenue. Sans lui, le modèle de base est rendu comme avant.
+- Formulaire : les cases de variante ouvrent la rangée de la tempête, devant « Nom de la
+  tempête » — la coche se lit avant le champ qu'elle fait disparaître. Ce champ passe de 7 à
+  4 colonnes sur les 10 de la grille, « Dommages alentour » gardant les 3 siennes.
+- Le test du référentiel contrôle les variantes comme les modèles : accord de la phrase
+  d'ouverture, équilibre des blocs — inversés compris —, présence du `champ`, du `libelle` et
+  du texte.
+
 ## [2.1.0] - 2026-09-02
 
 Navigation unifiée, onglet Phrases type, modèles TEMPÊTE et CHUTE D'ARBRE, et un seul geste de
@@ -380,6 +420,7 @@ Version initiale.
 
 Le détail de ces réserves est affiché dans l'onglet « Sources » du site.
 
+[2.2.0]: https://github.com/OWNER/AssuDecisionHelper/compare/2.1.0...2.2.0
 [2.1.0]: https://github.com/OWNER/AssuDecisionHelper/compare/2.0.0...2.1.0
 [2.0.0]: https://github.com/OWNER/AssuDecisionHelper/compare/1.4.0...2.0.0
 [1.4.0]: https://github.com/OWNER/AssuDecisionHelper/compare/1.3.0...1.4.0

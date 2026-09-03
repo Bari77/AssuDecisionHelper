@@ -307,6 +307,17 @@ Par ailleurs, des dommages similaires ont été constatés …{{/alentour}}
 L’habitation est située …
 ```
 
+`{{^cle}}…{{/cle}}` est le **bloc inversé** : il sort quand la réponse est négative. Une
+constatation et sa négation vivent donc dans le même modèle, et jamais les deux ensemble :
+
+```
+{{#alentour}}
+
+Par ailleurs, des dommages similaires ont été constatés …{{/alentour}}{{^alentour}}
+
+Par ailleurs, aucun dommage similaire n’a été constaté …{{/alentour}}
+```
+
 Une variable sans valeur laisse un crochet (`[vitesseVent]`) : l’expert voit ce qui reste à
 compléter.
 
@@ -331,6 +342,30 @@ une proposition (« …, donnée en location vide »), et la phrase serait illis
 `data-champ-modele="cle1 cle2"` dans [expertise.html](expertise.html) et n’apparaissent que si
 le modèle actif cite l’une de ces clés. Ajouter un modèle qui utilise `{{vitesseVent}}` fait
 donc apparaître le champ correspondant sans toucher au HTML.
+
+**Variantes** — un même sinistre ne se raconte pas toujours pareil. Un modèle peut porter des
+textes de rechange, chacun commandé par une case à cocher :
+
+```json
+"TEMPETE": {
+  "causesCirconstances": "… de fortes rafales de vent …",
+  "variantes": [
+    { "champ": "phenomene", "libelle": "Phénomène ?", "causesCirconstances": "… la tempête dénommée « {{tempete}} » …" }
+  ],
+  "dommages": "…"
+}
+```
+
+Le `champ` nomme la case, le `libelle` l’étiquette : la case est rendue depuis le référentiel,
+sans retouche du HTML. Cochée, la variante remplace les causes et circonstances — le texte de
+`dommages` reste celui du modèle — et **les champs du formulaire suivent le texte retenu**.
+
+C’est ce qui règle la saisie du nom de la tempête, sans une ligne de validation : la variante
+`phenomene` est la seule à citer `{{tempete}}`, donc le champ « Nom de la tempête » n’apparaît
+que cochée. Décochée, le modèle par défaut décrit un sinistre de vent **sans épisode nommé** :
+la notoriété publique ne peut pas être invoquée, et le texte s’appuie sur les rafales relevées
+sur la commune, l’absence de dommages comparables sur des bâtiments de bonne construction, et
+l’exposition d’un bâtiment isolé où les vents ont pu dépasser 100 km/h localement.
 
 **Valeurs préremplies** — `valeursParDefaut` dans le référentiel. `tempete` y porte le nom de
 l’épisode en cours : **à mettre à jour à chaque nouvelle tempête nommée**.

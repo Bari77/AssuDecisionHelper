@@ -1281,6 +1281,42 @@ a.src__titre:hover {
   }
 }
 
+/* Cases des variantes de modèle. Elles partagent la rangée des champs voisins
+   mais n'ont pas d'étiquette au-dessus : sans align-self, la coche se
+   retrouverait à hauteur du libellé « Nom de la tempête » et non de sa saisie.
+   D'où la boîte verticale d'un .field__input — mêmes marges, cadre transparent
+   — collée en bas de la cellule : la coche tombe alors sur la ligne de saisie.
+   Comme .field, il faut aussi rendre l'attribut hidden à nouveau décisif. */
+.exp-cases {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 20px;
+  align-self: end;
+  padding: 7px 0;
+  border: 1px solid transparent;
+}
+.exp-cases[hidden] {
+  display: none;
+}
+.exp-case {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  cursor: pointer;
+}
+.exp-case input {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  accent-color: var(--accent);
+}
+.exp-case input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
 .exp-grid {
   display: grid;
   gap: 12px;

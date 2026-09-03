@@ -134,7 +134,14 @@
                 <input id="exp-vent" class="field__input saisie" inputmode="decimal" />
               </label>
 
-              <label class="field" data-largeur="7" data-champ-modele="tempete" hidden>
+              <!-- Cases des variantes du modèle actif : elles sont déclarées
+                   dans le référentiel (modeles.<nature>.variantes), libellé
+                   compris, et rendues ici. Une nouvelle variante ne demande
+                   donc aucune retouche du HTML. Elles ouvrent la rangée : la
+                   variante « Phénomène » écarte la tempête nommée, la coche se
+                   lit donc avant le champ qu'elle fait disparaître. -->
+              <div class="exp-cases" data-largeur="3" id="exp-variantes" hidden></div>
+              <label class="field" data-largeur="4" data-champ-modele="tempete" hidden>
                 <span class="field__label">Nom de la tempête</span>
                 <input id="exp-tempete" class="field__input saisie" />
               </label>
