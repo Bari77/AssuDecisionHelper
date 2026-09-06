@@ -22,6 +22,22 @@
           ]
         }
       ]
+    },
+    {
+      "typeContrat": "MRH",
+      "numero": "GA5X21G",
+      "libelle": "GENERALI IARD - MRH - GA5X21G",
+      "options": [
+        {
+          "capitaux": [
+            {
+              "nature": "Batiment",
+              "capital": "Valeur de reconstruction",
+              "modalite": "VAN 25 %"
+            }
+          ]
+        }
+      ]
     }
   ]
 }

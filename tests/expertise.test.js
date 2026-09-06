@@ -345,6 +345,12 @@ if (g.statut === 'ok') {
 }
 
 attendu(
+  { compagnie: 'GENERALI', typeContrat: 'MRH', numero: 'GA5X21G', option: '' },
+  'GENERALI IARD - MRH - GA5X21G',
+  'VAN 25 %'
+);
+
+attendu(
   { compagnie: 'ACM', typeContrat: 'MRH', numero: 'BQ 16.46.43-04/21', option: '' },
   'ACM - MRH - 164643 - 042021',
   'VAN 25 %'
