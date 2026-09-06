@@ -780,6 +780,7 @@
       renderMotif(issue);
       renderDommages();
       renderTextes();
+      syncContratActif(issue, s);
       demanderCompagnie(issue.compagnie);
       return;
     }
@@ -813,6 +814,24 @@
     renderDommages();
     renderTextes();
     syncCopiesCalcule();
+    syncContratActif(issue, s);
+  }
+
+  function syncContratActif(issue, s) {
+    const store = window.CONTRAT_ACTIF;
+    if (!store) return;
+    if (!s.compagnie && !s.numero) {
+      store.ecrire(null);
+      return;
+    }
+    store.ecrire({
+      compagnie: s.compagnie,
+      typeContrat: s.typeContrat,
+      numero: s.numero,
+      option: s.option || '',
+      libelle: issue.libelle || '',
+      statut: issue.statut || 'incomplet',
+    });
   }
 
   ['exp-nom', 'exp-adresse', 'exp-commune', 'exp-date', 'exp-sinistre-debut', 'exp-sinistre-fin', 'exp-tempete', 'exp-vent'].forEach(

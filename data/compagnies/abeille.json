@@ -1,0 +1,21 @@
+{
+  "compagnie": "ABEILLE",
+  "contrats": [
+    {
+      "typeContrat": "MRA",
+      "numero": "AGRITER 3030-0421",
+      "libelle": "ABEILLE - MRA - AGRITER 3030-0421",
+      "options": [
+        {
+          "capitaux": [
+            {
+              "nature": "Batiment",
+              "capital": "Valeur de reconstruction",
+              "modalite": "Vétusté déduite"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

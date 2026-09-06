@@ -1,0 +1,21 @@
+{
+  "compagnie": "MMA",
+  "contrats": [
+    {
+      "typeContrat": "MRH",
+      "numero": "340400 ASSUR HABITATION 3 - 410k",
+      "libelle": "MMA - MRH - 410k",
+      "options": [
+        {
+          "capitaux": [
+            {
+              "nature": "Batiment",
+              "capital": "Valeur de reconstruction",
+              "modalite": "VAN 25 %"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

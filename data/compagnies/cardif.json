@@ -1,0 +1,21 @@
+{
+  "compagnie": "CARDIF",
+  "contrats": [
+    {
+      "typeContrat": "MRH",
+      "numero": "-",
+      "libelle": "CARDIF - MRH",
+      "options": [
+        {
+          "capitaux": [
+            {
+              "nature": "Batiment",
+              "capital": "Valeur de reconstruction",
+              "modalite": "VAN 25 %"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "compagnie": "GROUPAMA",
+  "contrats": [
+    {
+      "typeContrat": "MRH",
+      "numero": "201403 - 102012 - PRIVATIS - BIHAB1",
+      "libelle": "GROUPAMA - MRH - 201403 - 102012 - PRIVATIS - BIHAB1",
+      "options": [
+        {
+          "capitaux": [
+            {
+              "nature": "Batiment",
+              "capital": "Valeur de reconstruction",
+              "modalite": "VAN 25 %"
+            }
+          ],
+          "frais": [
+            {
+              "type": "Démolition / déblai",
+              "limitation": "Selon frais justifiés"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

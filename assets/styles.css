@@ -1774,6 +1774,240 @@ textarea.field__input {
   min-height: 58px;
 }
 
+/* ---------------- Aide chiffrage (barre sous le formulaire) ---------------- */
+
+.exp-dock {
+  margin: 8px 0 28px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.exp-dock__barre {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  padding: 8px 10px;
+  background: var(--bg-soft);
+  border-bottom: 1px solid var(--line);
+}
+.exp-dock.is-replie .exp-dock__barre {
+  border-bottom: 0;
+}
+.exp-dock__cat {
+  appearance: none;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 13.5px;
+  color: var(--ink-soft);
+  padding: 7px 14px;
+  border-radius: 7px;
+  cursor: pointer;
+}
+.exp-dock__cat:hover {
+  background: var(--bg);
+  color: var(--ink);
+}
+.exp-dock__cat:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+.exp-dock__cat.is-active {
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 600;
+}
+.exp-dock__panneau {
+  padding: 18px 20px 20px;
+  display: grid;
+  gap: 22px;
+}
+.exp-chiffrage__bloc h3 {
+  font-size: 13px;
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin: 0 0 12px;
+}
+.exp-chiffrage__grille {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  align-items: start;
+}
+.exp-tva {
+  background: var(--bg-soft);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 14px 16px 12px;
+}
+.exp-tva__taux {
+  font-size: 22px;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  color: var(--accent);
+  line-height: 1.15;
+}
+.exp-tva__titre {
+  margin: 2px 0 10px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.exp-chiffrage__liste {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 6px;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--ink-soft);
+}
+.exp-tva .exp-chiffrage__liste {
+  font-size: 13px;
+}
+.exp-chiffrage__vide {
+  margin: 0;
+}
+
+@media print {
+  .exp-dock {
+    display: none !important;
+  }
+}
+
+/* ---------------- Page Chiffrage ---------------- */
+
+.chf-layout {
+  display: grid;
+  gap: 16px;
+  align-items: start;
+}
+@media (min-width: 960px) {
+  .chf-layout {
+    grid-template-columns: minmax(280px, 1fr) minmax(0, 1.4fr) minmax(240px, 0.9fr);
+  }
+  .chf-aide {
+    display: grid;
+    gap: 16px;
+    align-content: start;
+  }
+  .chf-aide > .exp-card {
+    margin-bottom: 0;
+  }
+}
+.chf-recherche__champ {
+  margin-bottom: 10px;
+}
+.chf-compteur {
+  margin: 0 0 10px;
+}
+.chf-resultats {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+.chf-resultat__btn {
+  appearance: none;
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--bg-soft);
+  padding: 12px 14px;
+  cursor: pointer;
+  text-align: left;
+  display: grid;
+  gap: 4px;
+  font: inherit;
+  color: inherit;
+}
+.chf-resultat__btn:hover {
+  background: #eceef2;
+  border-color: var(--accent-line);
+}
+.chf-resultat__btn.is-active {
+  background: var(--accent-soft);
+  border-color: var(--accent-line);
+}
+.chf-resultat__btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+.chf-resultat__titre {
+  font-weight: 600;
+  font-size: 14.5px;
+}
+.chf-resultat__montant {
+  font-size: 13px;
+  color: var(--ink-soft);
+}
+.chf-postes {
+  display: grid;
+  gap: 12px;
+}
+.chf-poste {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 14px 16px 12px;
+  background: var(--bg-soft);
+}
+.chf-poste--principal {
+  border-color: var(--accent-line);
+  background: var(--accent-soft);
+}
+.chf-poste__entete {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+.chf-poste__libelle {
+  margin: 0;
+  font-size: 14.5px;
+  font-weight: 600;
+}
+.chf-poste__montant {
+  font-size: 18px;
+  font-weight: 650;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.chf-poste__note {
+  margin: 0 0 10px;
+}
+.chf-poste__copie {
+  margin-top: 4px;
+}
+.chf-poste__copie .copie__texte {
+  font-size: 13px;
+}
+.chf-contrat__ref {
+  margin: 0 0 12px;
+  line-height: 1.45;
+}
+.chf-contrat__ref strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+.chf-contrat__alerte {
+  margin: 0;
+}
+#chf-contrat-corps {
+  display: grid;
+  gap: 8px;
+}
+#chf-contrat-corps .copie__texte {
+  font-size: 13.5px;
+}
+
 /* ---------------- Pied de page ---------------- */
 
 .footer {

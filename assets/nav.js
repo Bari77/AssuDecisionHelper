@@ -35,6 +35,7 @@
     },
     { cle: 'expertise', libelle: 'Expertise', page: 'expertise.html', apercu: 'Capitaux, frais et textes' },
     { cle: 'phrases', libelle: 'Phrases type', page: 'phrases.html', apercu: 'Formules à copier' },
+    { cle: 'chiffrage', libelle: 'Chiffrage', page: 'chiffrage.html', apercu: 'Prix indicatifs et TVA' },
   ];
 
   const CHEVRON =

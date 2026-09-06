@@ -1,0 +1,60 @@
+{
+  "modeEmploi": "Référentiel de la page Chiffrage. postes / ensembles : prix indicatifs liés. indicationsContrat : règles filtrées sur le contrat choisi dans Expertise (compagnie, typeContrat, numero) — priorité au numéro exact, puis type + compagnie, puis compagnie seule. Chaque entrée porte un tableau lignes (texte copiable).",
+  "postes": [
+    {
+      "id": "desamiantage-travaux",
+      "libelle": "Désamiantage",
+      "ensemble": "desamiantage",
+      "principal": true,
+      "montant": "85",
+      "unite": "€/m²",
+      "note": "Ordre de grandeur HT",
+      "motsClefs": ["amiante", "retrait amiante", "desamiantage"]
+    },
+    {
+      "id": "desamiantage-diagnostic",
+      "libelle": "Diagnostic amiante avant travaux",
+      "ensemble": "desamiantage",
+      "montant": "250",
+      "unite": "€",
+      "note": "Forfait indicatif, environ",
+      "motsClefs": ["repérage", "diagnostic amiante", "dta"]
+    }
+  ],
+  "ensembles": [
+    {
+      "id": "desamiantage",
+      "libelle": "Désamiantage",
+      "motsClefs": ["amiante", "désamiantage"]
+    }
+  ],
+  "tva": [
+    {
+      "taux": "5,5 %",
+      "titre": "",
+      "lignes": []
+    },
+    {
+      "taux": "10 %",
+      "titre": "",
+      "lignes": ["Couvertures"]
+    },
+    {
+      "taux": "20 %",
+      "titre": "",
+      "lignes": ["Arbres"]
+    }
+  ],
+  "indicationsGenerales": [
+    "Remaniage de couverture : pas de vétusté."
+  ],
+  "indicationsContrat": [
+    {
+      "compagnie": "MAAF",
+      "lignes": [
+        "ARBRE = OPTION CADRE DE VIE REGARDER LA LIMITATION"
+      ]
+    }
+  ],
+  "placeholderContrat": "Les indications de chiffrage liées au contrat choisi s'afficheront ici. Le référentiel n'en porte pas encore."
+}

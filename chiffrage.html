@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ADH — Chiffrage</title>
+    <meta
+      name="description"
+      content="Base de recherche de prix indicatifs : postes liés, TVA et règles de chiffrage."
+    />
+    <link rel="stylesheet" href="assets/styles.css" />
+  </head>
+  <body class="page-expertise page-chiffrage">
+    <header class="topbar">
+      <div class="wrap wrap--wide topbar__inner">
+        <a class="brand" href="index.html">
+          <span class="brand__mark" aria-hidden="true"></span>
+          <span class="brand__text">
+            <strong>ADH <span class="brand__version" id="brand-version"></span></strong>
+            <span>Chiffrage</span>
+          </span>
+        </a>
+        <nav class="nav" id="nav-principal" aria-label="Navigation principale"></nav>
+      </div>
+    </header>
+
+    <main class="wrap wrap--wide">
+      <p id="chf-erreur" class="exp-erreur" hidden></p>
+
+      <div class="chf-layout">
+        <section class="exp-card chf-recherche" aria-labelledby="titre-recherche">
+          <h2 id="titre-recherche">Recherche</h2>
+          <label class="field chf-recherche__champ">
+            <span class="field__label">Poste ou mot-clé</span>
+            <input
+              id="chf-query"
+              class="field__input saisie"
+              type="search"
+              placeholder="Ex. désamiantage, couverture, diagnostic…"
+              autocomplete="off"
+              spellcheck="false"
+            />
+          </label>
+          <p id="chf-compteur" class="muted small chf-compteur" aria-live="polite"></p>
+          <ul id="chf-resultats" class="chf-resultats" role="listbox" aria-label="Ensembles de postes"></ul>
+        </section>
+
+        <section class="exp-card chf-detail" aria-labelledby="titre-detail" hidden>
+          <h2 id="titre-detail">Postes liés</h2>
+          <p id="chf-detail-intro" class="muted small"></p>
+          <div id="chf-postes" class="chf-postes"></div>
+        </section>
+
+        <aside class="chf-aide">
+          <section class="exp-card" aria-labelledby="titre-tva">
+            <h2 id="titre-tva">TVA</h2>
+            <div id="chf-tva" class="exp-chiffrage__grille"></div>
+          </section>
+          <section class="exp-card" aria-labelledby="titre-indic">
+            <h2 id="titre-indic">Indications générales</h2>
+            <div id="chf-indic"></div>
+          </section>
+          <section class="exp-card chf-contrat" aria-labelledby="titre-contrat">
+            <h2 id="titre-contrat">Indications contrat</h2>
+            <p id="chf-contrat-ref" class="chf-contrat__ref muted small"></p>
+            <div id="chf-contrat-corps"></div>
+          </section>
+        </aside>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="wrap wrap--wide footer__inner">
+        <p class="footer__meta" id="footer-version"></p>
+      </div>
+    </footer>
+
+    <script src="assets/version.js"></script>
+    <script src="assets/nav.js"></script>
+    <script src="assets/copie.js"></script>
+    <script src="assets/contrat-actif.js"></script>
+    <script src="assets/chiffrage-moteur.js"></script>
+    <script src="assets/chiffrage.js"></script>
+  </body>
+</html>
