@@ -16,6 +16,44 @@ Portée des incréments, appliquée à la base de connaissance autant qu'au code
   conclusions existantes.
 - **CORRECTIF** — libellés, ergonomie, corrections sans incidence sur le raisonnement.
 
+## [2.3.0] - 2026-09-06
+
+Page Chiffrage, nouvelles fiches contrat, phrases de vérification du risque et indications
+contractuelles synchronisées depuis Expertise.
+
+### Ajouté
+
+- Onglet **Chiffrage** ([chiffrage.html](chiffrage.html)) : recherche de postes indicatifs,
+  montants copiables, TVA et indications générales. Les postes sont regroupés en **ensembles**
+  : sélectionner « Désamiantage » affiche aussi le diagnostic amiante du même lot.
+- Référentiel [data/chiffrage.json](data/chiffrage.json) : `postes`, `ensembles`, `tva`,
+  `indicationsGenerales`, `indicationsContrat`.
+- [assets/chiffrage-moteur.js](assets/chiffrage-moteur.js) et [assets/chiffrage.js](assets/chiffrage.js) :
+  moteur de recherche et interface, testables en Node.
+- [assets/contrat-actif.js](assets/contrat-actif.js) : le contrat choisi dans Expertise est
+  mémorisé (localStorage) et lu par la page Chiffrage.
+- Section **Indications contrat** sur Chiffrage : règles filtrées sur la compagnie, le type et
+  le numéro du contrat actif dans Expertise ; première règle **MAAF** — arbres / option Cadre
+  de vie.
+- Premier ensemble de prix : désamiantage **85 €/m²** et diagnostic amiante **~250 €**.
+- Phrases type **Vérification de risque** : surface géoportail, copropriété RDC pro + R+1 à
+  R+3, copropriété 7 étages — chacune copiable séparément.
+- Fiches contrat : **GENERALI** GA5X21G ; **CARDIF** MRH ; **MMA** 410k ; **GROUPAMA**
+  PRIVATIS BIHAB1 ; **AXA** 970464 N (VAN 25 % / option rééquipement à neuf VAN 100 %) ;
+  **ABEILLE** MRA AGRITER 3030-0421 (vétusté déduite).
+- Fichiers de compagnie : [cardif.json](data/compagnies/cardif.json),
+  [mma.json](data/compagnies/mma.json), [groupama.json](data/compagnies/groupama.json),
+  [abeille.json](data/compagnies/abeille.json).
+- [tests/chiffrage.test.js](tests/chiffrage.test.js) : ensembles liés, filtrage des indications
+  contrat.
+
+### Modifié
+
+- Navigation : ordre **Expertise → Phrases type → Chiffrage**.
+- Expertise enregistre le contrat courant à chaque résolution pour alimenter Chiffrage ; la
+  barre d'aide chiffrage sous le formulaire Expertise est retirée au profit de la page dédiée.
+- **MMA** ajoutée à la liste des compagnies du référentiel.
+
 ## [2.2.0] - 2026-09-03
 
 Variante « Phénomène » du modèle TEMPÊTE : l'épisode nommé de notoriété publique et le coup de

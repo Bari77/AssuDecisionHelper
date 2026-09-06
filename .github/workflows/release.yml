@@ -63,11 +63,11 @@ jobs:
 
       - name: Contrôler la syntaxe des scripts
         run: |
-          for f in assets/version.js assets/rules.js assets/sources.js assets/guides.js assets/textes.js assets/parcours.js assets/nav.js assets/app.js assets/expertise-moteur.js assets/expertise.js assets/copie.js assets/phrases.js; do
+          for f in assets/version.js assets/rules.js assets/sources.js assets/guides.js assets/textes.js assets/parcours.js assets/nav.js assets/app.js assets/expertise-moteur.js assets/expertise.js assets/copie.js assets/phrases.js assets/chiffrage-moteur.js assets/chiffrage.js assets/contrat-actif.js; do
             node --check "$f" && echo "  ok  $f"
           done
           node --check tools/construire-index.js && echo "  ok  tools/construire-index.js"
-          for f in data/expertise.json data/compagnies/*.json; do
+          for f in data/expertise.json data/chiffrage.json data/compagnies/*.json; do
             node -e "JSON.parse(require('fs').readFileSync(process.argv[1],'utf8'))" "$f" && echo "  ok  $f"
           done
 
@@ -82,6 +82,9 @@ jobs:
 
       - name: Valider les fiches contrat Expertise
         run: node tests/expertise.test.js
+
+      - name: Valider le référentiel Chiffrage
+        run: node tests/chiffrage.test.js
 
   publier:
     name: Construire et publier l'image
