@@ -16,6 +16,28 @@ Portée des incréments, appliquée à la base de connaissance autant qu'au code
   conclusions existantes.
 - **CORRECTIF** — libellés, ergonomie, corrections sans incidence sur le raisonnement.
 
+## [2.4.0] - 2026-09-09
+
+Nature **Dommages électriques** (surtension orageuse) et indications de chiffrage intégrées à
+l'expertise.
+
+### Ajouté
+
+- Nouvelle nature **DOM ELECTRIQUES** : modèle de rédaction pour les sinistres de surtension
+  électrique provoquée par un épisode orageux.
+- Champs du formulaire pour la nature DOM ELECTRIQUES : appareil sinistré, marque, modèle,
+  année d'acquisition, fonction de l'appareil, entreprise (devis). Ces champs n'apparaissent
+  que si le modèle de la nature choisie cite leurs variables.
+- Section **Indication contrat** dans le formulaire Expertise : affiche les indications de
+  chiffrage associées au contrat, compagnie, type et numéro, filtrées depuis le référentiel.
+  Le bloc se charge avec chiffrage.json et change de rendu à chaque résolution du contrat.
+
+### Modifié
+
+- Formulaire Expertise : le bloc des indications de chiffrage passe de barre amovible en
+  pied de formulaire à section à part entière après la carte d'assiette, facilement visible
+  et mieux hiérarchisée.
+
 ## [2.3.0] - 2026-09-06
 
 Page Chiffrage, nouvelles fiches contrat, phrases de vérification du risque et indications
@@ -458,6 +480,8 @@ Version initiale.
 
 Le détail de ces réserves est affiché dans l'onglet « Sources » du site.
 
+[2.4.0]: https://github.com/OWNER/AssuDecisionHelper/compare/2.3.0...2.4.0
+[2.3.0]: https://github.com/OWNER/AssuDecisionHelper/compare/2.2.0...2.3.0
 [2.2.0]: https://github.com/OWNER/AssuDecisionHelper/compare/2.1.0...2.2.0
 [2.1.0]: https://github.com/OWNER/AssuDecisionHelper/compare/2.0.0...2.1.0
 [2.0.0]: https://github.com/OWNER/AssuDecisionHelper/compare/1.4.0...2.0.0
