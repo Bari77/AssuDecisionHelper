@@ -664,6 +664,69 @@ if (E.interpoler('Bonjour {{x}}', {}).includes('[x]') === false) {
   echec('Un champ vide doit laisser un crochet');
 }
 
+/* ------------------- Modèle DOM ELECTRIQUES (surtension orageuse) ------------------- */
+
+const domElec = E.modelePour(db, 'DOM ELECTRIQUES');
+if (!domElec.causesCirconstances || domElec === db.modeles._defaut) {
+  echec('Modèle DOM ELECTRIQUES absent');
+} else {
+  const utiliseesDom = E.variablesDe(domElec.causesCirconstances);
+  for (const cle of [
+    'civilite',
+    'nom',
+    'qualite',
+    'situe',
+    'adresse',
+    'appareil',
+    'marque',
+    'modele',
+    'anneeAcquisition',
+    'fonctionAppareil',
+    'dateSinistre',
+    'entreprise',
+  ]) {
+    if (utiliseesDom.indexOf(cle) === -1) echec('Modèle DOM ELECTRIQUES : variable {{' + cle + '}} attendue');
+  }
+
+  const qualiteDom = "propriétaire occupant d'une maison individuelle";
+  const champsDom = Object.assign(
+    {
+      civilite: 'MME',
+      nom: 'VIVIANE TREMOUILLE',
+      qualite: qualiteDom,
+      adresse: '32 CHEMIN DE LA MARSÈCHE, 19110 MONESTIER-PORT-DIEU',
+      appareil: 'la pompe à eau',
+      marque: 'WILO',
+      modele: 'Extract FIRST 304 EM/A',
+      anneeAcquisition: '2026',
+      fonctionAppareil:
+        "Cette pompe permet de remonter l'eau du puits et, raccordée à l'installation de l'habitation, assure l'alimentation en eau de l'ensemble de la maison.",
+      dateSinistre: E.formaterDate('2026-08-04'),
+      entreprise: 'ABC PLOMBERIE',
+    },
+    E.accordDuBien(db, qualiteDom, '')
+  );
+
+  const renduDom = E.interpoler(domElec.causesCirconstances, champsDom);
+  const attendusDom = [
+    [
+      /^MME VIVIANE TREMOUILLE est propriétaire occupant d'une maison individuelle, située au 32 CHEMIN DE LA MARSÈCHE/,
+      'phrase d’ouverture',
+    ],
+    [/dommages affectant la pompe à eau de marque WILO, modèle Extract FIRST 304 EM\/A, acquise en 2026/, 'appareil sinistré'],
+    [/épisode orageux survenu dans la nuit du 4 août 2026/, 'date du sinistre'],
+    [/surtension ayant entraîné sa mise hors service/, 'mise hors service'],
+    [/devis de remplacement a été établi par l'entreprise ABC PLOMBERIE/, 'devis entreprise'],
+  ];
+  for (const [motif, quoi] of attendusDom) {
+    if (!motif.test(renduDom)) echec('Modèle DOM ELECTRIQUES : ' + quoi + ' absent ou mal rendu');
+  }
+  if (/\{\{|\[/.test(renduDom)) echec('Modèle DOM ELECTRIQUES : balise ou variable non résolue');
+  if (!/mise hors service.*surtension électrique/i.test(domElec.dommages)) {
+    echec('Modèle DOM ELECTRIQUES : phrase de dommages attendue');
+  }
+}
+
 /* ------------------- Dates, périodes et accords ------------------- */
 
 if (E.formaterDate('2026-02-01') !== '1er février 2026') {

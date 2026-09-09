@@ -1774,6 +1774,17 @@ textarea.field__input {
   min-height: 58px;
 }
 
+.exp-indic-contrat {
+  margin-top: 16px;
+}
+#exp-indic-contrat-corps {
+  display: grid;
+  gap: 8px;
+}
+#exp-indic-contrat-corps .copie__texte {
+  font-size: 13.5px;
+}
+
 /* ---------------- Aide chiffrage (barre sous le formulaire) ---------------- */
 
 .exp-dock {

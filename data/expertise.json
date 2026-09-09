@@ -373,6 +373,10 @@
     "GRELE": {
       "causesCirconstances": "{{civilite}} {{nom}} est {{qualite}}, {{situe}} {{adresse}}.\n\nLe {{date}}, en fin de journée, un orage supercellulaire a traversé le secteur de {{commune}}.\n\nCet épisode météorologique s'est accompagné de violentes rafales de vent, de fortes précipitations ainsi que de chutes de grêle, dont les grêlons ont localement atteint plusieurs centimètres de diamètre.\n\nCet événement a provoqué de nombreux dégâts sur des bâtiments de bonne construction, tant sur la commune de {{commune}} que sur les communes avoisinantes.\n\nLors de notre expertise, nous avons constaté que les dommages affectant le bien assuré sont compatibles avec les effets de cet épisode de grêle.",
       "dommages": "Dommages d’impacts de gêle sur .........\nTâches au ......... avec dégradation de la peinture suite aux infiltrations"
+    },
+    "DOM ELECTRIQUES": {
+      "causesCirconstances": "{{civilite}} {{nom}} est {{qualite}}, {{situe}} au {{adresse}}.\n\nLors de notre expertise, nous avons constaté des dommages affectant {{appareil}} de marque {{marque}}, modèle {{modele}}, acquise en {{anneeAcquisition}}. {{fonctionAppareil}}\n\nCes dommages sont consécutifs à un épisode orageux survenu dans la nuit du {{dateSinistre}}. Les perturbations électriques engendrées par cet événement ont provoqué une surtension ayant entraîné sa mise hors service.\n\nUn devis de remplacement a été établi par l'entreprise {{entreprise}}, laquelle indique que le dysfonctionnement constaté est consécutif à la surtension provoquée par l'épisode orageux.",
+      "dommages": "{{appareil}} : mise hors service constatée, dysfonctionnement consécutif à une surtension électrique."
     }
   }
 }

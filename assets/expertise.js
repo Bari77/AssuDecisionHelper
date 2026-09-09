@@ -287,6 +287,12 @@
         tempete: $('exp-tempete').value,
         vitesseVent: $('exp-vent').value,
         alentour: $('exp-alentour').value,
+        appareil: $('exp-appareil').value,
+        marque: $('exp-marque').value,
+        modele: $('exp-modele').value,
+        anneeAcquisition: $('exp-annee-appareil').value,
+        fonctionAppareil: $('exp-fonction-appareil').value,
+        entreprise: $('exp-entreprise').value,
       },
       E.accordDuBien(db, qualite, typeBien),
       valeursVariantes()
@@ -708,6 +714,44 @@
   const BASE_DONNEES = 'data/';
   const paquets = new Map();
   const echoues = new Set();
+  let chiffrageDb = null;
+
+  function renderIndicationContrat(s) {
+    const host = $('exp-indic-contrat-corps');
+    const C = window.CHIFFRAGE;
+    if (!host) return;
+    host.replaceChildren();
+
+    if (!C || !chiffrageDb) {
+      const p = document.createElement('p');
+      p.className = 'muted small';
+      p.textContent = 'Chargement des indications de chiffrage…';
+      host.appendChild(p);
+      return;
+    }
+
+    if (!s.compagnie) {
+      const p = document.createElement('p');
+      p.className = 'muted small';
+      p.textContent = 'Sélectionnez une compagnie pour afficher les indications de chiffrage liées au contrat.';
+      host.appendChild(p);
+      return;
+    }
+
+    const indic = C.indicationsContratPour(chiffrageDb, s);
+    if (indic.lignes.length) {
+      indic.lignes.forEach((ligne) => {
+        host.appendChild(window.COPIE.carte(ligne, { libelle: 'Copier l’indication contrat' }));
+      });
+      return;
+    }
+
+    const p = document.createElement('p');
+    p.className = 'muted small';
+    p.textContent =
+      chiffrageDb.placeholderContrat || 'Aucune indication de chiffrage pour ce contrat au référentiel.';
+    host.appendChild(p);
+  }
 
   function chargerJson(chemin) {
     return fetch(BASE_DONNEES + chemin, { cache: 'no-store' }).then((r) => {
@@ -781,6 +825,7 @@
       renderDommages();
       renderTextes();
       syncContratActif(issue, s);
+      renderIndicationContrat(s);
       demanderCompagnie(issue.compagnie);
       return;
     }
@@ -815,6 +860,7 @@
     renderTextes();
     syncCopiesCalcule();
     syncContratActif(issue, s);
+    renderIndicationContrat(s);
   }
 
   function syncContratActif(issue, s) {
@@ -834,7 +880,22 @@
     });
   }
 
-  ['exp-nom', 'exp-adresse', 'exp-commune', 'exp-date', 'exp-sinistre-debut', 'exp-sinistre-fin', 'exp-tempete', 'exp-vent'].forEach(
+  [
+    'exp-nom',
+    'exp-adresse',
+    'exp-commune',
+    'exp-date',
+    'exp-sinistre-debut',
+    'exp-sinistre-fin',
+    'exp-tempete',
+    'exp-vent',
+    'exp-appareil',
+    'exp-marque',
+    'exp-modele',
+    'exp-annee-appareil',
+    'exp-fonction-appareil',
+    'exp-entreprise',
+  ].forEach(
     (id) => {
       $(id).addEventListener('input', renderTextes);
     }
@@ -930,6 +991,15 @@
       const defauts = json.valeursParDefaut || {};
       if (defauts.tempete) $('exp-tempete').value = defauts.tempete;
       render();
+      chargerJson('chiffrage.json')
+        .then((json) => {
+          chiffrageDb = window.CHIFFRAGE.preparer(json);
+          render();
+        })
+        .catch(() => {
+          chiffrageDb = null;
+          render();
+        });
     })
     .catch((err) => {
       CHAMPS_COMBO.forEach((id) => {

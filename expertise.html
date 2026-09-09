@@ -150,6 +150,30 @@
                 <input type="hidden" id="exp-alentour" />
                 <div id="combo-alentour"></div>
               </div>
+              <label class="field" data-largeur="4" data-champ-modele="appareil" hidden>
+                <span class="field__label">Appareil sinistré</span>
+                <input id="exp-appareil" class="field__input saisie" placeholder="la pompe à eau" />
+              </label>
+              <label class="field" data-largeur="3" data-champ-modele="marque" hidden>
+                <span class="field__label">Marque</span>
+                <input id="exp-marque" class="field__input saisie" />
+              </label>
+              <label class="field" data-largeur="3" data-champ-modele="modele" hidden>
+                <span class="field__label">Modèle</span>
+                <input id="exp-modele" class="field__input saisie" />
+              </label>
+              <label class="field" data-largeur="2" data-champ-modele="anneeAcquisition" hidden>
+                <span class="field__label">Année d'acquisition</span>
+                <input id="exp-annee-appareil" class="field__input saisie" inputmode="numeric" />
+              </label>
+              <label class="field" data-largeur="10" data-champ-modele="fonctionAppareil" hidden>
+                <span class="field__label">Fonction de l'appareil</span>
+                <textarea id="exp-fonction-appareil" class="field__input saisie" rows="2"></textarea>
+              </label>
+              <label class="field" data-largeur="5" data-champ-modele="entreprise" hidden>
+                <span class="field__label">Entreprise (devis)</span>
+                <input id="exp-entreprise" class="field__input saisie" />
+              </label>
             </div>
             <div id="exp-causes" class="exp-texte calcule"></div>
           </section>
@@ -160,6 +184,11 @@
           </section>
         </div>
       </div>
+
+      <section class="exp-card exp-indic-contrat" aria-labelledby="titre-indic-contrat">
+        <h2 id="titre-indic-contrat">Indication contrat</h2>
+        <div id="exp-indic-contrat-corps"></div>
+      </section>
     </main>
 
     <footer class="footer">
@@ -172,6 +201,7 @@
     <script src="assets/nav.js"></script>
     <script src="assets/copie.js"></script>
     <script src="assets/contrat-actif.js"></script>
+    <script src="assets/chiffrage-moteur.js"></script>
     <script src="assets/expertise-moteur.js"></script>
     <script src="assets/expertise.js"></script>
   </body>
