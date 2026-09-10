@@ -360,7 +360,9 @@
       return estAffirmatif((champs || {})[v.champ]);
     });
     if (!active) return base;
-    return Object.assign({}, base, { causesCirconstances: active.causesCirconstances });
+    const fusion = Object.assign({}, base, { causesCirconstances: active.causesCirconstances });
+    if (typeof active.dommages === 'string') fusion.dommages = active.dommages;
+    return fusion;
   }
 
   /* Un modèle porte des variables {{cle}} et des blocs conditionnels

@@ -84,6 +84,18 @@ if (!maaf.lignes.some((l) => /ARBRE = OPTION CADRE DE VIE/.test(l))) {
   echec('MAAF : indication arbres / option cadre de vie attendue');
 }
 
+const cardif = C.indicationsContratPour(db, {
+  compagnie: 'CARDIF',
+  typeContrat: 'MRH',
+  numero: 'POL6514',
+});
+if (!cardif.lignes.some((l) => /TVA.*différé/i.test(l))) {
+  echec('CARDIF POL6514 : indication TVA en différé attendue');
+}
+if (!cardif.lignes.some((l) => /valeur vénale/i.test(l))) {
+  echec('CARDIF POL6514 : indication dépendances / valeur vénale attendue');
+}
+
 if (echecs.length) {
   console.error('Échecs chiffrage (' + echecs.length + ') :');
   echecs.forEach((m) => console.error('  • ' + m));

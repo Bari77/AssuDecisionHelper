@@ -715,7 +715,7 @@ if (!domElec.causesCirconstances || domElec === db.modeles._defaut) {
     ],
     [/dommages affectant la pompe à eau de marque WILO, modèle Extract FIRST 304 EM\/A, acquise en 2026/, 'appareil sinistré'],
     [/épisode orageux survenu dans la nuit du 4 août 2026/, 'date du sinistre'],
-    [/surtension ayant entraîné sa mise hors service/, 'mise hors service'],
+    [/surtensions atmosphériques engendrées par cet événement ont provoqué une surtension ayant entraîné sa mise hors service/, 'surtensions atmosphériques'],
     [/devis de remplacement a été établi par l'entreprise ABC PLOMBERIE/, 'devis entreprise'],
   ];
   for (const [motif, quoi] of attendusDom) {
@@ -724,6 +724,59 @@ if (!domElec.causesCirconstances || domElec === db.modeles._defaut) {
   if (/\{\{|\[/.test(renduDom)) echec('Modèle DOM ELECTRIQUES : balise ou variable non résolue');
   if (!/mise hors service.*surtension électrique/i.test(domElec.dommages)) {
     echec('Modèle DOM ELECTRIQUES : phrase de dommages attendue');
+  }
+
+  const ondeSurtension = E.variantesDe(domElec).find((v) => v.champ === 'ondeSurtension');
+  if (!ondeSurtension) {
+    echec('Modèle DOM ELECTRIQUES : variante « ondeSurtension » attendue');
+  } else {
+    if (ondeSurtension.libelle !== 'Onde de surtension') {
+      echec('Variante ondeSurtension : libellé « Onde de surtension » attendu');
+    }
+    const cocheOnde = E.modelePour(db, 'DOM ELECTRIQUES', { ondeSurtension: 'oui' });
+    if (cocheOnde.causesCirconstances !== ondeSurtension.causesCirconstances) {
+      echec('Variante ondeSurtension : cochée, elle doit remplacer les causes et circonstances');
+    }
+    if (cocheOnde.dommages !== ondeSurtension.dommages) {
+      echec('Variante ondeSurtension : cochée, elle doit aussi remplacer le texte de dommages');
+    }
+    for (const valeur of [undefined, '', 'non']) {
+      if (E.modelePour(db, 'DOM ELECTRIQUES', { ondeSurtension: valeur }).causesCirconstances !== domElec.causesCirconstances) {
+        echec('Variante ondeSurtension : « ' + valeur + ' » ne doit pas l’activer');
+      }
+    }
+
+    const qualiteOnde = "propriétaire occupant d'une maison individuelle";
+    const champsOnde = Object.assign(
+      {
+        civilite: 'MME',
+        nom: 'LÉA BONNEFOND',
+        qualite: qualiteOnde,
+        adresse: 'BELAYGUE, 24310 BRANTOME',
+        heureSinistre: '1 h du matin',
+        dateSinistre: E.formaterDate('2026-07-11'),
+        pointFrappe: "la parabole installée sur la toiture de l'habitation",
+      },
+      E.accordDuBien(db, qualiteOnde, '')
+    );
+
+    const renduOnde = E.interpoler(ondeSurtension.causesCirconstances, champsOnde);
+    const attendusOnde = [
+      [/^MME LÉA BONNEFOND est propriétaire occupant d'une maison individuelle, située au BELAYGUE/, 'phrase d’ouverture'],
+      [/épisode orageux est survenu aux alentours de 1 h du matin le 11 juillet 2026/, 'heure et date du sinistre'],
+      [/la foudre a frappé la parabole installée sur la toiture de l'habitation/, 'point de frappe'],
+      [/L'onde de surtension s'est propagée au réseau électrique du logement/, 'propagation de l’onde'],
+      [/départ d'incendie au niveau du tableau électrique/, 'départ d’incendie'],
+      [/maîtrisé par l'intervention des pompiers/, 'intervention des pompiers'],
+    ];
+    for (const [motif, quoi] of attendusOnde) {
+      if (!motif.test(renduOnde)) echec('Variante ondeSurtension : ' + quoi + ' absent ou mal rendu');
+    }
+    if (/\{\{|\[/.test(renduOnde)) echec('Variante ondeSurtension : balise ou variable non résolue');
+    const dommagesOnde = E.interpoler(ondeSurtension.dommages, champsOnde);
+    if (!/détérioration de plusieurs équipements électriques et électroniques/.test(dommagesOnde)) {
+      echec('Variante ondeSurtension : phrase de dommages attendue');
+    }
   }
 }
 

@@ -293,6 +293,8 @@
         anneeAcquisition: $('exp-annee-appareil').value,
         fonctionAppareil: $('exp-fonction-appareil').value,
         entreprise: $('exp-entreprise').value,
+        heureSinistre: $('exp-heure-sinistre').value,
+        pointFrappe: $('exp-point-frappe').value,
       },
       E.accordDuBien(db, qualite, typeBien),
       valeursVariantes()
@@ -703,6 +705,8 @@
     const modele = E.modelePour(db, nature, champs);
     ajusterChampsModele(modele);
     $('exp-causes').textContent = E.interpoler(modele.causesCirconstances, champs);
+    const dommages = typeof modele.dommages === 'string' ? E.interpoler(modele.dommages, champs) : '';
+    renderCopies($('exp-dommages'), dommages ? [dommages] : []);
     syncCopiesCalcule();
   }
 
@@ -895,6 +899,8 @@
     'exp-annee-appareil',
     'exp-fonction-appareil',
     'exp-entreprise',
+    'exp-heure-sinistre',
+    'exp-point-frappe',
   ].forEach(
     (id) => {
       $(id).addEventListener('input', renderTextes);

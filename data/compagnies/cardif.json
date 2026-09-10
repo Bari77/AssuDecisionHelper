@@ -3,8 +3,8 @@
   "contrats": [
     {
       "typeContrat": "MRH",
-      "numero": "-",
-      "libelle": "CARDIF - MRH",
+      "numero": "POL6514",
+      "libelle": "CARDIF IARD - MRH - POL6514",
       "options": [
         {
           "capitaux": [
@@ -12,6 +12,17 @@
               "nature": "Batiment",
               "capital": "Valeur de reconstruction",
               "modalite": "VAN 25 %"
+            },
+            {
+              "nature": "Dépendance",
+              "capital": "Valeur de reconstruction",
+              "modalite": "Vétusté déduite"
+            }
+          ],
+          "frais": [
+            {
+              "type": "Démolition / déblai",
+              "limitation": "Plafonnés à 10 % de la remise en état des biens immobiliers assurés"
             }
           ]
         }

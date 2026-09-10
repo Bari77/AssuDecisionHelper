@@ -209,7 +209,7 @@
       "references": [
         {
           "typeContrat": "MRH",
-          "numero": "-"
+          "numero": "POL6514"
         }
       ]
     },
@@ -375,7 +375,15 @@
       "dommages": "Dommages d’impacts de gêle sur .........\nTâches au ......... avec dégradation de la peinture suite aux infiltrations"
     },
     "DOM ELECTRIQUES": {
-      "causesCirconstances": "{{civilite}} {{nom}} est {{qualite}}, {{situe}} au {{adresse}}.\n\nLors de notre expertise, nous avons constaté des dommages affectant {{appareil}} de marque {{marque}}, modèle {{modele}}, acquise en {{anneeAcquisition}}. {{fonctionAppareil}}\n\nCes dommages sont consécutifs à un épisode orageux survenu dans la nuit du {{dateSinistre}}. Les perturbations électriques engendrées par cet événement ont provoqué une surtension ayant entraîné sa mise hors service.\n\nUn devis de remplacement a été établi par l'entreprise {{entreprise}}, laquelle indique que le dysfonctionnement constaté est consécutif à la surtension provoquée par l'épisode orageux.",
+      "causesCirconstances": "{{civilite}} {{nom}} est {{qualite}}, {{situe}} au {{adresse}}.\n\nLors de notre expertise, nous avons constaté des dommages affectant {{appareil}} de marque {{marque}}, modèle {{modele}}, acquise en {{anneeAcquisition}}. {{fonctionAppareil}}\n\nCes dommages sont consécutifs à un épisode orageux survenu dans la nuit du {{dateSinistre}}. Des surtensions atmosphériques engendrées par cet événement ont provoqué une surtension ayant entraîné sa mise hors service.\n\nUn devis de remplacement a été établi par l'entreprise {{entreprise}}, laquelle indique que le dysfonctionnement constaté est consécutif à la surtension provoquée par l'épisode orageux.",
+      "variantes": [
+        {
+          "champ": "ondeSurtension",
+          "libelle": "Onde de surtension",
+          "causesCirconstances": "{{civilite}} {{nom}} est {{qualite}}, {{situe}} au {{adresse}}.\n\nSelon les éléments recueillis lors de notre expertise, un épisode orageux est survenu aux alentours de {{heureSinistre}} le {{dateSinistre}}.\nAu cours de cet événement, la foudre a frappé {{pointFrappe}}. L'onde de surtension s'est propagée au réseau électrique du logement, provoquant un départ d'incendie au niveau du tableau électrique.\n\nL'incendie a été rapidement maîtrisé par l'intervention des pompiers.",
+          "dommages": "La surtension et le départ de feu ont entraîné la détérioration de plusieurs équipements électriques et électroniques présents dans l'habitation."
+        }
+      ],
       "dommages": "{{appareil}} : mise hors service constatée, dysfonctionnement consécutif à une surtension électrique."
     }
   }

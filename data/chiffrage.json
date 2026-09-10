@@ -54,6 +54,15 @@
       "lignes": [
         "ARBRE = OPTION CADRE DE VIE REGARDER LA LIMITATION"
       ]
+    },
+    {
+      "compagnie": "CARDIF",
+      "typeContrat": "MRH",
+      "numero": "POL6514",
+      "lignes": [
+        "TVA : à payer en différé.",
+        "Dépendances : si le montant des travaux dépasse la valeur vénale, indemnisation sur la valeur vénale et non en valeur de reconstruction vétusté déduite."
+      ]
     }
   ],
   "placeholderContrat": "Les indications de chiffrage liées au contrat choisi s'afficheront ici. Le référentiel n'en porte pas encore."
