@@ -16,6 +16,30 @@ Portée des incréments, appliquée à la base de connaissance autant qu'au code
   conclusions existantes.
 - **CORRECTIF** — libellés, ergonomie, corrections sans incidence sur le raisonnement.
 
+## [2.5.0] - 2026-09-10
+
+Variante **onde de surtension** pour les dommages électriques et fiche **CARDIF IARD
+POL6514** complétée.
+
+### Ajouté
+
+- Variante **Onde de surtension** sur la nature DOM ELECTRIQUES : texte dédié (foudre,
+  propagation au réseau, départ d'incendie au tableau, intervention des pompiers) et
+  dommages sur plusieurs équipements électriques / électroniques. Champs associés :
+  heure du sinistre, point de frappe de la foudre.
+- Fiche **CARDIF IARD - MRH - POL6514** : capitaux bâtiment (VAN 25 %) et dépendance
+  (vétusté déduite), frais démolition / déblai plafonnés à 10 % de la remise en état.
+- Indications contrat **CARDIF POL6514** dans le chiffrage : TVA en différé ; plafond
+  valeur vénale sur les dépendances si le montant des travaux l'excède.
+
+### Modifié
+
+- Modèle DOM ELECTRIQUES (surtension classique) : « perturbations électriques » remplacé
+  par « surtensions atmosphériques ».
+- Moteur d'expertise : une variante de modèle peut désormais porter son propre texte de
+  dommages constatés ; le formulaire se met à jour à la coche.
+- Numéro de contrat CARDIF : **POL6514** (remplace le tiret provisoire).
+
 ## [2.4.0] - 2026-09-09
 
 Nature **Dommages électriques** (surtension orageuse) et indications de chiffrage intégrées à
