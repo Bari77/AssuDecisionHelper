@@ -16,6 +16,13 @@ Portée des incréments, appliquée à la base de connaissance autant qu'au code
   conclusions existantes.
 - **CORRECTIF** — libellés, ergonomie, corrections sans incidence sur le raisonnement.
 
+## [3.0.0] - 2026-09-17
+
+### Modifié
+
+- Interface en thème sombre (fond, cartes, champs saisis et calculés, états de copie).
+  L’impression reste claire.
+
 ## [2.5.0] - 2026-09-10
 
 Variante **onde de surtension** pour les dommages électriques et fiche **CARDIF IARD

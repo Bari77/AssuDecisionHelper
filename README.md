@@ -446,7 +446,8 @@ ADH_VERSION=1.0.0 docker compose up -d
 Build local depuis les sources, sans registry ni Traefik :
 
 ```sh
-docker build -t adh:dev . && docker run --rm -p 8080:8080 adh:dev
+podman build -t adh:dev .
+podman run --rm -p 8080:8080 adh:dev -d
 ```
 
 Le conteneur tourne en système de fichiers en lecture seule, sans élévation de privilèges,
