@@ -16,6 +16,12 @@ Portée des incréments, appliquée à la base de connaissance autant qu'au code
   conclusions existantes.
 - **CORRECTIF** — libellés, ergonomie, corrections sans incidence sur le raisonnement.
 
+## [3.0.1] - 2026-09-17
+
+### Ajouté
+
+- Nouvelle phrase type dans la vérification du risque.
+
 ## [3.0.0] - 2026-09-17
 
 ### Modifié
