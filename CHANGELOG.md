@@ -16,6 +16,18 @@ Portée des incréments, appliquée à la base de connaissance autant qu'au code
   conclusions existantes.
 - **CORRECTIF** — libellés, ergonomie, corrections sans incidence sur le raisonnement.
 
+## [4.0.0] - 2026-10-19
+
+Retour aux fiches PACIFICA et MAAF d’origine : les millésimes parsés en ligne
+ne sont plus dans la base, les qualifications qui s’appuyaient dessus changent.
+
+### Modifié
+
+- PACIFICA et MAAF : retour aux fiches d’origine. Les millésimes, sources,
+  détails contractuels et points de vigilance ajoutés par parsing en ligne
+  sont retirés. Le moteur et le formulaire n’exposent plus `sourceRef`,
+  statuts de qualité ni points de vigilance.
+
 ## [3.0.1] - 2026-09-17
 
 ### Ajouté

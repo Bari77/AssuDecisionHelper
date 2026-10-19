@@ -72,8 +72,6 @@
      Héritage. Un fichier de compagnie ne répète jamais ce que dit son parent :
 
        compagnie         écrite en tête du fichier, servie à toutes ses fiches
-       statut, sourceRef descendent de la fiche vers ses options, puis de
-                         l'option vers chacun de ses postes
        libelle           calculé « compagnie - type - numéro » s'il n'est pas
                          écrit
 
@@ -102,15 +100,8 @@
   function completerFiche(fiche, entete) {
     const complete = heriter(fiche, { compagnie: entete.compagnie });
     if (!complete.libelle) complete.libelle = libelleParDefaut(complete);
-
     complete.options = (fiche.options || []).map(function (option) {
-      const o = heriter(option, { statut: complete.statut, sourceRef: complete.sourceRef });
-      /* Le statut qualifie chaque poste dans l'interface : il descend jusque-là.
-         La source, elle, est lue au niveau de l'option par resoudre(). */
-      const posteHerite = { statut: o.statut };
-      if (option.capitaux) o.capitaux = option.capitaux.map((c) => heriter(c, posteHerite));
-      if (option.frais) o.frais = option.frais.map((f) => heriter(f, posteHerite));
-      return o;
+      return Object.assign({}, option);
     });
     return complete;
   }
@@ -153,7 +144,6 @@
     const propres = completerPaquet(referentiel);
     const vues = new Set(propres.map(cleFiche));
     base.contrats = propres.concat(amorces(base).filter((a) => !vues.has(cleFiche(a))));
-    base.sources = Object.assign({}, (referentiel && referentiel.sources) || {});
     return base;
   }
 
@@ -177,7 +167,6 @@
 
     return Object.assign({}, db, {
       contrats: contrats,
-      sources: Object.assign({}, db.sources || {}, paquet.sources || {}),
       compagniesChargees: (db.compagniesChargees || []).concat([paquet.compagnie]),
     });
   }
@@ -252,17 +241,13 @@
 
     if (!(fiche.options || []).length) {
       return {
-        statut: 'documente',
-        motif: "Référence identifiée, mais aucun régime d'indemnisation n'est documenté à ce jour.",
+        statut: 'inconnu',
+        motif: "Aucun régime d'indemnisation n'est renseigné pour cette référence.",
         contrat: fiche,
         libelle: fiche.libelle,
         options: [],
         capitaux: [],
         frais: [],
-        source: sourcePour(db, fiche.sourceRef),
-        remarques: remarquesDe(fiche, null),
-        pointsVigilance: fiche.pointsVigilance || [],
-        qualite: fiche.statut || '',
       };
     }
 
@@ -277,10 +262,8 @@
           ? 'Préciser la formule souscrite : cette référence en compte plusieurs.'
           : 'Option non référencée pour cette formule.',
         contrat: fiche,
+        libelle: fiche.libelle,
         options: (fiche.options || []).map((o) => o.libelle || ''),
-        source: sourcePour(db, fiche.sourceRef),
-        remarques: remarquesDe(fiche, null),
-        qualite: fiche.statut || '',
       };
     }
 
@@ -291,27 +274,7 @@
       libelle: fiche.libelle,
       capitaux: option.capitaux || [],
       frais: option.frais || [],
-      source: sourcePour(db, option.sourceRef || fiche.sourceRef),
-      remarques: remarquesDe(fiche, option),
-      pointsVigilance: fiche.pointsVigilance || [],
-      qualite: option.statut || fiche.statut || '',
     };
-  }
-
-  /* Table sources : une fiche, une option, un capital ou un frais porte une clé
-     sourceRef ; les fiches antérieures n'en portent aucune et remontent null. */
-  function sourcePour(db, ref) {
-    if (!ref) return null;
-    const table = (db && db.sources) || {};
-    const source = table[ref];
-    if (!source) return null;
-    return Object.assign({ id: ref }, source);
-  }
-
-  function remarquesDe(fiche, option) {
-    const liste = [].concat(fiche.remarques || []);
-    if (option && option.remarque) liste.push(option.remarque);
-    return liste;
   }
 
   function numerosPour(db, compagnie, typeContrat, nature) {
@@ -537,7 +500,6 @@
     normaliserNumero: normaliserNumero,
     optionEstVide: optionEstVide,
     phrasesTypePour: phrasesTypePour,
-    sourcePour: sourcePour,
     preparer: preparer,
     fusionner: fusionner,
     fichierCompagnie: fichierCompagnie,

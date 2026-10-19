@@ -1,18 +1,6 @@
 {
   "schemaVersion": 3,
   "modeEmploi": "Ce fichier est le référentiel commun : listes, vérifications de risque, modèles de rédaction et index des fiches contrat. Les fiches elles-mêmes vivent dans data/compagnies/<compagnie>.json et sont téléchargées au choix de la compagnie dans le formulaire. fichesParCompagnie donne, pour chaque compagnie, son fichier et les clés de recherche de ses fiches (typeContrat + numero) : c'est ce qui permet de proposer tous les numéros et de deviner la compagnie avant tout téléchargement. Régénérer cet index avec « node tools/construire-index.js » après toute modification d'un fichier de compagnie. Un tableau contrats peut aussi être ajouté ici : il est fusionné avec les fiches téléchargées.",
-  "statutsQualite": {
-    "verifie": "Donnée relevée dans le document contractuel lui-même (source de niveau officiel ou copie identifiable du document original).",
-    "source_secondaire": "Donnée issue d'une source non contractuelle (fiche produit, comparateur, synthèse).",
-    "deduit": "Donnée non lue dans cette édition : reprise par analogie avec une ou plusieurs éditions voisines vérifiées. À confirmer sur le document de l'assuré.",
-    "a_verifier": "Donnée affirmée sans qu'aucune source contractuelle ait pu être consultée. À confirmer avant tout usage en dossier."
-  },
-  "niveauxSource": {
-    "officiel": "Document diffusé par la compagnie ou son réseau distributeur (site de la compagnie, site d'une caisse régionale).",
-    "copie_document": "Copie clairement identifiable du document contractuel original, hébergée par un tiers.",
-    "source_secondaire": "Source non contractuelle (comparateur, article, synthèse).",
-    "non_lu": "Document dont l'existence et la référence sont établies, mais dont le contenu n'a pas pu être lu."
-  },
   "natures": [
     "ACCIDENT DE LA CIRCULATION",
     "BRIS DE GLACE",
@@ -250,26 +238,6 @@
       "references": [
         {
           "typeContrat": "MRH",
-          "numero": "2339 - 03/26"
-        },
-        {
-          "typeContrat": "MRH",
-          "numero": "2339 - 01/21"
-        },
-        {
-          "typeContrat": "MRH",
-          "numero": "3845 DOM - 01/23"
-        },
-        {
-          "typeContrat": "MRH",
-          "numero": "2340 - 01/26"
-        },
-        {
-          "typeContrat": "MRH",
-          "numero": "11001 - 05/26"
-        },
-        {
-          "typeContrat": "MRH",
           "numero": "TEMPO Habitation HA2 004/09/14"
         }
       ]
@@ -288,27 +256,7 @@
       "references": [
         {
           "typeContrat": "MRH",
-          "numero": "7030A.29"
-        },
-        {
-          "typeContrat": "MRH",
-          "numero": "7030A.30"
-        },
-        {
-          "typeContrat": "MRH",
-          "numero": "7030L.31"
-        },
-        {
-          "typeContrat": "MRH",
-          "numero": "7030A.33"
-        },
-        {
-          "typeContrat": "MRH",
-          "numero": "7030A.34"
-        },
-        {
-          "typeContrat": "MRH",
-          "numero": "7030A.35"
+          "numero": "INTEGRALE PNO - 7030A.38"
         },
         {
           "typeContrat": "MRH",
@@ -316,15 +264,7 @@
         },
         {
           "typeContrat": "MRH",
-          "numero": "7030A.38"
-        },
-        {
-          "typeContrat": "MRH",
-          "numero": "INTEGRALE PNO - 7030A.38"
-        },
-        {
-          "typeContrat": "MRH",
-          "numero": "7262A.39"
+          "numero": "7030A.29"
         },
         {
           "typeContrat": "MRH",

@@ -78,7 +78,7 @@ if (cie.lignes.join('|') !== 'Règle C') echec('indicationsContrat : repli compa
 const maaf = C.indicationsContratPour(db, {
   compagnie: 'MAAF',
   typeContrat: 'MRH',
-  numero: '2339 - 03/26',
+  numero: 'TEMPO Habitation HA2 004/09/14',
 });
 if (!maaf.lignes.some((l) => /ARBRE = OPTION CADRE DE VIE/.test(l))) {
   echec('MAAF : indication arbres / option cadre de vie attendue');

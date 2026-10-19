@@ -411,9 +411,6 @@
     attendre($('exp-libelle'), squelette('champ', '70%'));
     attendre($('exp-capitaux'), squelettePoste(3), squelettePoste(3));
     attendre($('exp-frais'), squelettePoste(2));
-    attendre($('exp-source'), squelette('label', '26%'), squelette('texte', '80%'));
-    libere($('exp-vigilance'));
-    $('exp-vigilance').replaceChildren();
   }
 
   function squelettesInitiaux() {
@@ -431,81 +428,7 @@
     host.appendChild(p);
   }
 
-  /* Vocabulaire de qualité des données (data/expertise.json → statutsQualite). */
-  const LIBELLES_STATUT = {
-    verifie: 'vérifié',
-    source_secondaire: 'source secondaire',
-    deduit: 'déduit',
-    a_verifier: 'à vérifier',
-  };
-
-  /* Champs facultatifs de capital.details, dans l'ordre d'affichage. */
-  const DETAIL_CAPITAL = [
-    ['base', 'Base d’évaluation'],
-    ['premierReglement', 'Premier règlement'],
-    ['complement', 'Complément'],
-    ['plafond', 'Plafond'],
-    ['versement', 'Versement'],
-    ['delaiReconstruction', 'Délai'],
-    ['conditions', 'Conditions'],
-    ['surJustificatifs', 'Sur justificatifs'],
-  ];
-
-  /* Champs facultatifs portés directement par un frais. */
-  const DETAIL_FRAIS = [
-    ['base', 'Base de calcul'],
-    ['pourcentage', 'Pourcentage'],
-    ['plafond', 'Plafond'],
-    ['minimum', 'Minimum'],
-    ['maximum', 'Maximum'],
-    ['conditions', 'Conditions'],
-    ['observations', 'Observations'],
-  ];
-
-  function valeurLisible(v) {
-    if (v === true) return 'oui';
-    if (v === false) return 'non';
-    if (typeof v === 'number') return String(v);
-    const t = String(v == null ? '' : v).trim();
-    return t;
-  }
-
-  function badgeStatut(statut) {
-    const libelle = LIBELLES_STATUT[statut];
-    if (!libelle) return null;
-    const el = document.createElement('span');
-    el.className = 'exp-statut exp-statut--' + statut;
-    el.textContent = libelle;
-    return el;
-  }
-
-  function blocDetail(source, champs) {
-    const lignes = champs
-      .map(([cle, etiquette]) => [etiquette, valeurLisible(source[cle])])
-      .filter(([, valeur]) => valeur !== '');
-    if (!lignes.length) return null;
-
-    const pli = document.createElement('details');
-    pli.className = 'exp-detail';
-    const titre = document.createElement('summary');
-    titre.textContent = 'Détail contractuel';
-    pli.appendChild(titre);
-
-    const dl = document.createElement('dl');
-    dl.className = 'exp-detail__liste';
-    lignes.forEach(([etiquette, valeur]) => {
-      const dt = document.createElement('dt');
-      dt.textContent = etiquette;
-      const dd = document.createElement('dd');
-      dd.textContent = valeur;
-      dl.appendChild(dt);
-      dl.appendChild(dd);
-    });
-    pli.appendChild(dl);
-    return pli;
-  }
-
-  function renderPile(host, postes, champs, detailsFrais) {
+  function renderPile(host, postes, champs) {
     libere(host);
     host.replaceChildren();
     if (!postes || !postes.length) {
@@ -528,22 +451,6 @@
         ligne.appendChild(dd);
         bloc.appendChild(ligne);
       });
-
-      const badge = badgeStatut(poste.statut);
-      if (badge) bloc.appendChild(badge);
-
-      const detail = detailsFrais
-        ? blocDetail(poste, DETAIL_FRAIS)
-        : poste.details && blocDetail(poste.details, DETAIL_CAPITAL);
-      if (detail) bloc.appendChild(detail);
-
-      if (poste.remarque) {
-        const note = document.createElement('p');
-        note.className = 'exp-poste__note';
-        note.textContent = poste.remarque;
-        bloc.appendChild(note);
-      }
-
       host.appendChild(bloc);
     });
   }
@@ -553,86 +460,6 @@
     const motif = issue.statut === 'ok' ? '' : issue.motif || '';
     host.textContent = motif;
     host.hidden = !motif;
-  }
-
-  function renderSource(issue) {
-    const host = $('exp-source');
-    libere(host);
-    host.replaceChildren();
-
-    const fiche = issue.contrat;
-    if (!fiche) return;
-
-    const entete = document.createElement('div');
-    entete.className = 'exp-source__entete';
-    const titre = document.createElement('span');
-    titre.className = 'exp-poste__label';
-    titre.textContent = 'Source contractuelle';
-    entete.appendChild(titre);
-    const badge = badgeStatut(issue.qualite);
-    if (badge) entete.appendChild(badge);
-    host.appendChild(entete);
-
-    const src = issue.source;
-    const corps = document.createElement('p');
-    corps.className = 'exp-source__corps';
-    if (src) {
-      const parts = [src.document, src.reference, src.edition ? 'éd. ' + src.edition : ''].filter(Boolean);
-      corps.textContent = parts.join(' — ');
-      if (src.url) {
-        const lien = document.createElement('a');
-        lien.href = src.url;
-        lien.target = '_blank';
-        lien.rel = 'noopener noreferrer';
-        lien.textContent = src.hote || 'document';
-        corps.appendChild(document.createTextNode(' · '));
-        corps.appendChild(lien);
-      }
-      if (src.verifieLe) {
-        const meta = document.createElement('span');
-        meta.className = 'exp-source__meta';
-        meta.textContent = ' · vérifié le ' + E.formaterDate(src.verifieLe);
-        corps.appendChild(meta);
-      }
-    } else {
-      corps.textContent = 'Aucune source consignée pour cette fiche.';
-      corps.classList.add('exp-source__corps--absente');
-    }
-    host.appendChild(corps);
-
-    (issue.remarques || []).forEach((texte) => {
-      const note = document.createElement('p');
-      note.className = 'exp-source__remarque';
-      note.textContent = texte;
-      host.appendChild(note);
-    });
-  }
-
-  function renderVigilance(issue) {
-    const host = $('exp-vigilance');
-    host.replaceChildren();
-    const points = issue.pointsVigilance || [];
-    if (!points.length) return;
-
-    const titre = document.createElement('p');
-    titre.className = 'exp-poste__label';
-    titre.textContent = 'Points de vigilance';
-    host.appendChild(titre);
-
-    const ul = document.createElement('ul');
-    ul.className = 'exp-vigilance__liste';
-    points.forEach((point) => {
-      const li = document.createElement('li');
-      li.textContent = typeof point === 'string' ? point : point.texte || '';
-      if (point && point.page) {
-        const meta = document.createElement('span');
-        meta.className = 'exp-source__meta';
-        meta.textContent = ' (p. ' + point.page + ')';
-        li.appendChild(meta);
-      }
-      ul.appendChild(li);
-    });
-    host.appendChild(ul);
   }
 
   /* Phrases copiables : les mêmes cartes que la page Phrases type. */
@@ -834,8 +661,7 @@
       return;
     }
 
-    /* « documente » : la référence est identifiée, seul le régime manque. */
-    const identifie = issue.statut === 'ok' || issue.statut === 'documente';
+    const identifie = issue.statut === 'ok';
     libere($('exp-libelle'));
     $('exp-libelle').textContent = identifie ? issue.libelle : '—';
 
@@ -851,15 +677,13 @@
 
     if (issue.statut === 'ok') {
       renderPile($('exp-capitaux'), issue.capitaux, champsCapitaux);
-      renderPile($('exp-frais'), issue.frais, champsFrais, true);
+      renderPile($('exp-frais'), issue.frais, champsFrais);
     } else {
       renderPile($('exp-capitaux'), [], champsCapitaux);
-      renderPile($('exp-frais'), [], champsFrais, true);
+      renderPile($('exp-frais'), [], champsFrais);
     }
 
     renderMotif(issue);
-    renderSource(issue);
-    renderVigilance(issue);
     renderDommages();
     renderTextes();
     syncCopiesCalcule();
@@ -1012,7 +836,7 @@
         libere($(id));
         $(id).replaceChildren();
       });
-      ['exp-libelle', 'exp-capitaux', 'exp-frais', 'exp-source', 'exp-dommages', 'exp-causes'].forEach(
+      ['exp-libelle', 'exp-capitaux', 'exp-frais', 'exp-dommages', 'exp-causes'].forEach(
         (id) => {
           libere($(id));
           $(id).replaceChildren();

@@ -132,9 +132,6 @@ de dossier et la complétude des guides métier.
 rattachée au référentiel (compagnie, type). Les associations d’exemple (ACM, GENERALI,
 PACIFICA, MAAF, AXA) produisent le libellé et la modalité de bâtiment attendus. L’option vide
 ne déclenche pas une option nommée (IMMO+). Les modèles interpolent civilité, nom et date.
-Côté traçabilité : chaque `sourceRef` pointe vers une entrée de `sources` complète, tout
-`statut` appartient au vocabulaire déclaré, une donnée `verifie` est rattachable à un
-document, et chaque référence PACIFICA attendue résout vers sa propre fiche.
 Côté découpage : le test fusionne tous les fichiers de [data/compagnies/](data/compagnies/),
 vérifie que `fichesParCompagnie` les reflète exactement, qu’une fiche non téléchargée reste
 proposée et se résout en `chargement`, et que la fusion remplace l’amorce sans doublon.
@@ -144,13 +141,12 @@ La pipeline exécute les quatre tests avant toute publication.
 ### Où vivent les données
 
 [data/expertise.json](data/expertise.json) est le **référentiel commun** : listes, vérifications
-de risque, modèles de rédaction, vocabulaire de qualité, et `fichesParCompagnie` — l’index des
-fiches. Les **fiches contrat** vivent dans [data/compagnies/](data/compagnies/), un fichier par
-compagnie :
+de risque, modèles de rédaction, et `fichesParCompagnie` — l’index des fiches. Les **fiches
+contrat** vivent dans [data/compagnies/](data/compagnies/), un fichier par compagnie :
 
 ```
 data/expertise.json              référentiel + index          ~8 ko
-data/compagnies/pacifica.json    { compagnie, sources, contrats }
+data/compagnies/pacifica.json    { compagnie, contrats }
 data/compagnies/acm.json         idem
 ```
 
@@ -181,8 +177,6 @@ répétition inutile.
 | Champ | Vient de | Écrit plus bas seulement si… |
 | --- | --- | --- |
 | `compagnie` | l’en-tête du fichier | jamais : le fichier *est* la compagnie |
-| `statut` | la fiche → l’option → le poste | la qualité de cette donnée diffère de son parent |
-| `sourceRef` | la fiche → l’option | cette option vient d’un autre document |
 | `libelle` | calculé `compagnie - type - numéro` | le libellé attendu n’est pas celui-là |
 
 **`typeContrat` et `nomContrat` ne s’héritent pas** et se déclarent sur chaque fiche. Ils
@@ -230,45 +224,6 @@ Recopier une entrée de `contrats` dans le fichier de la compagnie
 
 `numero` et un `options[]` porteur de `capitaux` suffisent : tout le reste est facultatif et
 les fiches qui n’en portent rien fonctionnent à l’identique.
-
-### Tracer une fiche contrat
-
-Une référence de Conditions Générales est une **version contractuelle distincte** :
-7030A.29 ≠ 7030A.37 ≠ 7262A.40. Une fiche n’est jamais remplacée par une édition plus récente.
-
-Champs facultatifs, tous nourris par un document identifié :
-
-- **Fiche** — `nomContrat`, `edition` (`MM/AAAA`), `dateDebut` / `dateFin`, `distributeur`,
-  `referenceCG` quand `numero` porte aussi une formule, `formules[]` et
-  `optionsIndemnisationConnues[]` (noms documentés, sans régime associé),
-  `pointsVigilance[]` (`{ texte, statut, page }`, affichés sous les capitaux), `remarques[]`.
-- **Option** — `formule` et `optionsIndemnisation[]` séparent la formule commerciale
-  (Initiale, Intégrale, EKO, OPTIMALE…) de l’option d’indemnisation (Immo +, Équipement +).
-  Une même référence peut ainsi porter plusieurs régimes.
-- **Capital** — `details` (`base`, `premierReglement`, `complement`, `plafond`, `versement`,
-  `delaiReconstruction`, `conditions`, `surJustificatifs`), replié derrière « Détail
-  contractuel ». `modalite` reste la donnée synthétique affichée en clair.
-- **Frais** — `base`, `pourcentage`, `plafond`, `minimum`, `maximum`, `conditions`,
-  `observations`. `pourcentage` n’est renseigné que s’il figure déjà dans `limitation` :
-  le test le vérifie.
-
-**Qualité de la donnée** — `statut`, avec le vocabulaire déclaré dans `statutsQualite` :
-`verifie` (relevé sur le document), `deduit` (repris par analogie avec une édition voisine
-vérifiée), `source_secondaire`, `a_verifier`. Il s’écrit **une fois sur la fiche** et descend
-jusqu’à chaque poste ; on ne le réécrit que sur l’option ou le poste dont la qualité diffère.
-Une valeur douteuse reste absente ou passe en `a_verifier` — jamais affirmée.
-
-**Un millésime, une fiche** — une même référence de Conditions Générales peut changer de
-nomenclature d’une édition à l’autre : MAAF 2339 porte les formules Initiale / Classique /
-Intégrale en 01/21 et Eco / Essentielle / Confort / Confort + en 03/26. Chaque édition est donc
-une fiche distincte, dont le `numero` porte le millésime (`2339 - 03/26`). Saisir « 2339 » seul
-répond `ambigu` et propose les deux : c’est le comportement attendu.
-
-**Source** — `sourceRef` renvoie à une entrée de la table `sources`, qui porte le document,
-sa référence exacte, son édition, son `url`, son `hote`, son `niveau` (`officiel`,
-`copie_document`, `source_secondaire`, `non_lu`), la date `verifieLe` et le
-`modeVerification`. Une fiche sans régime documenté garde `options: []` et un `statut`
-`a_verifier` : le formulaire affiche alors la référence et sa source, sans inventer de capital.
 
 Les causes et le texte de dommages se règlent dans `modeles`, indexés par le code de nature
 (`GRELE`, `TEMPETE`, `INCENDIE`, …) avec repli sur `_defaut`. `dommages` est une chaîne
