@@ -381,7 +381,7 @@ for (const cle of Object.keys(db.modeles || {})) {
 
 const grele = E.modelePour(db, 'GRELE');
 if (!grele.causesCirconstances) echec('Modèle GRÊLE : causes absentes');
-if (!/impacts de gêle/i.test(grele.dommages)) {
+if (!/impacts de grêle/i.test(grele.dommages)) {
   echec('Modèle GRÊLE : phrase d’impacts de grêle absente');
 }
 if (!/dégradation de la peinture/i.test(grele.dommages)) {

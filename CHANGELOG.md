@@ -16,6 +16,12 @@ Portée des incréments, appliquée à la base de connaissance autant qu'au code
   conclusions existantes.
 - **CORRECTIF** — libellés, ergonomie, corrections sans incidence sur le raisonnement.
 
+## [4.0.1] - 2026-10-21
+
+### Corrigé
+
+- Modèle GRÊLE : le texte des dommages constatés indique « grêle » (le « r » manquait).
+
 ## [4.0.0] - 2026-10-19
 
 Retour aux fiches PACIFICA et MAAF d’origine : les millésimes parsés en ligne
